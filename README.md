@@ -1,5 +1,15 @@
 <h1> Estimating  Carbon in Digital Product</h1>
 
+<h2>Overview:</h2>
+There are already tools and plugins that measure the carbon footprint of code builds, infrastructure usage, or web
+performance. Some VS Code extensions even estimate the environmental cost of local development. However, none of
+them track AI token usage in context, and certainly not in a way that separates:
+<ul><li> Tokens sent to LLMs during app runtime inside the IDE (for example, while running and testing code).</li></ul>
+<ul><li>Tokens sent to LLMs for development support (the behind-the-scenes calls that power Cursor’s chat and AI-assisted
+features).</li></ul> 
+This is the gap we want to explore. By focusing on these two AI-specific metrics, we can give developers and teams
+visibility over both the carbon and cost of their AI usage, making it possible to make smarter, lower-impact choices earlier
+
 <h2>Building a Carbon-Aware Dev toolkit:</h2>
 
 We aim to design a toolkit that:
