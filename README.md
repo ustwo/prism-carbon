@@ -4,11 +4,11 @@
 
 We aim to design a toolkit that:
 <ul>
-<li>tracks AI token usage from two sources</li>
+<li>Tracks AI token usage from two sources</li>
   <ul>
-  <li>runtime interactions</li>
+  <li>Runtime interactions</li>
 
-  <li>AI assisted coded</li>
+  <li>AI assisted code</li>
   </ul>
   
 <li>Estimates carbon footprint</li>
@@ -18,6 +18,17 @@ We aim to design a toolkit that:
   <li>IDE</li>
   
   <li>Pull requests</li>
+  </ul>
+  <h2> Team Members </h2>
+  <ul>
+    Hao Ni (wx24939)
+    Iman Hadi (jp24368)
+    Jacob Connor (gn24034)
+    Max Davies (cg24012)
+  </ul>
+  <h2> Supporting Mentors</h2>
+  <ul> 
+    Murray Groves (ij22909)
   </ul>
 </ul>
 
