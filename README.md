@@ -44,7 +44,7 @@ We aim to design a toolkit that:
   <ul>
     <li>As a developer, I want to know what impact my code has on the envrionment so I can make better and more carbon efficient development choices.</li>
     <li>As a Project Manager, I want to know how impactful my project is, and which areas of a coded solution are the most environmentally costly so I can identify less carbon heavy implementations, and utilise this to re-design prototypes</li>
-    <li>As an Artifical Intelligence company, I can easily see and discover any massive inefficiencies in my AI model due to an overtly large relative carbon cost.</li>
+    <li>As an engineer at an Artifical Intelligence company, I can easily see and discover any massive inefficiencies in my AI model due to an overtly large relative carbon cost.</li>
   </ul>
 
   <h2>Client Names</h2>
