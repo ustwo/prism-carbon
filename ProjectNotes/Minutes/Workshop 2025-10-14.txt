@@ -1,0 +1,21 @@
+github 
+create a dev
+how does github review :
+1.always use another issue   
+2.make sure your team mates know you are commiting
+3.after two peole reveiw the code it can be commit to the dev (learn how to use github)
+4.break down the PR if it's too big (split it into smaller parts)
+5.agree in advance who's reviewing
+
+verification and validation :
+verification:are we buliding it right ?
+validation:are we building the stuff we want ?
+
+How to determine the day of the week, given the month, day and year
+-there's actually a mathematic formula about it
+-write a test to check if everthing is correct 
+
+test driven development (TDD)
+write tests before write code
+
+CI
