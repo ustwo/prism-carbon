@@ -5,7 +5,8 @@ jobs:
   FirstGithubAction:
     runs-on: ubuntu-latest
     steps:
-      - run: git checkout
+      - name: Check out repository code
+        uses: actions/checkout@v5
       - run: echo "Running on repository ${{github.repository}} and on branch ${{github.ref}}"
       - run: ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
