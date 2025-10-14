@@ -1,5 +1,9 @@
 <h1> Estimating  Carbon in Digital Product</h1>
 
+<h2>Contents:</h2>
+
+to be implemented in the future!!!
+
 <h2>Overview:</h2>
 There are already tools and plugins that measure the carbon footprint of code builds, infrastructure usage, or web
 performance. Some VS Code extensions even estimate the environmental cost of local development. However, none of
