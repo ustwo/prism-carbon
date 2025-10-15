@@ -2,11 +2,13 @@ name: Issue Priority Level Assigner
 
 on:
   issues:
-    types: [opened]
+    types: [opened, labeled]
 
 jobs:
   set_priority_label:
     runs-on: ubuntu-latest
+    if: ${{ github.event.label.name == 'bug' }}
+    
     
     steps:
       - name: Parse Issue Form (Get Priority Value)
