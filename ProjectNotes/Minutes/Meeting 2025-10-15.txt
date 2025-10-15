@@ -2,3 +2,18 @@ We’re currently expanding our Kanban board by creating more detailed issues an
 At the same time, we’re refining the C4 model for our project — moving from Level 1 (highest level) down to Level 4 (lowest level).
 hopefully this will help us clearly understand eveything before implementation 
 and give us a hint for deciding where to start with the actual coding.
+
+
+meeting with mentor
+how is the team being ranked ?
+1.readme issues
+branches project structure 
+
+recommed to do test driven what do we test 
+??????         do not worry about it for now 
+
+assign people in the issue 
+good first issue 
+make sure title more descriptive 
+
+fix 
