@@ -54,7 +54,7 @@ We aim to design a toolkit that:
   <li><b> Who They Are: </b> Software engineers who write, test, and debug code on a daily basis, often using AI-assisted tools </li>
   <li> <b>Their Improvements: </b> They are the primary end-users. The toolkit provides them with real-time data within their IDE, allowing them to see the environmental impact of their code and make more carbon-efficient development choices</li>
   <h3> Project Managers</h3>
-  <li><b>Who They Are:</> Individuals who oversee project planning, resource allocation and reporting</li>
+  <li><b>Who They Are:</b> Individuals who oversee project planning, resource allocation and reporting</li>
   <li><b>Their Involvement:</b> The toolkit allwos them to assess a projects overall environmental impact. They can use this data to identify carbon-heavy implementation, guide redesigns, and report on sustainability metrics</li>
 
 <h3>AI Engineers</h3>
