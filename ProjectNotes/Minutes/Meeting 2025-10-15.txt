@@ -1,0 +1,4 @@
+We’re currently expanding our Kanban board by creating more detailed issues and breaking down the tasks further.
+At the same time, we’re refining the C4 model for our project — moving from Level 1 (highest level) down to Level 4 (lowest level).
+hopefully this will help us clearly understand eveything before implementation 
+and give us a hint for deciding where to start with the actual coding.
