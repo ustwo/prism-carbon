@@ -1,6 +1,6 @@
 # VS code extension
 
-# prerequisits
+# prerequisites
 npm (May have to be updated)
 yeoman 
 esbuild (npm i --save-dev esbuild)
