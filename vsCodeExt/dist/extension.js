@@ -40,6 +40,9 @@ function activate(context) {
   const disposable = vscode.commands.registerCommand("vsCodeExt.helloWorld", () => {
     vscode.window.showInformationMessage("Hello World from EstimatingCarbon!");
   });
+  const input = vscode.commands.registerCommand("vsCodeExt.inputdisplay", () => {
+    vscode.window.showInformationMessage("temp");
+  });
   context.subscriptions.push(disposable);
 }
 function deactivate() {
