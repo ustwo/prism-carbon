@@ -6,7 +6,7 @@ but this method isn't very privacy safe, so this is not going to be our main pri
 
 2.our scond solution is inspired from another extension we found, it's similar with our projects 
 this approach takes the user's respond and sending it to LLM again 
-it's much privacy frendly compared with the first solution but this way it doubled the token usage and costs
+It's a lot more of a privacy-friendly solution compared with the first solution, but via this route, it doubles the token usage and costs 
 so we are not considering this method
 
 3.finally we are thinking to directly to send to API and API will directly send everything to us 
