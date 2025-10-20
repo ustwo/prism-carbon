@@ -1,11 +1,14 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
+import { stringify } from 'querystring';
 import * as vscode from 'vscode';
+import * as https from 'https';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
+	const BarManager = vscode.window.createStatusBarItem();
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "vsCodeExt" is now active!');
@@ -33,17 +36,16 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposableAPIKEY);
 
 
-	//------------     CREATE A PROXY SERVER TO ACT AS AN INBETWEEN FOR THE API RESPONSES
+	//1. Wait and listen for an API call to be made to gemini / openAI
 
-	//1: Define target for request to be forwarded to
+	//2. Determine model used by looking at API call
 
-	//2: instantiate the proxy client
+	//3. Send usage request to correct API usage endpoint using correct API key
 
-	//3: create a standard node.js jttp server. This should then listen for incoming requests
+	//4. Find Tokens and calculate costs
 
-	//4: choose localhost port
 
-	//5: Store port in "context.globalState" so other areas of the extension can access it
+
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
@@ -51,7 +53,17 @@ export function activate(context: vscode.ExtensionContext) {
 	const disposable = vscode.commands.registerCommand('vsCodeExt.helloWorld', async () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
+
 		vscode.window.showInformationMessage('Hello World from EstimatingCarbon!');
+		
+	});
+
+	const input = vscode.commands.registerCommand('vsCodeExt.inputdisplay',()=> {
+		
+		vscode.window.showInputBox()!;
+		
+		var x = vscode.window.createStatusBarItem("testing",1,1);
+		x.show();
 	});
 
 	context.subscriptions.push(disposable); 
