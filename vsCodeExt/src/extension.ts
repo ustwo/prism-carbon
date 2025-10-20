@@ -2,11 +2,13 @@
 // Import the module and reference it with the alias vscode in your code below
 import { stringify } from 'querystring';
 import * as vscode from 'vscode';
+import * as https from 'https';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
+	const BarManager = vscode.window.createStatusBarItem();
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "vsCodeExt" is now active!');
@@ -23,10 +25,11 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	const input = vscode.commands.registerCommand('vsCodeExt.inputdisplay',()=> {
-		// let x:string = vscode.window.showInputBox()!;
-
-		vscode.window.showInformationMessage("temp");
-
+		
+		vscode.window.showInputBox()!;
+		
+		var x = vscode.window.createStatusBarItem("testing",1,1);
+		x.show();
 	});
 
 	context.subscriptions.push(disposable);

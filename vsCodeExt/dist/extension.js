@@ -36,12 +36,15 @@ __export(extension_exports, {
 module.exports = __toCommonJS(extension_exports);
 var vscode = __toESM(require("vscode"));
 function activate(context) {
+  const BarManager = vscode.window.createStatusBarItem();
   console.log('Congratulations, your extension "vsCodeExt" is now active!');
   const disposable = vscode.commands.registerCommand("vsCodeExt.helloWorld", () => {
     vscode.window.showInformationMessage("Hello World from EstimatingCarbon!");
   });
   const input = vscode.commands.registerCommand("vsCodeExt.inputdisplay", () => {
-    vscode.window.showInformationMessage("temp");
+    vscode.window.showInputBox();
+    var x = vscode.window.createStatusBarItem("testing", 1, 1);
+    x.show();
   });
   context.subscriptions.push(disposable);
 }
