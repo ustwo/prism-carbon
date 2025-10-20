@@ -4,7 +4,7 @@ and we are focusing mainly on the tracking of token, we have come to three solut
 1.the first solution is to create a proxy server that sits between user and the LLMs
 but this method isn't very privacy safe, so this is not going to be our main priority but it seems to be workable 
 
-2.our scond solution is inspired from another extension we found, it's similar with our projects 
+2. Our second solution is inspired by another extension we found, it's similar to our project
 This approach takes the user's response and sends it to LLM again 
 It's a lot more of a privacy-friendly solution compared with the first solution, but via this route, it doubles the token usage and costs 
 so we are not considering this method
