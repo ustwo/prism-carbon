@@ -36,16 +36,30 @@ __export(extension_exports, {
 module.exports = __toCommonJS(extension_exports);
 var vscode = __toESM(require("vscode"));
 function activate(context) {
-  const BarManager = vscode.window.createStatusBarItem();
+  const barManager = vscode.window.createStatusBarItem();
+  barManager.text = "Limit";
+  barManager.show();
+  context.subscriptions.push(barManager);
   console.log('Congratulations, your extension "vsCodeExt" is now active!');
   const disposable = vscode.commands.registerCommand("vsCodeExt.helloWorld", () => {
     vscode.window.showInformationMessage("Hello World from EstimatingCarbon!");
   });
-  const input = vscode.commands.registerCommand("vsCodeExt.inputdisplay", () => {
-    vscode.window.showInputBox();
-    var x = vscode.window.createStatusBarItem("testing", 1, 1);
-    x.show();
+  const input = vscode.commands.registerCommand("vsCodeExt.inputdisplay", async () => {
+    const limit = await vscode.window.showInputBox({
+      prompt: "enter your carbon limit",
+      placeHolder: "eg. 5",
+      ignoreFocusOut: true
+      // keep input box open even if focus moves away from window
+    });
+    if (limit) {
+      barManager.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground");
+      barManager.text = "$(error) limit has been reached";
+      vscode.window.showInformationMessage("satisfied ");
+    } else {
+      vscode.window.showInformationMessage("not satisfied!");
+    }
   });
+  context.subscriptions.push(input);
   context.subscriptions.push(disposable);
 }
 function deactivate() {

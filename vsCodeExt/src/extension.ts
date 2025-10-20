@@ -8,7 +8,11 @@ import * as https from 'https';
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	const BarManager = vscode.window.createStatusBarItem();
+	const barManager = vscode.window.createStatusBarItem();
+	barManager.text = 'Limit';
+	barManager.show();
+	
+	context.subscriptions.push(barManager);
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "vsCodeExt" is now active!');
@@ -26,21 +30,23 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const input = vscode.commands.registerCommand('vsCodeExt.inputdisplay', async ()=> {
 		
-		vscode.window.showInformationMessage('Hello World from EstimatingCarbon!');
+		//vscode.window.showInformationMessage('Hello World from EstimatingCarbon!');
 
-		// const limit  = await vscode.window.showInputBox({
-		// 	prompt: 'enter your carbon limit',
-		// 	placeHolder:'eg. 5',
-		// 	ignoreFocusOut: true // keep input box open even if focus moves away from window
-		// });
+		const limit  = await vscode.window.showInputBox({
+			prompt: 'enter your carbon limit',
+			placeHolder:'eg. 5',
+			ignoreFocusOut: true // keep input box open even if focus moves away from window
+		});
 		
-		// if (limit === "h"){
-		// 	vscode.window.showInformationMessage('satisfied ');
-		// }
-		// else{
-		// 	vscode.window.showInformationMessage('not satisfied!');
+		if (limit){
+			barManager.backgroundColor = new vscode.ThemeColor("statusBarItem.errorBackground");
+			barManager.text = '$(error) limit has been reached';
+			vscode.window.showInformationMessage('satisfied ');
+		}
+		else{
+			vscode.window.showInformationMessage('not satisfied!');
 
-		// }
+		}
 		
 	});
 	
