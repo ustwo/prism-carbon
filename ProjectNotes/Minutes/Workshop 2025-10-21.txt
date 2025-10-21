@@ -4,7 +4,7 @@ the point is try not to get hit in the face by AI
 how professional developers work :
 nilton santos (restaurant booking system)
 he tells AI to implement according to some rules (analysis)
-he also need to do design (AI isn't good at designing)so he has to do the top level design(attributes,what to implement)
+he also needs do design (AI isn't good at designing)so he has to do the top level design(attributes,what to implement)
 implementation, can't accept if you don't understand the code(questioon the code review it)
 but AI don't consider effeciency
 
