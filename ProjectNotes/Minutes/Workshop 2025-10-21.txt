@@ -19,7 +19,7 @@ give them time consuming work
 give them job that's easy to explain 
 don't trust them with essential tasks
 don't ask it to do things you don't know how to do yourself
-review the code from AI understand it completely(also veiw for the quality)
+review the code from AI understand it completely (also view for the quality)
 fully test the code they write
 
 humans have to stay in charge
