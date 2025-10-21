@@ -1,12 +1,6 @@
 name: Basic Issue Form
 description: A form for basic issues
 title: "[GENERIC] New Submission: <Brief description>"
-assignees:
-  - mx-dv
-  - Crystal-2006
-  - JacobConnor5
-  - iman-ui
-  - m0g56
 
 body:
 
@@ -31,22 +25,42 @@ body:
       required: true
 
   - type: dropdown
+    id: assignees
+    attributes:
+      label: Which users should be assigned?
+      multiple: true # Allows selecting multiple options
+      options:
+        - FrontEnd
+        - BackEnd
+        - Runtime
+        - Devtime
+        - Everyone
+        - Max
+        - Jacob
+        - Iman
+        - Hao
+        - Morgan
+    validations:
+      required: true
+
+  - type: dropdown
     id: environment
     attributes:
-      label: Development / Runtime / UI
+      label: Development / Runtime / UI / Documentation
       description: Which phase of the development does this issue apply to?
       multiple: true # Allows selecting multiple options
       options:
         - Development
         - Runtime
         - UI
+        - Documentation
     validations:
       required: true
 
   - type: dropdown
     id: priority
     attributes:
-      label: Priority Level
+      label: Select Priority Level
       description: Please select the urgency of this issue
       options:
         - P0
