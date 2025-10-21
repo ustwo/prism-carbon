@@ -22,7 +22,7 @@ don't ask it to do things you don't know how to do yourself
 review the code from AI understand it completely(also veiw for the quality)
 fully test the code they write
 
-huaman have to stay in charge
+humans have to stay in charge
 NO AI in the readme
 
 we're going to create a general token tracker, then calculate the carbon emmision according to the different model they're using 
