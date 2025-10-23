@@ -16,7 +16,6 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.window.registerTreeDataProvider(
 			'myPrimaryView',
 			
-			treeDataProvider
 			new MyTreeDataProvider()
 		);
 
