@@ -85,9 +85,32 @@ function activate(context) {
   });
   context.subscriptions.push(input);
   context.subscriptions.push(disposable);
+  const treeDataProvider = new MyTreeDataProvider();
+  vscode.window.registerTreeDataProvider(
+    "myPrimaryView",
+    new MyTreeDataProvider()
+  );
 }
 function deactivate() {
 }
+var MyTreeDataProvider = class {
+  _onDidChangeTreeData = new vscode.EventEmitter();
+  onDidChangeTreeData = this._onDidChangeTreeData.event;
+  getTreeItem(element) {
+    return element;
+  }
+  getChildren(element) {
+    if (element) {
+      return Promise.resolve([]);
+    } else {
+      const infoMessage = new vscode.TreeItem(
+        "Here you will be able to track tokens and carbon emission",
+        vscode.TreeItemCollapsibleState.None
+      );
+      return Promise.resolve([infoMessage]);
+    }
+  }
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   activate,

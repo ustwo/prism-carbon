@@ -1,0 +1,58 @@
+name: Basic Issue Form
+description: A form for basic issues
+title: "[GENERIC] New Submission: <Brief description>"
+assignees:
+  - mx-dv
+  - Crystal-2006
+  - JacobConnor5
+  - iman-ui
+  - m0g56
+
+body:
+
+  - type: markdown
+    attributes:
+      value: |
+        Fill in the relevant fields with the information concerning the issue. 
+
+        Be as descriptive and concise.
+
+        Mandatory fields are marked with a *
+
+  - type: textarea
+    id: detailed-description
+    attributes:
+      label: Detailed Description of the Issue
+      description: Please be as specific as possible. Include expected vs actual behavior seen from the issue.
+      placeholder: Tell us what you see, what you expected, and why.
+      value: Pre-filled text goes here.
+      render: shell 
+    validations:
+      required: true
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Development / Runtime / UI
+      description: Which phase of the development does this issue apply to?
+      multiple: true # Allows selecting multiple options
+      options:
+        - Development
+        - Runtime
+        - UI
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority Level
+      description: Please select the urgency of this issue
+      options:
+        - P0
+        - P1
+        - P2
+        - P3
+      default: 2
+    validations:
+      required: true
