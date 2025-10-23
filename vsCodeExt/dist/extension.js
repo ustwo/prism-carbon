@@ -36,14 +36,32 @@ __export(extension_exports, {
 module.exports = __toCommonJS(extension_exports);
 var vscode = __toESM(require("vscode"));
 function activate(context) {
-  console.log('Congratulations, your extension "vsCodeExt" is now active!');
-  const disposable = vscode.commands.registerCommand("vsCodeExt.helloWorld", () => {
-    vscode.window.showInformationMessage("Hello World from EstimatingCarbon!");
-  });
-  context.subscriptions.push(disposable);
+  const treeDataProvider = new MyTreeDataProvider();
+  vscode.window.registerTreeDataProvider(
+    "myPrimaryView",
+    treeDataProvider
+  );
 }
 function deactivate() {
 }
+var MyTreeDataProvider = class {
+  _onDidChangeTreeData = new vscode.EventEmitter();
+  onDidChangeTreeData = this._onDidChangeTreeData.event;
+  getTreeItem(element) {
+    return element;
+  }
+  getChildren(element) {
+    if (element) {
+      return Promise.resolve([]);
+    } else {
+      const infoMessage = new vscode.TreeItem(
+        "Here you will be able to track tokens and carbon emission",
+        vscode.TreeItemCollapsibleState.None
+      );
+      return Promise.resolve([infoMessage]);
+    }
+  }
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   activate,
