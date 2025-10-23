@@ -37,8 +37,14 @@ module.exports = __toCommonJS(extension_exports);
 var vscode = __toESM(require("vscode"));
 function activate(context) {
   const barManager = vscode.window.createStatusBarItem();
-  barManager.text = "Limit";
+  const loading = [];
+  barManager.text = "Limit:";
   barManager.show();
+  for (var i = 0; i < 10; i++) {
+    loading.push(vscode.window.createStatusBarItem());
+    loading[i].text = "-";
+    loading[i].show();
+  }
   context.subscriptions.push(barManager);
   console.log('Congratulations, your extension "vsCodeExt" is now active!');
   const disposable = vscode.commands.registerCommand("vsCodeExt.helloWorld", () => {
@@ -46,6 +52,7 @@ function activate(context) {
   });
   const input = vscode.commands.registerCommand("vsCodeExt.inputdisplay", async () => {
     const limit = await vscode.window.showInputBox({
+      //opens an input box currently representing the carbon footprint
       prompt: "enter your carbon limit",
       placeHolder: "eg. 5",
       ignoreFocusOut: true
@@ -53,26 +60,28 @@ function activate(context) {
     });
     var num = Number(limit);
     var colour = "statusBarItem.activeBackground";
-    var text = "Limit has not yet been reached";
     if (num) {
-      if (num > 5) {
+      if (num >= 8) {
         colour = "statusBarItem.errorBackground";
-        text = "$(error) Limit has been exceeded";
-        vscode.window.showInformationMessage("satisfied");
+        vscode.window.showInformationMessage("passed limit");
       } else {
-        if (num === 5) {
-          colour = "statusBarItem.warningBackground";
-          text = "$(warning) Limit has been met";
-        }
-        vscode.window.showInformationMessage("satisfied but low");
+        colour = "statusBarItem.warningBackground";
+        vscode.window.showInformationMessage("below limit");
       }
-      barManager.backgroundColor = new vscode.ThemeColor(colour);
-      barManager.text = text;
+      var i2 = 0;
+      vscode.window.showInformationMessage(colour);
     } else {
-      colour = "statusBarItem.errorBackground";
-      text = "Error Invaild input";
+      colour = "statusBarItem.activeBackground";
+      num = 0;
       vscode.window.showInformationMessage("not satisfied!");
     }
+    for (i2 = 0; i2 < num; i2++) {
+      loading[i2].backgroundColor = new vscode.ThemeColor(colour);
+    }
+    for (i2; i2 < loading.length; i2++) {
+      loading[i2].backgroundColor = new vscode.ThemeColor("statusBarItem.activeBackground");
+    }
+    barManager.backgroundColor = new vscode.ThemeColor(colour);
   });
   context.subscriptions.push(input);
   context.subscriptions.push(disposable);

@@ -1,17 +1,21 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import { stringify } from 'querystring';
 import * as vscode from 'vscode';
 import * as https from 'https';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+	const barManager = vscode.window.createStatusBarItem(); //creates a status bar item for limit word
+	const loading: vscode.StatusBarItem[] = []; //creates a list of statusbar items for the loading bar items
+	barManager.text = 'Limit:';
+	barManager.show();//displays the limit item
 
-	const barManager = vscode.window.createStatusBarItem();
-	barManager.text = 'Limit';
-	barManager.show();
-	
+	for (var i:number = 0;i<10;i++){
+		loading.push(vscode.window.createStatusBarItem());
+		loading[i].text = "-"; //fills the loading array with some items
+		loading[i].show(); //displays them
+	}
 	context.subscriptions.push(barManager);
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
@@ -23,48 +27,50 @@ export function activate(context: vscode.ExtensionContext) {
 	const disposable = vscode.commands.registerCommand('vsCodeExt.helloWorld', () => {
 		// The code you place here will be executed every time your command is executed
 		// Display a message box to the user
-
 		vscode.window.showInformationMessage('Hello World from EstimatingCarbon!');
 		
 	});
 
 	const input = vscode.commands.registerCommand('vsCodeExt.inputdisplay', async ()=> {
 		//vscode.window.showInformationMessage('Hello World from EstimatingCarbon!');
-		const limit  = await vscode.window.showInputBox({
+		const limit  = await vscode.window.showInputBox({ //opens an input box currently representing the carbon footprint
 			prompt: 'enter your carbon limit',
 			placeHolder:'eg. 5',
 			ignoreFocusOut: true // keep input box open even if focus moves away from window
 		});
 
-		var num = Number(limit);
-		var colour = "statusBarItem.activeBackground";
-		var text = "Limit has not yet been reached";
+		var num = Number(limit); 
+		var colour = "statusBarItem.activeBackground"; 
+		//defines the default background
 		
 		if (num){
-			if (num > 5){
-				colour = "statusBarItem.errorBackground";
-
-				text = '$(error) Limit has been exceeded';
-				vscode.window.showInformationMessage('satisfied');
+			if (num >= 8){ //currently 8 represents the limit 
+				colour = "statusBarItem.errorBackground"; //if beyond the limit the loading bar goes red
+				vscode.window.showInformationMessage('passed limit');
 			}
 			else{
-				if (num === 5){
-					colour = "statusBarItem.warningBackground";
-					text = '$(warning) Limit has been met';
-				}
-				vscode.window.showInformationMessage('satisfied but low');
+				colour = "statusBarItem.warningBackground"; //if not beyond the limit loading bar is yellow
+				vscode.window.showInformationMessage('below limit');	
 			}
-			barManager.backgroundColor = new vscode.ThemeColor(colour);
-			barManager.text = text;
+			var i:number = 0;
+			vscode.window.showInformationMessage(colour);
 		}
-
 		else{
-			colour = "statusBarItem.errorBackground";
-			text = "Error Invaild input";
+			colour = "statusBarItem.activeBackground";
+			num = 0;
 			vscode.window.showInformationMessage('not satisfied!');
 		}
-		
+		for(i = 0;i<num;i++){ //populates the loading bar
+			loading[i].backgroundColor = new vscode.ThemeColor(colour);
+			}
+		for(i;i<loading.length;i++){
+			loading[i].backgroundColor = new vscode.ThemeColor("statusBarItem.activeBackground");
+			}
+
+		barManager.backgroundColor = new vscode.ThemeColor(colour); //colours the word "loading"
+
 	});
+	
 	
 	context.subscriptions.push(input);
 
