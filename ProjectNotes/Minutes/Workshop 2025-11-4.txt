@@ -1,0 +1,18 @@
+containerisation:
+package of software that's suitable on all sorts of systems
+we recommend docker for containerisation.
+
+cloud
+this year we are using AWS
+three service moudle:IaaS,PaaS,SaaS
+
+
+as a group,we are thinking about what to release for MVP:
+basic UI and some of the runtime and the dev time done 
+also we are creating MVP mile stones
+
+and the client meeting tomorrow, we will ask for :
+1.
+2.
+3.
+etc.   (will think about it tonight)groupmates please fill this out if you think of something
