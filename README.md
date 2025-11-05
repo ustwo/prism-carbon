@@ -1,4 +1,10 @@
-<h1> Estimating  Carbon in Digital Product</h1>
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=fff)](#)
+[![Visual Studio Code](https://custom-icon-badges.demolab.com/badge/Visual%20Studio%20Code-0078d7.svg?logo=vsc&logoColor=white)](#)
+[![Cursor](https://custom-icon-badges.demolab.com/badge/Cursor-000000?logo=cursor-ai-white)](#)
+[![GitHub Copilot](https://img.shields.io/badge/GitHub%20Copilot-000?logo=githubcopilot&logoColor=fff)](#)
+
+
+<h1> Estimating Carbon in Digital Product Development</h1>
 
 <h2>Contents:</h2>
 
@@ -72,7 +78,7 @@ We aim to design a toolkit that:
     <li>As a Project Manager, I want to know how impactful my project is, and which areas of a coded solution are the most environmentally costly so I can identify less carbon heavy implementations, and utilise this to re-design prototypes</li>
     <li>As an engineer at an Artifical Intelligence company, I can easily see and discover any massive inefficiencies in my AI model due to an overtly large relative carbon cost.</li>
   </ul>
-
+<h2>Project Structure</h2>
   <h2>Client Names</h2>
   <ul>
     <li>Paolo Rizzi</li>
@@ -85,6 +91,7 @@ We aim to design a toolkit that:
     <li>Iman Hadi (jp24368) </li>
     <li>Jacob Connor (gn24034)</li>
    <li>  Max Davies (cg24012)</li>
+    <li>Morgan Parry (vi24348)</li>
   </ul>
   <h2> Supporting Mentor</h2>
   <ul> 
