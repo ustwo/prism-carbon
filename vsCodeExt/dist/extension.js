@@ -67,6 +67,7 @@ var MyTreeDataProvider = class {
   _onDidChangeTreeData = new vscode.EventEmitter();
   onDidChangeTreeData = this._onDidChangeTreeData.event;
   items = [];
+  //creates a list of tree items starts empty obviously
   constructor() {
     this.items.push(new vscode.TreeItem(
       "Emission Levels:",
@@ -85,6 +86,7 @@ var MyTreeDataProvider = class {
   }
   addMessage(message) {
     this.items.push(new vscode.TreeItem(
+      //adds a new item to the side bar
       message,
       vscode.TreeItemCollapsibleState.None
     ));
@@ -118,13 +120,12 @@ var statusBarManager = class {
         vscode.window.showInformationMessage("below limit");
       }
       var i = 0;
-      vscode.window.showInformationMessage(this.newColour);
     } else {
       this.newColour = "statusBarItem.activeBackground";
       input = 0;
       vscode.window.showInformationMessage("not satisfied!");
     }
-    for (i = 0; i < input; i++) {
+    for (i = 0; i < Math.max(input); i++) {
       this.loading[i].backgroundColor = new vscode.ThemeColor(this.newColour);
     }
     for (i; i < this.loading.length; i++) {

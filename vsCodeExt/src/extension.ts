@@ -115,14 +115,13 @@ class statusBarManager{
 				vscode.window.showInformationMessage('below limit');	
 			}
 			var i:number = 0;
-			vscode.window.showInformationMessage(this.newColour);
 		}
 		else{
 			this.newColour = "statusBarItem.activeBackground";
 			input = 0;
 			vscode.window.showInformationMessage('not satisfied!');
 		}
-		for(i = 0;i<input;i++){ //populates the loading bar
+		for(i = 0;i<Math.max(input);i++){ //populates the loading bar
 			this.loading[i].backgroundColor = new vscode.ThemeColor(this.newColour);
 			}
 		for(i;i<this.loading.length;i++){
