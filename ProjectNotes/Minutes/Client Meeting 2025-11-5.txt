@@ -4,7 +4,7 @@ then our client describe what do they mean local to us and they ask us to use a 
 as for the UI side we already send a first release to them, so we are walking it through right now
 so for now our UI is just pretty much of a dummy, and we are setting an arbitary number as level of different emmission
 we need to let the engineers to know how good or how bad they're doing and they want a smaller sidebar
-
+Further research will be needed to look into what constitutes a good/context applicable budget
 1.our client(project manager) what us to be able to do expectations before our client do anything and he is asking if that's possible
 our client(IT manager) said it's not possible but this is what will happen in real life(people asking you to do not real stuff)
 2.our client also request they don't want to use a budget too much 
