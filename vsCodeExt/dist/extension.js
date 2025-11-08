@@ -104,11 +104,6 @@ var statusBarManager = class {
     this.newColour = this.defaultColour;
     this.mainItem.text = "Limit:";
     this.mainItem.show();
-    for (var i = 0; i < 10; i++) {
-      this.loading.push(vscode.window.createStatusBarItem());
-      this.loading[i].text = "-";
-      this.loading[i].show();
-    }
   }
   updateBar(input, limit) {
     if (input) {
@@ -124,12 +119,6 @@ var statusBarManager = class {
       this.newColour = "statusBarItem.activeBackground";
       input = 0;
       vscode.window.showInformationMessage("not satisfied!");
-    }
-    for (i = 0; i < Math.max(input); i++) {
-      this.loading[i].backgroundColor = new vscode.ThemeColor(this.newColour);
-    }
-    for (i; i < this.loading.length; i++) {
-      this.loading[i].backgroundColor = new vscode.ThemeColor("statusBarItem.activeBackground");
     }
     this.mainItem.backgroundColor = new vscode.ThemeColor(this.newColour);
   }

@@ -95,11 +95,11 @@ class statusBarManager{
 		this.mainItem.text = 'Limit:';
 		this.mainItem.show();//displays the limit item
 
-		for (var i:number = 0;i<10;i++){
-			this.loading.push(vscode.window.createStatusBarItem());
-			this.loading[i].text = "-"; //fills the loading array with some items
-			this.loading[i].show(); //displays them
-		}
+		// for (var i:number = 0;i<10;i++){
+		// 	this.loading.push(vscode.window.createStatusBarItem());
+		// 	this.loading[i].text = "-"; //fills the loading array with some items
+		// 	this.loading[i].show(); //displays them
+		// }
 
 	}
 
@@ -121,12 +121,12 @@ class statusBarManager{
 			input = 0;
 			vscode.window.showInformationMessage('not satisfied!');
 		}
-		for(i = 0;i<Math.max(input);i++){ //populates the loading bar
-			this.loading[i].backgroundColor = new vscode.ThemeColor(this.newColour);
-			}
-		for(i;i<this.loading.length;i++){
-			this.loading[i].backgroundColor = new vscode.ThemeColor("statusBarItem.activeBackground");
-			}
+		// for(i = 0;i<Math.max(input);i++){ //populates the loading bar
+		// 	this.loading[i].backgroundColor = new vscode.ThemeColor(this.newColour);
+		// 	}
+		// for(i;i<this.loading.length;i++){
+		// 	this.loading[i].backgroundColor = new vscode.ThemeColor("statusBarItem.activeBackground");
+		// 	}
 
 		this.mainItem.backgroundColor = new vscode.ThemeColor(this.newColour); //colours the word "loading"
 	}
