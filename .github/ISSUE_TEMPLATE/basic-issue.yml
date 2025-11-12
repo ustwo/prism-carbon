@@ -1,6 +1,6 @@
 name: Basic Issue Form
 description: A form for basic issues
-title: "[GENERIC] New Submission: <Brief description>"
+title: "New Submission: <Brief description>"
 
 body:
 
