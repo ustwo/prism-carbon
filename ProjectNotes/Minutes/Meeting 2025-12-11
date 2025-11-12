@@ -1,7 +1,7 @@
 Feedback 
 Things to fix
 - Add dev instructions in readme
-- Change the background for the image added in the readme doesnt show up in dakrmode
+- Change the background for the image added in the readme doesn't show up in dark mode
 - Make sure issues have the metadata (labels) on them 
 - All issues have description milestones 
 - Branch names are still inconsistent --> Figure out the camel case and capitalisation --> Stick to camel case?
