@@ -1,6 +1,6 @@
 name: Bug Report Form
 description: A form for submitting bugs
-title: "[BUG] New Submission: <Brief description>"
+title: "New Submission: <Brief description>"
 labels: ["bug"]
 
 body:
@@ -35,6 +35,7 @@ body:
         - BackEnd
         - Runtime
         - Devtime
+        - TokenConversion
         - Everyone
         - Max
         - Jacob

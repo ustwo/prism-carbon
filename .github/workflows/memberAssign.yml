@@ -32,10 +32,11 @@ jobs:
             }
 
             const teamAssignments = {
-              "FrontEnd": ["JacobConnor5", "iman-ui"],
-              "BackEnd": ["mx-dv","Crystal-2006", "m0g56"],
-              "Runtime": ["mx-dv","Crystal-2006"],
-              "Devtime": ["m0g56"],
+              "FrontEnd": ["iman-ui", "m0g56"],
+              "BackEnd": ["mx-dv","Crystal-2006", "JacobConnor5"],
+              "Runtime": ["mx-dv"],
+              "Devtime": ["JacobConnor5"],
+              "TokenConversion": ["Crystal-2006"],
               "Everyone": ["mx-dv", "JacobConnor5", "m0g56", "Crystal-2006", "iman-ui"],
               "Max": ["mx-dv"],
               "Jacob": ["JacobConnor5"],
