@@ -4,7 +4,7 @@
 
 import * as vscode from 'vscode';
 import * as https from 'https';
-
+import { encoding_for_model } from "tiktoken";
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 
@@ -33,15 +33,16 @@ export function activate(context: vscode.ExtensionContext) {
         context.subscriptions.push(disposable);
     });
 
-	disposables.push(vscode.workspace.onDidChangeTextDocument(evt => {
+	disposables.push(vscode.workspace.onDidChangeTextDocument(async evt => {
+		const enc = await encoding_for_model("gpt-4o");
 		for (const change of evt.contentChanges){
-			if (change.text.length>1){ //if its more than 1 character
-				treeDataProvider.addMessage(change.text);
+			const tokens = enc.encode(change.text);
+			if (change.text.length>2){ //if its more than 1 character
+				treeDataProvider.addMessage(String(tokens.length));
 				
 			}
 		}
 	}));
-
 	
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
