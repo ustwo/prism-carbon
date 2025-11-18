@@ -4,6 +4,8 @@
 
 import * as vscode from 'vscode';
 import * as https from 'https';
+import * as budget from './budget';
+import { Memento } from "vscode";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -11,11 +13,15 @@ import * as https from 'https';
 export function activate(context: vscode.ExtensionContext) {
 	var barManager = new statusBarManager();
 	const treeDataProvider = new MyTreeDataProvider();
+	
 	vscode.window.registerTreeDataProvider(
 			'myPrimaryView',
 			treeDataProvider
 		);
 
+	budget.initStorage(context.workspaceState);
+	restoreCallHistory(treeDataProvider);
+	barManager.updateLimit(budget.updateLimit());
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "vsCodeExt" is now active!');
@@ -27,17 +33,31 @@ export function activate(context: vscode.ExtensionContext) {
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Hello World from EstimatingCarbon!');
 	});
+
+	const reset = vscode.commands.registerCommand('vsCodeExt.clearStore', () => {
+		// The code you place here will be executed every time your command is executed
+		// Display a message box to the user
+		budget.resetBudget();
+		treeDataProvider.clearTree();
+		barManager.updateLimit(0);
+		vscode.window.showInformationMessage('Past calls cleared.');
+	});
 	const input = vscode.commands.registerCommand('vsCodeExt.inputdisplay', async ()=> {
 		//vscode.window.showInformationMessage('Hello World from EstimatingCarbon!');
 		const limit  = await vscode.window.showInputBox({ //opens an input box currently representing the carbon footprint
-			prompt: 'enter your carbon limit',
+			prompt: 'Enter test call: ',
 			placeHolder:'eg. 5',
 			ignoreFocusOut: true // keep input box open even if focus moves away from window
 		});
 
-		var num = Number(limit); 
-		barManager.updateBar(num,8);
-		treeDataProvider.addMessage("Carbon Emissions level: "+num);
+		var num = Number(limit);
+		var newCall: budget.Call = {Emissions: num};
+		budget.storeCall(newCall); 
+		var cLimit = budget.updateLimit();
+		console.log("limit: " + cLimit);
+		
+		barManager.updateBar(num,cLimit);
+		treeDataProvider.addMessage("Call ID: xxxx - Emissions: " + num + ' g CO₂e');
 
 		//defines the default background
 	});	
@@ -58,7 +78,7 @@ class MyTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem>{
 
 	constructor(){
 		this.items.push(new vscode.TreeItem(
-				"Emission Levels:", 
+				"Latest calls:", 
 				vscode.TreeItemCollapsibleState.None)); //initialises the messages with one title message		
 	}
 
@@ -82,6 +102,10 @@ class MyTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem>{
 		this._onDidChangeTreeData.fire(); //refreshes the sidebar
 
 	}
+	clearTree() {
+		this.items = [];
+		this._onDidChangeTreeData.fire();
+	}
 
 }
 class statusBarManager{
@@ -92,7 +116,7 @@ class statusBarManager{
 
 	constructor(){
 		this.newColour = this.defaultColour;
-		this.mainItem.text = 'Limit:';
+		this.mainItem.text = 'Average carbon cost: g CO₂e';
 		this.mainItem.show();//displays the limit item
 
 		// for (var i:number = 0;i<10;i++){
@@ -103,12 +127,17 @@ class statusBarManager{
 
 	}
 
+	updateLimit(input:number) {
+		this.mainItem.text = 'Average carbon cost: ' + input + ' g CO₂e';
+	}
+
 	updateBar(input:number,limit:number){
 
 		if (input){
+			this.mainItem.text = 'Average carbon cost: ' + limit + ' g CO₂e';
 			if (input >= limit){ //currently 8 represents the limit 
 				this.newColour = "statusBarItem.errorBackground"; //if beyond the limit the loading bar goes red
-				vscode.window.showInformationMessage('passed limit');
+				vscode.window.showInformationMessage('High carbon AI call made (check pane for details)');
 			}
 			else{
 				this.newColour = "statusBarItem.warningBackground"; //if not beyond the limit loading bar is yellow
@@ -131,3 +160,12 @@ class statusBarManager{
 		this.mainItem.backgroundColor = new vscode.ThemeColor(this.newColour); //colours the word "loading"
 	}
 }
+
+function restoreCallHistory(tree: MyTreeDataProvider) { //restores past calls to sidebar
+	var pCalls = budget.getCalls();
+	console.log("CALLS:", pCalls);
+	for (let i = 0; i < pCalls.length; i++) {
+		tree.addMessage("Call ID: xxxx - Emissions: " + pCalls[i].Emissions + ' g CO₂e');
+	}
+}
+

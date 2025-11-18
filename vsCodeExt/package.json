@@ -11,6 +11,7 @@
   ],
   "activationEvents": [
     "onCommand:vsCodeExt.helloWorld",
+    "onCommand:vsCodeExt.resetStore",
     "onCommand:vsCodeExt.inputdisplay",
     "onView:myPrimaryView"
   ],
@@ -38,6 +39,10 @@
       {
         "command": "vsCodeExt.helloWorld",
         "title": "Hello World"
+      },
+            {
+        "command": "vsCodeExt.clearStore",
+        "title": "Clear stored calls"
       },
       {
         "command": "vsCodeExt.inputdisplay",
