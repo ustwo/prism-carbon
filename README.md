@@ -71,6 +71,14 @@ We aim to design a toolkit that:
     <li>As an engineer at an Artifical Intelligence company, I can easily see and discover any massive inefficiencies in my AI model due to an overtly large relative carbon cost.</li>
   </ul>
 
+
+  <h2> Dependencies: </h2>
+  <ul>
+    <ul> RunTime Analysis
+      <li> mockttp - https certificate generator and handshake handler - npm install mockttp
+    </ul>
+  </ul>
+
   <h2>Client Names</h2>
   <ul>
     <li>Paolo Rizzi</li>
