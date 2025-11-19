@@ -32,6 +32,11 @@
         "command": "interceptor.stop",
         "title": "Stop Proxy Interceptor",
         "category": "Interceptor"
+      },
+      {
+        "command": "interceptor.openTerminal",
+        "title": "Open Runtime Terminal",
+        "category": "Interceptor"
       }
     ]
   },

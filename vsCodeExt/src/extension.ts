@@ -12,7 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
 		try {
 			// start local server
 			proxyServer = new InterceptorProxy(PROXY_PORT);
-			proxyServer.start();
+			await proxyServer.start(context.globalStorageUri.fsPath);
 
 			// set VSCode to use local proxy
 			const config = vscode.workspace.getConfiguration('http');
@@ -41,6 +41,38 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage('Interceptor Proxy stopped. Proxy settings cleared.');
 	});
 
+	let terminalDisposable = vscode.commands.registerCommand('interceptor.openTerminal', async () => {
+		if (!proxyServer) {
+			vscode.window.showErrorMessage("There is no Interceptor Proxy Running. Please initiate `interceptor.start`");
+			return;
+		}
+
+		const proxyUrl = `http://127.0.0.1:${PROXY_PORT}`;
+
+		//create a new terminal with specific Environment Vars
+
+		const terminal = vscode.window.createTerminal({
+			name: "Estimating Carbon Terminal",
+			env: {
+				//Standard Proxy Vars
+				"HTTP_PROXY": proxyUrl,
+				"HTTPS_PROXY": proxyUrl,
+				"http_proxy": proxyUrl,
+				"https_proxy": proxyUrl,
+
+				// python specific
+				"REQUESTS_CA_BUNDLE": proxyServer.certPath,
+
+				// NODE JS SPECIFIC: Trust the proxy
+				"NODE_EXTRA_CA_CERTS": proxyServer.certPath
+			}
+		});
+
+		terminal.show()
+		vscode.window.showInformationMessage("Opened Terminal with Proxy Environment Vars");
+	});
+
+	context.subscriptions.push(terminalDisposable)
 	context.subscriptions.push(startDisposable);
 	context.subscriptions.push(stopDisposable);
 }
