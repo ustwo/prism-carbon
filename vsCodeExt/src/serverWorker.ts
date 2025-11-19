@@ -40,9 +40,8 @@ async function startServer(port: number, storagePath: string) {
                 // Log Request
                 sendLog(`[REQUEST] ${req.method} ${req.url}`);
 
-                // === TOKEN EXTRACTION LOGIC ===
+                // === check a token / api call is made ===
                 detectTokens(req.headers, body);
-                // ==============================
 
                 if (body) { sendLog(`Body: ${body.substring(0, 200)}...`); };
                 sendLog('------------------------------------------------');
@@ -53,9 +52,16 @@ async function startServer(port: number, storagePath: string) {
 
                 try {
                     const body = await res.body.getText() || "";
+                    // const jsonBody = JSON.parse(body)
                     const preview = RawBodyIncludesMatcher.length > 2000
                         ? body.substring(0, 2000) + "... (Shortened to 2000 chars)"
                         : body;
+                    // if (jsonBody.usage && jsonBody.model) {
+                    //     const totalTokens = jsonBody.usage.total_tokens;
+                    //     const modelName = jsonBody.model;
+                    //     const emission = calculateEmission(modelName, totalTokens);
+                    // }
+                    getJsonTokenCount(body);
                     sendLog(` << status: ${status}`);
                     sendLog(` << body: ${preview}`);
                 } catch (error) {
@@ -87,7 +93,7 @@ function detectTokens(headers: mockttp.Headers, body: string) {
     // 1. Check Headers
     Object.keys(headers).forEach(key => {
         if (TOKEN_KEYS.includes(key.toLowerCase())) {
-            sendLog(`TOKENS DETECTED `);//(Header [${key}]): ${headers[key]}`);
+            sendLog(`🔥🔥 TOKENS DETECTED `);//(Header [${key}]): ${headers[key]}`);
         }
     });
 
@@ -106,8 +112,57 @@ function scanJsonForTokens(obj: any) {
     Object.keys(obj).forEach(key => {
         const value = obj[key];
         if (TOKEN_MATCHERS.some(m => m.test(key)) && typeof value === 'string' && value.length > 8) {
-            sendLog(`TOKEN DETECTED `);//(Body JSON [${key}]): ${value}`);
+            sendLog(`🔥🔥 TOKEN DETECTED `);//(Body JSON [${key}]): ${value}`);
         }
         if (typeof value === 'object') { scanJsonForTokens(value); };
     });
+}
+
+function getJsonTokenCount(body: string) {
+    const jsonBody = JSON.parse(body);
+
+    // OpenAI uses this format in response
+    if (jsonBody.usage && jsonBody.model) {
+        const totalTokens = jsonBody.usage.total_tokens;
+        const modelName = jsonBody.model;
+        const emission = calculateEmission(modelName, totalTokens);
+        sendLog(`   >> Analysis: ${totalTokens} tokens on ${modelName}`);
+        sendLog(`   >> Est. Carbon: ${emission.toFixed(8)} gCO2e`);
+        return { "Tokens": totalTokens, "Model": modelName };
+    }
+
+}
+
+function calculateEmission(model: string, token: number) {
+    const chatgpt4oshort = 0.000000370125;
+    const chatgpt4omedium = 0.000000212625;
+    const chatgpt4olong = 0.0000000875;
+    const chatgpt4ominishort = 0.00923;
+    const chatgpt4ominimedium = 0.00369;
+    const chatgpt4ominilong = 0.0006293;
+    const chatgpt4point5 = 0.0003;
+
+    let carbon = 0;
+    const lowerModel = model.toLowerCase();
+
+    if (lowerModel.includes("gpt-4o-mini")) {
+        if (token <= 400) {
+            carbon = chatgpt4ominishort * token;
+        } else if (token <= 2000) {
+            carbon = chatgpt4ominimedium * token;
+        } else if (token <= 11500) {
+            carbon = chatgpt4ominilong * token;
+        }
+    } else if (lowerModel.includes("gpt-4o")) {
+        if (token <= 400) {
+            carbon = chatgpt4oshort * token;
+        } else if (token <= 2000) {
+            carbon = chatgpt4omedium * token;
+        } else if (token <= 11500) {
+            carbon = chatgpt4olong * token;
+        }
+    } else if (lowerModel.includes("gpt-4.5")) {
+        carbon = chatgpt4point5 * token;
+    }
+    return carbon;
 }

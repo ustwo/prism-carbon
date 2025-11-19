@@ -67,6 +67,12 @@ var InterceptorProxy = class {
           if (msg.message.includes("\u{1F525}\u{1F525}")) {
             vscode.window.showInformationMessage(msg.message);
           }
+          if (msg.message.includes(">> Analysis:")) {
+            vscode.window.showInformationMessage(msg.message);
+          }
+          if (msg.message.includes(">> Est. Carbon:")) {
+            vscode.window.showInformationMessage(msg.message);
+          }
         } else if (msg.type === "error") {
           vscode.window.showErrorMessage(`Proxy Error: ${msg.message}`);
           reject(msg.message);

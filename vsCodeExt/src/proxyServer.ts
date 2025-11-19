@@ -226,6 +226,12 @@ export class InterceptorProxy {
                     if (msg.message.includes('🔥🔥')) {
                         vscode.window.showInformationMessage(msg.message);
                     }
+                    if (msg.message.includes('>> Analysis:')) {
+                        vscode.window.showInformationMessage(msg.message);
+                    }
+                    if (msg.message.includes('>> Est. Carbon:')) {
+                        vscode.window.showInformationMessage(msg.message);
+                    }
                 } else if (msg.type === 'error') {
                     vscode.window.showErrorMessage(`Proxy Error: ${msg.message}`);
                     reject(msg.message);
