@@ -44,19 +44,10 @@ Tick all that apply:
 
 *Please provide any additional notes for the reviewers here. Be as relevant to your request as possible.*
 
-Please @mention the users that should review your code (delete any that aren't applicable):
+Please assign the users that should review your code using the assign users field on the right of the screen.
 
-@mx-dv
-@JacobConnor5
-@iman-ui
-@Crystal-2006
-@m0g56
-
-
-## Workflow
-
-1. **Open a PR**: Go to the Pull Requests tab on your repository on GitHub and select 'New Pull Request'. Then select the branch that you want to merge to and from and click 'Create pull request'.
-2. **Review**: 1 or 2 people are assigned to review changes from feature branches. Most, if not all, of the team are assigned when merging into main.
-3. **Automated Tests**: Automated tests will run via GitHub Actions.
-4. **Merge Conflicts**: Detect and resolve any merge conflicts.
-5. **Approval**: Ensure that all reviewers have approved the changes before merging.
+mx-dv
+JacobConnor5
+iman-ui
+Crystal-2006
+m0g56
