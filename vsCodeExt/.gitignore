@@ -1,8 +1,5 @@
-# Dependencies
 node_modules/
 .package-lock.json
 out/
 dist/
 .vscode
-.DS_Store
-Thumbs.db
