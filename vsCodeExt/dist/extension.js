@@ -509,6 +509,20 @@ function activate(context) {
     treeDataProvider.addMessage(String(x));
     return x;
   }
+  function getTextAroundCursor(linesBefore = 150, linesAfter = 150) {
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+      return "";
+    }
+    const docu = editor.document;
+    const cursorPos = editor.selection.active;
+    const startLine = Math.max(0, cursorPos.line - linesBefore);
+    const endLine = Math.min(docu.lineCount - 1, cursorPos.line + linesAfter);
+    const start = new vscode.Position(startLine, 0);
+    const end = new vscode.Position(endLine, docu.lineAt(endLine).text.length);
+    const range = new vscode.Range(start, end);
+    return docu.getText(range);
+  }
   var accept = false;
   const disposables = [];
   const aiCommands = [
@@ -526,7 +540,7 @@ function activate(context) {
     if (accept) {
       for (const change of evt.contentChanges) {
         if (change.text.length > 2) {
-          const tokens = enc.encode(change.text);
+          const tokens = enc.encode(change.text + getTextAroundCursor());
           convert(tokens.length);
         }
       }

@@ -22,6 +22,23 @@ export function activate(context: vscode.ExtensionContext) {
 		treeDataProvider.addMessage(String(x));
 		return x;
 	}
+
+	function getTextAroundCursor(linesBefore: number = 150, linesAfter: number = 150): string{
+		const editor = vscode.window.activeTextEditor;
+		if (!editor){
+			return "";//if document is empty
+		} 
+		const docu = editor.document;
+		const cursorPos = editor.selection.active;
+		const startLine = Math.max(0,cursorPos.line-linesBefore);
+		const endLine = Math.min(docu.lineCount-1, cursorPos.line+linesAfter);
+
+		const start = new vscode.Position(startLine, 0);
+    	const end = new vscode.Position(endLine, docu.lineAt(endLine).text.length);
+    	const range = new vscode.Range(start, end);
+		return docu.getText(range);
+	}
+
 	//let lastInlineState = false;
 	var accept = false;
 	const disposables: vscode.Disposable[] = [];
@@ -37,14 +54,20 @@ export function activate(context: vscode.ExtensionContext) {
 		await vscode.commands.executeCommand("editor.action.inlineSuggest.commit");
 	});
 
+	// const inlineChat = vscode.commands.registerCommand('vsCodeExt.wrappedInlineChat',async () =>{
+	// 	accept = true;
+	// 	await vscode.commands.executeCommand("inlineChat.start");
+	// });
+	//initial attempt at inline chat usage
+
 	disposables.push(vscode.workspace.onDidChangeTextDocument(async evt => {
 		const enc = await encoding_for_model("gpt-4o");
-		//vscode.window.showInformationMessage (String (accept)); //accept is never set to true
+
 		if (accept){
 			for (const change of evt.contentChanges){
 
 				if (change.text.length>2){ //if its more than 2 character
-					const tokens = enc.encode(change.text);
+					const tokens = enc.encode(change.text+getTextAroundCursor());
 					convert(tokens.length);				
 				}
 			}
@@ -78,6 +101,8 @@ export function activate(context: vscode.ExtensionContext) {
 	});	
 	context.subscriptions.push(input);
 	context.subscriptions.push(inline);
+	//context.subscriptions.push(inlineChat);
+
 	//context.subscriptions.push(disposable2);
 	context.subscriptions.push(disposable);
 	//This creates the view

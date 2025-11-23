@@ -17,8 +17,17 @@
       {
         "command": "vsCodeExt.wrappedInline",
         "key": "tab",
-        "when": "editorTextFocus && inlineSuggestionVisible"
+        "when": "editorTextFocus && inlineSuggestionVisible && !isSnippetMode"
+      },
+      {
+
+        "key": "ctrl+i",
+        "command": "vsCodeExt.wrappedInlineChat",
+        "when": "editorFocus && inlineChatHasEditsAgent && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor != 'workbench.editor.notebook' || editorFocus && inlineChatHasNotebookAgent && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor == 'workbench.editor.notebook' || editorFocus && inlineChatHasNotebookInline && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor == 'workbench.editor.notebook' || editorFocus && inlineChatHasProvider && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor != 'workbench.editor.notebook'"
+
       }
+      
+
     ],
     "viewsContainers": {
       "activitybar": [
@@ -49,6 +58,10 @@
       {
         "command": "vsCodeExt.wrappedInline",
         "title": "Inline Commit"
+      },
+      {
+        "command": "vsCodeExt.wrappedInlineChat",
+        "title": "Inline chat accepted"
       }
     ]
   },
