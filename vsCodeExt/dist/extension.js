@@ -516,13 +516,13 @@ function activate(context) {
     "github.copilot.generate",
     "cursor._executeCompletionItemProvider"
   ];
-  vscode.commands.registerCommand("vsCodeExt.wrappedInline", async () => {
+  const inline = vscode.commands.registerCommand("vsCodeExt.wrappedInline", async () => {
     accept = true;
+    vscode.window.showInformationMessage("in wrapped inline" + String(accept));
     await vscode.commands.executeCommand("editor.action.inlineSuggest.commit");
   });
   disposables.push(vscode.workspace.onDidChangeTextDocument(async (evt) => {
     const enc = await (0, import_tiktoken.encoding_for_model)("gpt-4o");
-    vscode.window.showInformationMessage(String(accept));
     if (accept) {
       for (const change of evt.contentChanges) {
         if (change.text.length > 2) {
@@ -550,6 +550,7 @@ function activate(context) {
     treeDataProvider.addMessage("Carbon Emissions level: " + num);
   });
   context.subscriptions.push(input);
+  context.subscriptions.push(inline);
   context.subscriptions.push(disposable);
 }
 function deactivate() {

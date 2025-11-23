@@ -31,19 +31,17 @@ export function activate(context: vscode.ExtensionContext) {
 		"cursor._executeCompletionItemProvider"
 	];
 
-	vscode.commands.registerCommand('vsCodeExt.wrappedInline', async () => {
+	const inline = vscode.commands.registerCommand('vsCodeExt.wrappedInline', async () => {
 		accept = true;
+		vscode.window.showInformationMessage ("in wrapped inline"+String (accept)); //accept is never set to true
 		await vscode.commands.executeCommand("editor.action.inlineSuggest.commit");
 	});
 
 	disposables.push(vscode.workspace.onDidChangeTextDocument(async evt => {
 		const enc = await encoding_for_model("gpt-4o");
-		vscode.window.showInformationMessage (String (accept)); //accept is never set to true
-
+		//vscode.window.showInformationMessage (String (accept)); //accept is never set to true
 		if (accept){
 			for (const change of evt.contentChanges){
-				//treeDataProvider.addMessage(change.text);
-				//vscode.window.showInformationMessage(change.text);
 
 				if (change.text.length>2){ //if its more than 2 character
 					const tokens = enc.encode(change.text);
@@ -52,7 +50,6 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 			accept = false;
 		}
-		//suppressNextChange = true;
 	}));
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
@@ -80,6 +77,7 @@ export function activate(context: vscode.ExtensionContext) {
 		//defines the default background
 	});	
 	context.subscriptions.push(input);
+	context.subscriptions.push(inline);
 	//context.subscriptions.push(disposable2);
 	context.subscriptions.push(disposable);
 	//This creates the view

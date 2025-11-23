@@ -16,7 +16,7 @@
     "keybindings": [
       {
         "command": "vsCodeExt.wrappedInline",
-        "key": "ctrl+i",
+        "key": "tab",
         "when": "editorTextFocus && inlineSuggestionVisible"
       }
     ],
@@ -45,6 +45,10 @@
       {
         "command": "vsCodeExt.inputdisplay",
         "title": "Input Display"
+      },
+      {
+        "command": "vsCodeExt.wrappedInline",
+        "title": "Inline Commit"
       }
     ]
   },
