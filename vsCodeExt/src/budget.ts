@@ -2,7 +2,8 @@ import { Memento } from "vscode";
 
 export interface Call {
     //File: string;
-    //Model: string;
+    Model: string;
+    DateTime: string;
     //InputTokens: number;
     //OutputTokens: number;
     //TotalTokens: number;
@@ -12,6 +13,8 @@ export interface Call {
 var calls: Call[] = [];
 var storeKey: string = "storeKey";
 var callStore: Memento;
+let dateTime = new Date();
+
 
 export function testFunc(amount:number): string  {
     return 'hello from budget!';
