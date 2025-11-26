@@ -16,11 +16,11 @@ var callStore: Memento;
 let dateTime = new Date();
 
 
-export function testFunc(amount:number): string  {
+export function testFunc(amount: number): string {
     return 'hello from budget!';
 }
 
-export async function resetBudget(): Promise<void> { 
+export async function resetBudget(): Promise<void> {
     await callStore.update(storeKey, undefined);
 }
 
@@ -34,11 +34,11 @@ export function updateLimit(): number { // returns the median average of emissio
     emissions.sort((a, b) => a - b);
     console.log(emissions);
     var mid: number = emissions.length / 2;
-    if (emissions.length  === 0) {
+    if (emissions.length === 0) {
         return 0;
-    } 
+    }
     else if (emissions.length % 2 === 0) {
-        return (emissions[(mid)] + emissions[mid -1]) / 2;
+        return (emissions[(mid)] + emissions[mid - 1]) / 2;
     }
     else {
         return emissions[Math.floor(mid)];

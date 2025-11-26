@@ -32,25 +32,37 @@ export class InterceptorProxy {
                     this.logger.appendLine(`Interceptor Proxy running on port ${this.port}`);
                     resolve();
                 } else if (msg.type === 'log') {
+                    let fullCall = false;
+                    let id: string = " ";
+                    let mod: string = " ";
+                    let cost: number = 0;
                     // check message content, and show popups. 
 
                     //!! purely for Dev, can be removed in main once incoorperated with UI
                     this.logger.appendLine(msg.message);
-                    if (msg.message.includes('gCO2e}🔥')) {
-                        let parsedMessage = msg.message.slice(0, msg.message.length)
-                        var call = budget.Call
-                        // updateTree()
+                    // if (msg.message.includes('gCO2e}🔥')) {
+                    //     // let parsedMessage = msg.message.slice(0, msg.message.length)
+                    // updateTree()
+                    // }
+                    // if (msg.message.includes('🔥🔥')) {
+                    //     vscode.window.showInformationMessage(msg.message);
+                    // }
+                    if (msg.message.includes('>> DateTime:')) {
+                        id = msg.message.slice(16)
                     }
-                    if (msg.message.includes('🔥🔥')) {
-                        vscode.window.showInformationMessage(msg.message);
+                    if (msg.message.includes('>> Model:')) {
+                        // vscode.window.showInformationMessage(msg.message);
+                        mod = msg.message.slice(13)
                     }
-                    if (msg.message.includes('>> Analysis:')) {
-                        vscode.window.showInformationMessage(msg.message);
-                    }
-                    if (msg.message.includes('>> Est. Carbon:')) {
-                        vscode.window.showInformationMessage(msg.message);
+                    if (msg.message.includes('>> Emissions:')) {
+                        // vscode.window.showInformationMessage(msg.message);
+                        cost = msg.message.slice(17)
+                        fullCall = true;
                     }
                     //!!
+                    if (fullCall) {
+                        var call: budget.Call = { DateTime: id, Model: mod, Emissions: +cost }
+                    }
                 } else if (msg.type === 'error') {
                     vscode.window.showErrorMessage(`Proxy Error: ${msg.message}`);
                     reject(msg.message);

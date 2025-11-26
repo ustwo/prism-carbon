@@ -123,9 +123,11 @@ function getJsonTokenCount(body: string) {
         const emission = calculateEmission(modelName, totalTokens);
         let dateTime = new Date()
         dateTime.getTime()
-        sendLog(`{ID: ${dateTime}, Model: ${modelName}, Emissions: ${emission.toFixed(8)} gCO2e}🔥`)
-        // sendLog(`   >> Analysis: ${totalTokens} tokens on ${modelName}`);
-        // sendLog(`   >> Est. Carbon: ${emission.toFixed(8)} gCO2e`);
+        // sendLog(`{ID: ${dateTime}, Model: ${modelName}, Emissions: ${emission.toFixed(8)} gCO2e}🔥`)
+        sendLog(`   >> DateTime: ${dateTime}`);
+        sendLog(`   >> Model: ${modelName}`);
+        sendLog(`   >> Tokens: ${totalTokens}`);
+        sendLog(`   >> Emissions: ${emission.toFixed(8)}`);
         return { "Tokens": totalTokens, "Model": modelName };
     }
 
