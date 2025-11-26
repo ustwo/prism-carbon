@@ -10,6 +10,14 @@ import { stringify } from 'querystring';
 
 import { InterceptorProxy } from './proxyServer';
 
+export let tree: MyTreeDataProvider;
+export let bar: statusBarManager;
+
+export function setDisplay(t: MyTreeDataProvider, b: statusBarManager) {
+    tree = t;
+    bar = b;
+}
+
 
 let proxyServer: InterceptorProxy;
 const PROXY_PORT = 3024;
@@ -19,6 +27,8 @@ export function activate(context: vscode.ExtensionContext) {
 	var barManager = new statusBarManager();
 	const treeDataProvider = new MyTreeDataProvider();
 
+	setDisplay(treeDataProvider, barManager);
+	
 	vscode.window.registerTreeDataProvider(
 		'myPrimaryView',
 		treeDataProvider
