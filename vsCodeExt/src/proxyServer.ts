@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import * as cp from 'child_process';
 import * as path from 'path';
 // import { treeDataProvider } from './extension';
+import { updateTree } from './extension'
+import * as budget from './budget'
 
 export class InterceptorProxy {
     private child?: cp.ChildProcess;
@@ -34,6 +36,11 @@ export class InterceptorProxy {
 
                     //!! purely for Dev, can be removed in main once incoorperated with UI
                     this.logger.appendLine(msg.message);
+                    if (msg.message.includes('gCO2e}🔥')) {
+                        let parsedMessage = msg.message.slice(0, msg.message.length)
+                        var call = budget.Call
+                        // updateTree()
+                    }
                     if (msg.message.includes('🔥🔥')) {
                         vscode.window.showInformationMessage(msg.message);
                     }
