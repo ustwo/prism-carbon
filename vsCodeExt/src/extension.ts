@@ -14,8 +14,8 @@ export let tree: MyTreeDataProvider;
 export let bar: statusBarManager;
 
 export function setDisplay(t: MyTreeDataProvider, b: statusBarManager) {
-    tree = t;
-    bar = b;
+	tree = t;
+	bar = b;
 }
 
 
@@ -28,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const treeDataProvider = new MyTreeDataProvider();
 
 	setDisplay(treeDataProvider, barManager);
-	
+
 	vscode.window.registerTreeDataProvider(
 		'myPrimaryView',
 		treeDataProvider
@@ -57,12 +57,12 @@ export function activate(context: vscode.ExtensionContext) {
 		if (!Number.isNaN(num)) {
 			var newCall: budget.Call = { Emissions: num, Model: "TEST", DateTime: "1/1/97 00:00:00" };
 			budget.storeCall(newCall);
-			updateTree(treeDataProvider, barManager, newCall);
+			updateTree(newCall);
 		}
 		else {
 			vscode.window.showInformationMessage('Error: NaN inputted.');
 		}
-		
+
 
 
 	});
@@ -268,7 +268,7 @@ function restoreCallHistory(tree: MyTreeDataProvider) { //restores past calls to
 	}
 }
 
-export function updateTree(tree: MyTreeDataProvider, bar: statusBarManager, call: budget.Call ) {
+export function updateTree(call: budget.Call) {
 	var cLimit = budget.updateLimit();
 	console.log("limit: " + cLimit);
 	bar.updateBar(call.Emissions, cLimit);

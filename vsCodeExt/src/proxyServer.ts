@@ -61,7 +61,8 @@ export class InterceptorProxy {
                     }
                     //!!
                     if (fullCall) {
-                        var call: budget.Call = { DateTime: id, Model: mod, Emissions: +cost }
+                        var call: budget.Call = { DateTime: id, Model: mod, Emissions: +cost };
+                        updateTree(call);
                     }
                 } else if (msg.type === 'error') {
                     vscode.window.showErrorMessage(`Proxy Error: ${msg.message}`);
