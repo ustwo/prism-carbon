@@ -6,6 +6,6 @@ So for now our UI is a dummy, and we are setting an arbitrary number for the max
 We need to let the engineers know how good or how bad they're doing with their carbon emissions. Client stated they want a smaller sidebar
 Further research will be needed to look into what constitutes a good/context applicable budget
 1. Our client(project manager) wants us to be able to set expectations before our client does anything (how many tokens they would use based on their prompt ), and he asked if that was a possible feature
-our client(IT manager) said it's not possible but this is what will happen in real life(people asking you to do not real stuff)
+Our client(IT manager) said this feature is not feasible, and having features suggested but not able to happen is a real-life thing that occurs during the creation of a project 
 2.needed more thinking before implementation.
 and for the next MVP release client meeting is on 11.19 10:00
