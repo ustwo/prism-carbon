@@ -1,0 +1,67 @@
+name: Set Priority Label from Issue Form
+
+permissions:
+  issues: write
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  set_priority_label:
+    runs-on: ubuntu-latest
+    # makes sure that event is an issue, is not a pull request, and contains the relevant 
+    # dropdown menu (found by text matching to title of dropdown)
+    if: |
+      ${{ github.event.issue && github.event.issue.pull_request == null 
+      && contains(github.event.issue.body, 'Select Priority Level')}}
+
+    steps:
+      - name: Set priority label based on issue form
+        uses: actions/github-script@v6
+        # enters into a javascript script using api token 
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issue = context.payload.issue;
+            if (!issue) {
+              console.log("No issue object found in the event payload.");
+              return;
+            }
+
+            const body = issue.body || '';
+
+            // Extract the priority selection using dropdown label
+            const regex = /###\s*Select Priority Level\s*\n+(.+)/i;
+            const match = body.match(regex);
+
+            if (!match) {
+              console.log("Could not find the priority level in the issue body.");
+              return;
+            }
+
+            // checks priority is a valid one (label exists)
+            const selectedPriority = match[1].trim().toUpperCase();
+
+            const validPriorities = ['P0', 'P1', 'P2', 'P3'];
+
+            if (!validPriorities.includes(selectedPriority)) {
+              console.log(`Invalid priority level selected: ${selectedPriority}`);
+              return;
+            }
+
+            // Remove any existing priority labels from the issue but keep others
+            const existingLabels = issue.labels.map(label => label.name);
+            const labelsToKeep = existingLabels.filter(label => !validPriorities.includes(label));
+            const updatedLabels = [...labelsToKeep, selectedPriority];
+
+            console.log(`Assigning priority for issue #${issue.number}: ${updatedLabels.join(', ')}`);
+            
+            // send api request to update issue
+
+            await github.rest.issues.setLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              labels: updatedLabels
+            });

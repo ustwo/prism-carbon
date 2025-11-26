@@ -1,6 +1,6 @@
 {
-  "name": "run-time-analysis",
-  "displayName": "EstimatingCarbon Runtime",
+  "name": "vsCodeExt",
+  "displayName": "EstimatingCarbon",
   "description": "",
   "version": "0.0.1",
   "engines": {
@@ -10,14 +10,43 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:vsCodeExt.inputdisplay"
+    "onCommand:vsCodeExt.helloWorld",
+    "onCommand:vsCodeExt.resetStore",
+    "onCommand:vsCodeExt.inputdisplay",
+    "onCommand:vsCodeExt.setApiKey",
+    "onView:myPrimaryView"
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "my-view-container",
+          "title": "Estimating Carbon",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "my-view-container": [
+        {
+          "id": "myPrimaryView",
+          "name": "Carbon Estimates"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "vsCodeExt.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "vsCodeExt.clearStore",
+        "title": "Clear stored calls"
+      },
+      {
+        "command": "vsCodeExt.inputdisplay",
+        "title": "Input Display"
       },
       {
         "command": "vsCodeExt.setApiKey",

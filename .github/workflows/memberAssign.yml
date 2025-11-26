@@ -1,0 +1,77 @@
+name: Auto-Assign Members to Issue by Form Selection
+
+permissions:
+  issues: write
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  auto_assign:
+    runs-on: ubuntu-latest
+    # makes sure that event is an issue, is not a pull request, and contains the relevant 
+    # dropdown menu (found by text matching to title of dropdown)
+    if: |
+      ${{ github.event.issue && github.event.issue.pull_request == null 
+      && contains(github.event.issue.body, 'Which users should be assigned?')}}
+
+    steps:
+
+      - name: Auto-assign based on form selection
+        uses: actions/github-script@v6
+        with:
+        # enters into a javascript script using api token 
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Use context.payload.issue instead of github.event.issue
+            const issue = context.payload.issue;
+            if (!issue) {
+              console.log("No issue object found in the event payload.");
+              return;
+            }
+
+            const teamAssignments = {
+              "FrontEnd": ["iman-ui", "m0g56"],
+              "BackEnd": ["mx-dv","Crystal-2006", "JacobConnor5"],
+              "Runtime": ["mx-dv"],
+              "Devtime": ["JacobConnor5"],
+              "TokenConversion": ["Crystal-2006"],
+              "Everyone": ["mx-dv", "JacobConnor5", "m0g56", "Crystal-2006", "iman-ui"],
+              "Max": ["mx-dv"],
+              "Jacob": ["JacobConnor5"],
+              "Morgan": ["m0g56"],
+              "Iman" : ["iman-ui"],
+              "Hao" : ["Crystal-2006"]
+            };
+
+            const body = issue.body || '';
+
+            // Regex to match your dropdown Label and capture the selected members on the next line
+            const regex = /###\s*Which users should be assigned\??\s*\n+(.+)/i;
+            const match = body.match(regex);
+
+            if (!match) {
+              console.log("Could not find the team selection in the issue body.");
+              return;
+            }
+
+            const selectedTeam = match[1].trim();
+
+            const assignees = teamAssignments[selectedTeam];
+
+            if (!assignees || assignees.length === 0) {
+              console.log(`No assignees defined for selected team: ${selectedTeam}`);
+              return;
+            }
+
+            console.log(`Assigning issue #${issue.number} to: ${assignees.join(', ')}`);
+
+            // use the API and send the relevant data
+
+            await github.rest.issues.addAssignees({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              assignees
+            });

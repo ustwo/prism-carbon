@@ -1,0 +1,15 @@
+this week we been working based on last week's project overview 
+and we are focusing mainly on the tracking of token, we have come to three solutions so far
+
+1.the first solution is to create a proxy server that sits between user and the LLMs
+but this method isn't very privacy safe, so this is not going to be our main priority but it seems to be workable 
+
+2. Our second solution is inspired by another extension we found, it's similar to our project
+This approach takes the user's response and sends it to LLM again 
+It's a lot more of a privacy-friendly solution compared with the first solution, but via this route, it doubles the token usage and costs 
+so we are not considering this method
+
+3.finally we are thinking to listen for AI API calls and then send an API usage request. OpenAI and Gemini both have usage api endpoints which we can query to find token data.
+this method is efficent doesn't duplicate calls and also privacy friendly this is our preffered method
+
+

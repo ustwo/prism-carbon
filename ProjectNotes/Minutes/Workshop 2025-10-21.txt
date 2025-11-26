@@ -1,0 +1,28 @@
+use of AI in software development
+the point is try not to get hit in the face by AI
+
+how professional developers work :
+nilton santos (restaurant booking system)
+he tells AI to implement according to some rules (analysis)
+he also needs do design (AI isn't good at designing)so he has to do the top level design(attributes,what to implement)
+implementation, can't accept if you don't understand the code(questioon the code review it)
+but AI don't consider effeciency
+
+
+technical debt
+
+
+how to use AI:
+think of it as worse developer
+give it something easy
+give them time consuming work
+give them job that's easy to explain 
+don't trust them with essential tasks
+don't ask it to do things you don't know how to do yourself
+review the code from AI understand it completely (also view for the quality)
+fully test the code they write
+
+humans have to stay in charge
+NO AI in the readme
+
+we're going to create a general token tracker, then calculate the carbon emmision according to the different model they're using 

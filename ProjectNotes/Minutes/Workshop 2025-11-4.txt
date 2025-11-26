@@ -1,0 +1,19 @@
+containerisation:
+package of software that's suitable on all sorts of systems
+we recommend docker for containerisation.
+
+cloud
+this year we are using AWS
+three service moudle:IaaS,PaaS,SaaS
+
+
+as a group,we are thinking about what to release for MVP:
+basic UI and some of the runtime and the dev time done 
+also we are creating MVP mile stones
+
+and the client meeting tomorrow, we will ask for :
+1. Clarification on MVP priorities with regards to completeness. 
+    i.e. a working but not presentable solution, or a presentable half working solution
+2. Finalise an MVP release meeting date in which we can do a presentation and demo
+3. Feedback / pointers on our current release and if we're headed in the right direction
+etc.   (will think about it tonight)groupmates please fill this out if you think of something
