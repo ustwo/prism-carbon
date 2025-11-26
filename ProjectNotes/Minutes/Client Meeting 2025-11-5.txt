@@ -1,7 +1,7 @@
 we are meting with the client today 
 so we are first talking about the problem of our project(the problem we meet in the process)
 then our client describe what do they mean local to us and they ask us to use a proxy
-as for the UI side we already send a first release to them, so we are walking it through right now
+as for the UI side we already sent a first release to them, so we are walking through it right now
 so for now our UI is just pretty much of a dummy, and we are setting an arbitary number as level of different emmission
 we need to let the engineers to know how good or how bad they're doing and they want a smaller sidebar
 Further research will be needed to look into what constitutes a good/context applicable budget
