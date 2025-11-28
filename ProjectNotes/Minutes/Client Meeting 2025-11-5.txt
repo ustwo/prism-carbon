@@ -1,0 +1,11 @@
+we are meting with the client today 
+so we are first talking about the problem of our project(the problem we meet in the process)
+then our client describe what do they mean local to us and they ask us to use a proxy
+as for the UI side we already sent a first release to them, so we are walking through it right now
+So for now our UI is a dummy, and we are setting an arbitrary number for the max level of emission and based on that, it will calculate how much it has exceeded the limit
+We need to let the engineers know how good or how bad they're doing with their carbon emissions. Client stated they want a smaller sidebar
+Further research will be needed to look into what constitutes a good/context applicable budget
+1. Our client(project manager) wants us to be able to set expectations before our client does anything (how many tokens they would use based on their prompt ), and he asked if that was a possible feature
+Our client(IT manager) said this feature is not feasible, and having features suggested but not able to happen is a real-life thing that occurs during the creation of a project 
+2.needed more thinking before implementation.
+and for the next MVP release client meeting is on 11.19 10:00
