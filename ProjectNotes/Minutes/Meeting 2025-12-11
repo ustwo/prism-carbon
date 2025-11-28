@@ -1,0 +1,14 @@
+Feedback 
+Things to fix
+- Add dev instructions in readme
+- Change the background for the image added in the readme doesn't show up in dark mode
+- Make sure issues have the metadata (labels) on them 
+- All issues have description milestones 
+- Branch names are still inconsistent --> Figure out the camel case and capitalisation --> Stick to camel case?
+- Add some tests
+Things that are good:
+- Templates are good 
+- Good start to CI
+- Really nice PRs
+We will get in touch with Daniel Schien (prof of sustainable computing) in the beta stage to look further into what constitutes a "good" carbon budget
+Gave Murray a rundown on what we have all been doing since we last saw him 

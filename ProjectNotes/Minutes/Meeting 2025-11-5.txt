@@ -1,0 +1,8 @@
+meeting with mentor:
+we are at 15th place this week
+improve our readme, demonstrations on, add more milestones to issues, branch names should describe what it does
+remove .vscode and add on gitignore, don't use features and bugs and etc.  
+if it's for everyone then we just send in teams and ask if someone can review it 
+
+afternoon working:
+we are creating badges for our readme, and we are going to make C4 modles for our readme
