@@ -11,6 +11,8 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 let server: mockttp.Mockttp | null = null;
 
+
+
 process.on('message', async (msg: any) => {
     if (msg.command === 'start') {
         await startServer(msg.port, msg.storagePath);
@@ -119,8 +121,12 @@ function getJsonTokenCount(body: string) {
         const totalTokens = jsonBody.usage.total_tokens;
         const modelName = jsonBody.model;
         const emission = calculateEmission(modelName, totalTokens);
-        sendLog(`   >> Analysis: ${totalTokens} tokens on ${modelName}`);
-        sendLog(`   >> Est. Carbon: ${emission.toFixed(8)} gCO2e`);
+        let dateTime = new Date();
+        // sendLog(`{ID: ${dateTime}, Model: ${modelName}, Emissions: ${emission.toFixed(8)} gCO2e}🔥`)
+        sendLog(`   >> DateTime: ${dateTime.toLocaleString()}`);
+        sendLog(`   >> Model: ${modelName}`);
+        sendLog(`   >> Tokens: ${totalTokens}`);
+        sendLog(`   >> Emissions: ${emission.toFixed(8)}`);
         return { "Tokens": totalTokens, "Model": modelName };
     }
 
