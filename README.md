@@ -38,8 +38,13 @@ Estimating the Carbon
 Visual Dashboard (Results)
 </pre>
 
-<ul>![C4 Level 1 Diagram](https://github.com/spe-uob/2025-EstimatingCarbon/blob/main/Images/Level1%20C4.png?raw=true)</ul>
-<ul>![C4 Level 2 Diagram](https://github.com/spe-uob/2025-EstimatingCarbon/blob/main/Images/C4%20MODEL%20LEVEL%202.png)</ul>
+<h2>Level 1 C4 diagram</h2>
+
+![C4 Level 1 Diagram](https://github.com/spe-uob/2025-EstimatingCarbon/blob/main/Images/Level1%20C4.png?raw=true)
+
+<h2>Level 2 C4 diagram</h2>
+
+![C4 Level 2 Diagram](https://github.com/spe-uob/2025-EstimatingCarbon/blob/main/Images/C4%20MODEL%20LEVEL%202.png)
 
 <h2 id="carbon-toolkit">Building a Carbon-Aware Dev toolkit:</h2>
 
