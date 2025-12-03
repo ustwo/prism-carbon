@@ -51,5 +51,3 @@ export async function change (evt:vscode.TextDocumentChangeEvent){
         console.log("accept not gone through");
         return -1;}
 }
-
-// Use
