@@ -53,6 +53,10 @@
         "title": "Set Api Key"
       },
       {
+        "command": "vsCodeExt.setCursorToken",
+        "title": "Set Api Key"
+      },
+      {
         "command": "interceptor.start",
         "title": "Start Proxy Interceptor",
         "category": "Interceptor"

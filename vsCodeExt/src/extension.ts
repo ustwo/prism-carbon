@@ -66,7 +66,17 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 	});
-	context.subscriptions.push(input);
+	const cursorInput = vscode.commands.registerCommand('vsCodeExt.setCursorToken', async () => {
+		//vscode.window.showInformationMessage('Hello World from EstimatingCarbon!');
+		const cToken = await vscode.window.showInputBox({ //opens an input box currently representing the carbon footprint
+			prompt: 'Enter your Cursor session token: ',
+			placeHolder: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+			ignoreFocusOut: true // keep input box open even if focus moves away from window
+		});
+		var token = String(cToken);
+
+	});
+	context.subscriptions.push(cursorInput);
 	console.log('Interceptor Proxy Server is active');
 
 	let startDisposable = vscode.commands.registerCommand('interceptor.start', async () => {
