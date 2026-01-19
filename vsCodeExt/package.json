@@ -10,10 +10,17 @@
     "Other"
   ],
   "activationEvents": [
+    "onCommand:vsCodeExt.helloWorld",
+    "onCommand:vsCodeExt.resetStore",
+    "onCommand:vsCodeExt.inputdisplay",
+    "onCommand:vsCodeExt.setApiKey",
+    "onView:myPrimaryView"
   ],
+
+  
   "main": "./dist/extension.js",
   "contributes": {
-    "keybindings": [
+        "keybindings": [
       {
         "command": "vsCodeExt.wrappedInline",
         "key": "tab",
@@ -24,18 +31,9 @@
         "key": "ctrl+i",
         "command": "vsCodeExt.wrappedInlineChat",
         "when": "editorFocus && inlineChatHasEditsAgent && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor != 'workbench.editor.notebook' || editorFocus && inlineChatHasNotebookAgent && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor == 'workbench.editor.notebook' || editorFocus && inlineChatHasNotebookInline && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor == 'workbench.editor.notebook' || editorFocus && inlineChatHasProvider && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor != 'workbench.editor.notebook'"
-
       }
-      
 
     ],
-    "onCommand:vsCodeExt.resetStore",
-    "onCommand:vsCodeExt.inputdisplay",
-    "onCommand:vsCodeExt.setApiKey",
-    "onView:myPrimaryView"
-  ],
-  "main": "./dist/extension.js",
-  "contributes": {
     "viewsContainers": {
       "activitybar": [
         {
@@ -73,6 +71,8 @@
       {
         "command": "vsCodeExt.wrappedInlineChat",
         "title": "Inline chat accepted"
+      },
+      {
         "command": "vsCodeExt.setApiKey",
         "title": "Set Api Key"
       },
@@ -122,7 +122,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "tiktoken": "^1.0.22"
+    "tiktoken": "^1.0.22",
     "http-proxy": "^1.18.1",
     "mockttp": "^4.2.1"
   }

@@ -3,7 +3,6 @@
 
 // Import the module and reference it with the alias vscode in your code below
 
-import * as vscode from 'vscode';
 import * as devTok from './devTokens';
 import * as vscode from 'vscode';
 import * as https from 'https';
@@ -45,7 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const tokens = await devTok.change(evt);
 
 		if (tokens !== -1){
-			treeDataProvider.addMessage("adding"+String(tokens));
+			convert(tokens);
 		}
 	}));
 	
