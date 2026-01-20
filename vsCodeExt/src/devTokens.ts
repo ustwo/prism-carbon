@@ -27,12 +27,6 @@ export const inline = vscode.commands.registerCommand('vsCodeExt.wrappedInline',
     await vscode.commands.executeCommand("editor.action.inlineSuggest.commit"); //then does the accept command
 });
 
-// const inlineChat = vscode.commands.registerCommand('vsCodeExt.wrappedInlineChat',async () =>{
-// 	accept = true;
-// 	await vscode.commands.executeCommand("inlineChat.start");
-// });
-//initial attempt at inline chat usage
-
 export async function change (evt:vscode.TextDocumentChangeEvent){
 //disposables.push(vscode.workspace.onDidChangeTextDocument(async evt => {
     const enc = await encoding_for_model("gpt-4o"); //use gpt-4o for now because copilot very secretive
