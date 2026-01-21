@@ -94,9 +94,13 @@ We aim to design a toolkit that:
   </ul>
 <h2 id ="devIn">How To Run</h2>
 
-1. Download extension.
-2. Run <code>npm install</code>
-3. For runtime analysis, run "Start Proxy Interceptor" command in active extension.
+1. Clone Repository
+2. Open in VScode
+3. Run <code>npm install</code>
+4. Run <code>npm run compile</code>
+4. Run extension.ts in extension development environment  
+5. For runtime analysis, run "Start Proxy Interceptor" command in active extension.
+This is currently the same for both developers and users 
     
   
 <h2 id="structure">Project Structure</h2>
