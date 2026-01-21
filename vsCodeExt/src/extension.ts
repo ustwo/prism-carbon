@@ -28,7 +28,6 @@ export function activate(context: vscode.ExtensionContext) {
 	const treeDataProvider = new MyTreeDataProvider();
 
 	setDisplay(treeDataProvider, barManager);
-
 	vscode.window.registerTreeDataProvider(
 		'myPrimaryView',
 		treeDataProvider
