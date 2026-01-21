@@ -98,8 +98,12 @@ We aim to design a toolkit that:
 2. Open in VScode
 3. Run <code>npm install</code>
 4. Run <code>npm run compile</code>
-4. Run extension.ts in extension development environment  
-5. For runtime analysis, run "Start Proxy Interceptor" command in active extension.
+5. Run extension.ts to start the extension development environment window
+6. For runtime analysis, within the extension development environment:
+   - run "Start Proxy Interceptor" command
+   - run "Open Runtime Terminal" command
+   - In the "Runtime Terminal" that appears, run your file.
+   - The carbon costs and log will appear in the sidebar, and a coloured indicator in the status bar.
    
 <p>
     This is currently the same for both developers and users
