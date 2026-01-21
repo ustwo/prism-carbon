@@ -103,10 +103,10 @@ We aim to design a toolkit that:
    - run "Start Proxy Interceptor" command
    - run "Open Runtime Terminal" command
    - In the "Runtime Terminal" that appears, run your file.
-   - The carbon costs and log will appear in the sidebar, and a coloured indicator in the status bar.
+   - The carbon costs and log will appear in the sidebar, and a coloured indicator in the status bar. They show the cost of using an LLM in real time, as each API call happens.
    
 <p>
-    This is currently the same for both developers and users
+    This is currently the same for both developers and users. However, we plan to have the extension downloadable from the VScode store for users.
 </p>
     
   
