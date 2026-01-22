@@ -16,6 +16,14 @@ import { stringify } from 'querystring';
 
 import { InterceptorProxy } from './proxyServer';
 
+export let tree: MyTreeDataProvider;
+export let bar: statusBarManager;
+
+export function setDisplay(t: MyTreeDataProvider, b: statusBarManager) {
+	tree = t;
+	bar = b;
+}
+
 
 let proxyServer: InterceptorProxy;
 const PROXY_PORT = 3024;
@@ -40,6 +48,8 @@ export function activate(context: vscode.ExtensionContext) {
 	//let lastInlineState = false;
 	const disposables: vscode.Disposable[] = [];
 
+
+	setDisplay(treeDataProvider, barManager);
 
 	vscode.window.registerTreeDataProvider(
 		'myPrimaryView',
@@ -79,21 +89,16 @@ export function activate(context: vscode.ExtensionContext) {
 			placeHolder: 'eg. 5',
 			ignoreFocusOut: true // keep input box open even if focus moves away from window
 		});
-
-
 		var num = Number(limit);
 		if (!Number.isNaN(num)) {
-			var newCall: budget.Call = { Emissions: num };
-			budget.storeCall(newCall);
-			var cLimit = budget.updateLimit();
-			console.log("limit: " + cLimit);
-
-			barManager.updateBar(num, cLimit);
-			treeDataProvider.addMessage("Call ID: xxxx - Emissions: " + num + ' g CO₂e');
+			let date = new Date();
+			var newCall: budget.Call = { Emissions: num, Model: "TEST", DateTime: date.toLocaleString() };
+			updateTree(newCall);
 		}
 		else {
 			vscode.window.showInformationMessage('Error: NaN inputted.');
 		}
+
 
 
 	});
@@ -297,7 +302,16 @@ function restoreCallHistory(tree: MyTreeDataProvider) { //restores past calls to
 	var pCalls = budget.getCalls();
 	console.log("CALLS:", pCalls);
 	for (let i = 0; i < pCalls.length; i++) {
-		tree.addMessage("Call ID: xxxx - Emissions: " + pCalls[i].Emissions + ' g CO₂e');
+		tree.addMessage("Emissions: " + pCalls[i].Emissions + " - Model: " + pCalls[i].Model + " - Date: " + pCalls[i].DateTime);
 	}
+}
+
+export function updateTree(call: budget.Call) {
+	budget.storeCall(call);
+	var cLimit = budget.updateLimit();
+	console.log("limit: " + cLimit);
+	bar.updateBar(call.Emissions, cLimit);
+	tree.addMessage("Emissions: " + call.Emissions + " - Model: " + call.Model + " - Date: " + call.DateTime);
+
 }
 

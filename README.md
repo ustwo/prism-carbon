@@ -13,6 +13,7 @@
 - [Building a Carbon-Aware Dev toolkit](#carbon-toolkit)
 - [User Stories](#user-stories)
 - [Stakeholders](#stakeholders)
+- [How To Run](#devIn)
 - [Project Structure](#structure)
 - [Team Members](#team)
 
@@ -37,7 +38,13 @@ Estimating the Carbon
 Visual Dashboard (Results)
 </pre>
 
+<h2>Level 1 C4 diagram</h2>
+
 ![C4 Level 1 Diagram](https://github.com/spe-uob/2025-EstimatingCarbon/blob/main/Images/Level1%20C4.png?raw=true)
+
+<h2>Level 2 C4 diagram</h2>
+
+![C4 Level 2 Diagram](https://github.com/spe-uob/2025-EstimatingCarbon/blob/main/Images/C4%20MODEL%20LEVEL%202.png)
 
 <h2 id="carbon-toolkit">Building a Carbon-Aware Dev toolkit:</h2>
 
@@ -85,7 +92,31 @@ We aim to design a toolkit that:
     <li>As a Project Manager, I want to know how impactful my project is, and which areas of a coded solution are the most environmentally costly so I can identify less carbon heavy implementations, and utilise this to re-design prototypes</li>
     <li>As an engineer at an Artifical Intelligence company, I can easily see and discover any massive inefficiencies in my AI model due to an overtly large relative carbon cost.</li>
   </ul>
+<h2 id ="devIn">How To Run</h2>
+
+1. Download extension.
+2. Run <code>npm install</code>
+3. For runtime analysis, run "Start Proxy Interceptor" command in active extension.
+    
+  
 <h2 id="structure">Project Structure</h2>
+<pre>
+├── Images # architecture diagrams
+├── ProjectNotes # meeting minutes and other project notes
+├── README.md
+├── tree.txt
+└── vsCodeExt # main directory for VS Code extension
+    ├── howToRun.md # instructions on how to run the extension
+    ├── package.json # config file containing extension metadata
+    ├── src
+    │   ├── extension.ts # main UI features and commands 
+    │   ├── budget.ts # interface for Call structure and usage calculations
+    │   ├── serverWorker.ts # listens on proxyServer and handles parsing
+    │   ├── proxyServer.ts # starts server, receives parsed information
+    ├── tsconfig.json
+    └── vsc-extension-quickstart.md
+
+</pre>
   <h2>Client Names</h2>
   <ul>
     <li>Paolo Rizzi</li>
