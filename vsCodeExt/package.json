@@ -14,25 +14,22 @@
     "onCommand:vsCodeExt.resetStore",
     "onCommand:vsCodeExt.inputdisplay",
     "onCommand:vsCodeExt.setApiKey",
+    "onCommand:vsCodeExt.openDashboard",
     "onView:myPrimaryView"
   ],
-
-  
-  "main": "./dist/extension.js",
+  "main": "./out/extension.js",
   "contributes": {
-        "keybindings": [
+    "keybindings": [
       {
         "command": "vsCodeExt.wrappedInline",
         "key": "tab",
         "when": "editorTextFocus && inlineSuggestionVisible && !isSnippetMode"
       },
       {
-
         "key": "ctrl+i",
         "command": "vsCodeExt.wrappedInlineChat",
         "when": "editorFocus && inlineChatHasEditsAgent && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor != 'workbench.editor.notebook' || editorFocus && inlineChatHasNotebookAgent && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor == 'workbench.editor.notebook' || editorFocus && inlineChatHasNotebookInline && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor == 'workbench.editor.notebook' || editorFocus && inlineChatHasProvider && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor != 'workbench.editor.notebook'"
       }
-
     ],
     "viewsContainers": {
       "activitybar": [
@@ -55,6 +52,10 @@
       {
         "command": "vsCodeExt.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "vsCodeExt.openDashboard",
+        "title": "Open Carbon Dashboard"
       },
       {
         "command": "vsCodeExt.clearStore",
