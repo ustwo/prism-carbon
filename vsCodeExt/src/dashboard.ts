@@ -41,7 +41,8 @@ export class CarbonDashboardPanel {
             if (x) { x.dispose(); }
         }
     }
-
+// generates the HTML content for the webview
+// importing chart.js for that charts can be drawn and its libraries will handle the math and drawing
     private _getWebviewContent() {
             return `<!DOCTYPE html>
     <html lang="en">
