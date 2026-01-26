@@ -50,7 +50,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 
 	setDisplay(treeDataProvider, barManager);
-
 	vscode.window.registerTreeDataProvider(
 		'myPrimaryView',
 		treeDataProvider
@@ -66,13 +65,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 		if (tokens !== -1){
 			var emissions = convert(tokens);
-			var newCall: budget.Call = { Emissions: emissions };
-			budget.storeCall(newCall);
-			var cLimit = budget.updateLimit();
-
-			barManager.updateBar(tokens, cLimit);
-			treeDataProvider.addMessage("Call ID: xxxx - Emissions: " + emissions + ' g CO₂e');
-
+			let date = new Date();
+			var newCall: budget.Call = { Emissions: emissions, Model: "TEST", DateTime: date.toLocaleString() };
+			updateTree(newCall);
 		}
 	}));
 	
