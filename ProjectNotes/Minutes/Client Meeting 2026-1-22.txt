@@ -7,5 +7,5 @@ The client said they would like the line chart that shows daily CO₂ consumptio
 3. For the dashboard design, the client prefers per project metric first. They also like the idea of keeping budget within the dashboard. The Cursor dashboard would be a good point of inspiration.
 3.5. Client also interested in per session metrics – identifying high volume sessions etc to improve future coding practices.
 4.The client suggests we can use resources from the Green Software Foundation, they said that platform got many usful and trustworthy data
-5.After the beta release, the client suggested an online meeting to provide us with some more technical support. 
+5.After the beta release, the client suggested an online meeting with their development team to provide technical and holistic feedback on the release.
 6.client suggested that we should name the project. And create a logo for our project.
