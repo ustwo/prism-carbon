@@ -2,7 +2,7 @@ At the start of the new teaching block, we reported to our client about the beta
 the client to provide feedback and suggestions on beta release. They also offered us some technical support.
 
 1. The client strongly suggested that the bottom bar needs to be redesigned. We decided to make a new dashboard style UI, which can be popped up, alongside the redesigned bottom bar. 
-the client said they like the line chart that shows daily CO₂ consumption changing over time.
+The client said they would like the line chart that shows daily CO₂ consumption and other metrics changing over time, with a particular interest in session time on the Y-axis.
 2.the client would like to adding new AI models. Anthropic was their top priority, then OpenAI then Gemmini.
 3.for the dashboard design, the client perfers per project metric first. They also like the idea of keeping budget within the dashboard.
 4.The client suggests we can use resources from the Green Software Foundation, they said that platform got many usful and trustworthy data
