@@ -16,10 +16,6 @@ var callStore: Memento;
 let dateTime = new Date();
 
 
-export function testFunc(amount: number): string {
-    return 'hello from budget!';
-}
-
 export async function resetBudget(): Promise<void> {
     await callStore.update(storeKey, undefined);
 }

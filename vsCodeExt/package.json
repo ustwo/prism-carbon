@@ -25,12 +25,6 @@
         "command": "vsCodeExt.wrappedInline",
         "key": "tab",
         "when": "editorTextFocus && inlineSuggestionVisible && !isSnippetMode"
-      },
-      {
-
-        "key": "ctrl+i",
-        "command": "vsCodeExt.wrappedInlineChat",
-        "when": "editorFocus && inlineChatHasEditsAgent && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor != 'workbench.editor.notebook' || editorFocus && inlineChatHasNotebookAgent && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor == 'workbench.editor.notebook' || editorFocus && inlineChatHasNotebookInline && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor == 'workbench.editor.notebook' || editorFocus && inlineChatHasProvider && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor != 'workbench.editor.notebook'"
       }
 
     ],
