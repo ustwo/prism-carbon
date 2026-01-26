@@ -1,7 +1,7 @@
 At the start of the new teaching block, we reported to our client about the beta release goals and the client decided to schedule a Google Meet with us
 the client to provide feedback and suggestions on beta release. They also offered us some technical support.
 
-1.the client strongly suggested that the bottom bar needs to be redesigned. We decided to make a new dashboard style UI. 
+1. The client strongly suggested that the bottom bar needs to be redesigned. We decided to make a new dashboard style UI, which can be popped up, alongside the redesigned bottom bar. 
 the client said they like the line chart that shows daily CO₂ consumption changing over time.
 2.the client would like to adding new AI models. Anthropic was their top priority, then OpenAI then Gemmini.
 3.for the dashboard design, the client perfers per project metric first. They also like the idea of keeping budget within the dashboard.
