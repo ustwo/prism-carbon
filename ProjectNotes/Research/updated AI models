@@ -1,0 +1,62 @@
+After reviewing online, we can't find energy consumption or carbon emission data for Claude models. 
+Neither Anthropic company nor third-party studies(papers and blogs) provide estimates for Claude.
+
+For GPT-5, no detailed or formal data could be found. 
+The available information mainly comes from blog posts and informal estimates,
+And they are based on indirect assumptions rather than carefully measured data.
+
+For Gemini models, available information is also limited.
+While there are some blog estimates for Gemini 2.5 Pro and estimates for Gemini models as a whole, 
+there's no detailed energy consumption data in the internet
+
+Anthropic Claude
+| Model                  | 100–300 | 1000  | 10k   | CIF   |
+|------------------------|---------|-------|-------|-------|
+| claude-opus-4-5-*      |         |       |       |       |
+| claude-sonnet-4-5-*    |         |       |       |       |
+| claude-haiku-4-5-*     |         |       |       |       |
+| claude-opus-4-*        |         |       |       |       |
+| claude-sonnet-4-*      |         |       |       |       |
+| claude-3-7-sonnet-*    | 0.950   | 2.989 | 5.671 | 0.287 |
+| claude-haiku-3-5-*     | 0.975   | 4.464 | 8.010 | 0.287 |
+| claude-3-haiku-*       |         |       |       |       |
+
+claude-3-7-sonnet-* and claude-haiku-3-5-* are the only models we can find on the web so far
+https://arxiv.org/pdf/2505.09598
+
+OpenAi ChatGpt
+| Model              | 100–300 | 1000  | 10k   | CIF  |
+|--------------------|---------|-------|-------|------|
+| gpt-5.2            |         |       |       |      |
+| O3-mini            | 0.674   | 2.423 | 3.525 | 0.35 |
+| O1                 | 2.268   | 4.047 | 6.181 | 0.35 |
+| Gpt-4 turbo        | 1.699   | 5.940 | 9.877 | 0.35 |
+| Gpt-4o mini        | 0.577   | 1.897 | 3.098 | 0.35 |
+| Gpt-4              | 1.797   | 6.925 | -     | 0.35 |
+| Gpt-4o             | 0.423   | 1.215 | 2.875 | 0.35 |
+| O1-mini            | 0.535   | 1.547 | 2.317 | 0.35 |
+| O3-mini (high)     | 3.012   | 6.865 | 5.389 | 0.35 |
+| gpt-5.1 / gpt-5    |         |       |       |      |
+| gpt-5-mini         |         |       |       |      |
+| gpt-4.1            | 0.871   | 3.161 | 4.833 | 0.35 |
+| gpt-4.1-mini       | 0.450   | 1.545 | 2.122 | 0.35 |
+| gpt-4.1-nano       | 0.207   | 0.575 | 0.827 | 0.35 |
+| o3                 | 1.177   | 5.153 | 12.222| 0.35 |
+| o4-mini            | 3.649   | 7.380 | 7.237 | 0.35 |
+
+as for chatgpt-5 and all its series, it is approximately 1000 token 18.35wh but 40wh when thinking about harder questions.
+https://www.digitimes.com/news/a20250815PD238/openai-flagship-performance-cost-electricity.html?mod=3&q=OpenAI%27s+GPT-5+consumes+over+eight+times+power+GPT-4+researchers+estimate
+https://www.tomshardware.com/tech-industry/artificial-intelligence/chatgpt-5-power-consumption-could-be-as-much-as-eight-times-higher-than-gpt-4-research-institute-estimates-medium-sized-gpt-5-response-can-consume-up-to-40-watt-hours-of-electricity
+
+Google Gemini
+| Model                 | Energy / Emissions (per prompt)        |
+|-----------------------|-----------------------------------------|
+| gemini-3-pro-preview  |                                         |
+| gemini-2.5-pro        | 14.6 Wh / prompt · 7.4 CO₂ / prompt     |
+| gemini-2.5-flash      |                                         |
+| gemini-2.0-flash      |                                         |
+| gemini-2.0-flash-lite |                                         |
+
+the data of  gemini-2.5-pro comes from this  https://greenly.earth/en-gb/leaf-media/data-stories/ai-efficiency-a-gemini-reality-check-with-greenly
+and for gemini as a total it is approximately 0.03 g CO₂ / prompt
+https://www.technologyreview.com/2025/08/21/1122288/google-gemini-ai-energy/
