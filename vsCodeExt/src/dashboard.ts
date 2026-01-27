@@ -121,6 +121,16 @@ export class CarbonDashboardPanel {
                 }
             }
         });
+        // Listener for the real data
+        window.addEventListener('message', event => {
+            const message = event.data;
+            if (message.command === 'updateData') {
+                // This will be used when real data is available, the dummy data used above will be ignored
+                myChart.data.datasets[0].data = message.data;
+                myChart.data.datasets[0].backgroundColor = generateColors(message.data.length);
+                myChart.update();
+            }
+        });
 
         
     </script>
