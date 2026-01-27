@@ -74,6 +74,24 @@ export class CarbonDashboardPanel {
         <div class="container">
             < canvas id="emissionChart"></canvas>
         </div>
+        <script>
+        const ctx = document.getElementById('emissionChart');
+        const myCHART = NEW chart(ctx, {
+        type: "pie",
+        data; {
+            labels;[],
+            datasets;[{
+                label:'File Size',
+                data:[],
+                borderWidth:2}
+                ]
+                },
+                options: {
+                    responsive:true,
+                    maintain
+                    AspectRatio: false,}
+                    });
+        </script>
     </body>
     </html>`;
         }
