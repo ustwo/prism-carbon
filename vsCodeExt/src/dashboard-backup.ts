@@ -1,4 +1,4 @@
-import * as vscode from 'vscode';
+gimport * as vscode from 'vscode';
 
 export class CarbonDashboardPanel {
     public static currentPanel: CarbonDashboardPanel | undefined;
@@ -55,7 +55,8 @@ export class CarbonDashboardPanel {
     </head>
     <body>
         <div class="container">
-            < canvas id="emissionChart"></canvas>
+            <h1>Carbon Emissions Tracker</h1>
+            <p>Dashboard structure initialised. Chart.js loaded.</p>
         </div>
     </body>
     </html>`;
