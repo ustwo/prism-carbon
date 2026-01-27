@@ -52,7 +52,20 @@ export class CarbonDashboardPanel {
         <title>Carbon Dashboard</title>
     
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    </head>
+        <style>
+        body { background-color: #1e1e1e; color: #cfcfcf; font-family: Arial, sans-serif; padding: 20px;}
+            .chart-container {
+                position: relative;
+                height: 400px;
+                width: 100%;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+                h2 { text-align: center; font-weight: normal; margin-bottom; 10px;}
+        </style>
+
+    
+        </head>
     <body>
         <div class="container">
             < canvas id="emissionChart"></canvas>
