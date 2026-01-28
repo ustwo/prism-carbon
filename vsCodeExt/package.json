@@ -13,7 +13,6 @@
     "onCommand:vsCodeExt.helloWorld",
     "onCommand:vsCodeExt.resetStore",
     "onCommand:vsCodeExt.inputdisplay",
-    "onCommand:vsCodeExt.setCursorToken",
     "onCommand:vsCodeExt.setApiKey",
     "onView:myPrimaryView"
   ],
@@ -70,11 +69,6 @@
       {
         "command": "vsCodeExt.setApiKey",
         "title": "Set Api Key"
-      },
-      {
-        "command": "vsCodeExt.setCursorToken",
-        "title": "Set Cursor Token",
-        "category": "Cursor"
       },
       {
         "command": "interceptor.start",
