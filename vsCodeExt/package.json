@@ -112,7 +112,7 @@
     "@types/http-proxy": "^1.17.16",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.18.11",
-    "@types/vscode": "^1.107.0",
+    "@types/vscode": "^1.108.1",
     "@typescript-eslint/eslint-plugin": "^8.45.0",
     "@typescript-eslint/parser": "^8.45.0",
     "@vscode/test-cli": "^0.0.11",
@@ -125,8 +125,8 @@
   },
   "dependencies": {
     "axios": "^1.13.2",
-    "tiktoken": "^1.0.22",
     "http-proxy": "^1.18.1",
-    "mockttp": "^4.2.1"
+    "mockttp": "^4.2.1",
+    "tiktoken": "^1.0.22"
   }
 }
