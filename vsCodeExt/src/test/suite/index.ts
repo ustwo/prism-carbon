@@ -8,6 +8,7 @@ export function run(): Promise<void> {
     ui: 'tdd',
     color: true
   });
+  console.log("in the index.ts");
 
   const testsRoot = path.resolve(__dirname, '..');
 

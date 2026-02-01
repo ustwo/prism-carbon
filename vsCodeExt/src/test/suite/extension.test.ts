@@ -7,12 +7,15 @@ import * as vscode from 'vscode';
 // import * as myExtension from '../extension';
 
 suite('Extension Test Suite', () => {
+  vscode.window.showInformationMessage('start tests');
   after(() => {
-    vscode.window.showInformationMessage('All tests done!');
+    vscode.window.showInformationMessage('end tests');
   });
 
   test('Sample test', () => {
     assert.strictEqual(-1, [1, 2, 3].indexOf(5));
-    assert.strictEqual(-1, [1, 2, 3].indexOf(0));
+  });
+  test('Sample2 test',() => {
+    assert.strictEqual(1,2);
   });
 });
