@@ -5,7 +5,7 @@ import * as devTok from './devTokens';
 import * as vscode from 'vscode';
 import * as https from 'https';
 import * as budget from './budget';
-import { Memento } from "vscode";
+import { Memento } from 'vscode';
 import { stringify } from 'querystring';
 
 import { CarbonDashboardPanel } from './dashboard'; 
@@ -31,8 +31,9 @@ export function activate(context: vscode.ExtensionContext) {
     
     vscode.window.registerTreeDataProvider(
             'myPrimaryView',
-            treeDataProviderz
+            treeDataProvider
         );
+        
     function convert(x:any){
         //treeDataProvider.addMessage(String(x));
         return x;
@@ -50,13 +51,6 @@ export function activate(context: vscode.ExtensionContext) {
         'myPrimaryView',
         treeDataProvider
     );
-
-    // Dashboard command 
-    const dashboardCommand = vscode.commands.registerCommand('vsCodeExt.openDashboard', () => {
-        CarbonDashboardPanel.createOrShow(context.extensionUri);
-    });
-    context.subscriptions.push(dashboardCommand);
-    console.log('Carbon Dashboard command registered.');
     
 
     budget.initStorage(context.workspaceState);
@@ -69,16 +63,14 @@ export function activate(context: vscode.ExtensionContext) {
 
         if (tokens !== -1){
             var emissions = convert(tokens);
-            var newCall: budget.Call = {
-				Emissions: emissions,
-				Model: '',
-				DateTime: ''
-			};
-            budget.storeCall(newCall);
-            var cLimit = budget.updateLimit();
 
-            barManager.updateBar(tokens, cLimit);
+            
             treeDataProvider.addMessage("Call ID: xxxx - Emissions: " + emissions + ' g CO₂e');
+
+
+            let date = new Date();
+            var newCall: budget.Call = { Emissions: emissions, Model: "TEST", DateTime: date.toLocaleString() };
+            updateTree(newCall);
 
         }
     }));
@@ -89,6 +81,15 @@ export function activate(context: vscode.ExtensionContext) {
         barManager.updateLimit(0);
         vscode.window.showInformationMessage('Past calls cleared.');
     });
+
+    // Dashboard command 
+    const dashboardCommand = vscode.commands.registerCommand('vsCodeExt.openDashboard', () => {
+        CarbonDashboardPanel.createOrShow(context.extensionUri);
+        console.log('Carbon Dashboard command registered.');
+    });
+
+    
+
     const input = vscode.commands.registerCommand('vsCodeExt.inputdisplay', async () => {
         //vscode.window.showInformationMessage('Hello World from EstimatingCarbon!');
         const limit = await vscode.window.showInputBox({ //opens an input box currently representing the carbon footprint
@@ -111,6 +112,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(input);
     context.subscriptions.push(devTok.inline);
+    context.subscriptions.push(dashboardCommand);
 
     console.log('Interceptor Proxy Server is active');
 
@@ -195,159 +197,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(terminalDisposable);
     context.subscriptions.push(startDisposable);
     context.subscriptions.push(stopDisposable);
-	var barManager = new statusBarManager();
-	const treeDataProvider = new MyTreeDataProvider();
-	//treeDataProvider.addMessage("AI happened");
 
-	vscode.window.registerTreeDataProvider(
-			'myPrimaryView',
-			treeDataProvider
-		);
-	function convert(x:any){
-		//treeDataProvider.addMessage(String(x));
-		return x;
-	}
-
-	devTok.getTextAroundCursor();
-
-	//let lastInlineState = false;
-	const disposables: vscode.Disposable[] = [];
-
-
-	setDisplay(treeDataProvider, barManager);
-	vscode.window.registerTreeDataProvider(
-		'myPrimaryView',
-		treeDataProvider
-	);
-
-	budget.initStorage(context.workspaceState);
-	restoreCallHistory(treeDataProvider);
-	barManager.updateLimit(budget.updateLimit());
-	const BarManager = vscode.window.createStatusBarItem();
-
-	disposables.push(vscode.workspace.onDidChangeTextDocument(async evt => {
-		const tokens = Number(await devTok.change(evt));
-
-		if (tokens !== -1){
-			var emissions = convert(tokens);
-			let date = new Date();
-			var newCall: budget.Call = { Emissions: emissions, Model: "TEST", DateTime: date.toLocaleString() };
-			updateTree(newCall);
-		}
-	}));
-	
-	const reset = vscode.commands.registerCommand('vsCodeExt.clearStore', () => {
-		budget.resetBudget();
-		treeDataProvider.clearTree();
-		barManager.updateLimit(0);
-		vscode.window.showInformationMessage('Past calls cleared.');
-	});
-	const input = vscode.commands.registerCommand('vsCodeExt.inputdisplay', async () => {
-		//vscode.window.showInformationMessage('Hello World from EstimatingCarbon!');
-		const limit = await vscode.window.showInputBox({ //opens an input box currently representing the carbon footprint
-			prompt: 'Enter test call: ',
-			placeHolder: 'eg. 5',
-			ignoreFocusOut: true // keep input box open even if focus moves away from window
-		});
-		var num = Number(limit);
-		if (!Number.isNaN(num)) {
-			let date = new Date();
-			var newCall: budget.Call = { Emissions: num, Model: "TEST", DateTime: date.toLocaleString() };
-			updateTree(newCall);
-		}
-		else {
-			vscode.window.showInformationMessage('Error: NaN inputted.');
-		}
-
-
-
-	});
-	context.subscriptions.push(input);
-	context.subscriptions.push(devTok.inline);
-
-	console.log('Interceptor Proxy Server is active');
-
-	let startDisposable = vscode.commands.registerCommand('interceptor.start', async () => {
-		try {
-			// start local server
-			proxyServer = new InterceptorProxy(PROXY_PORT);
-			await proxyServer.start(context.globalStorageUri.fsPath);
-
-			// set VSCode to use local proxy
-			const config = vscode.workspace.getConfiguration('http');
-			await config.update('proxy', `http://localhost:${PROXY_PORT}`, vscode.ConfigurationTarget.Global);
-
-			//QUICK FIX TO NOT NEED SSL CERTS FOR NOW
-			// NEED TO CHANGE FOR BETA
-			await config.update('proxyStrictSSL', false, vscode.ConfigurationTarget.Global);
-
-
-			// const disposableAPIKEY = vscode.commands.registerCommand('vsCodeExt.setApiKey', async () => {
-			// 	const apiKey = await vscode.window.showInputBox({
-			// 		prompt: 'Enter your API Key',
-			// 		placeHolder: 'e.g.   sk - xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-			// 		ignoreFocusOut: true // keep input box open even if focus moves away from window
-
-			// 	});
-			// 	if (apiKey) {
-			// 		await context.secrets.store('myApiKey', apiKey); // securely stores apikey using key 'myApiKey'
-
-			// 		// to retrieve key from secret store, use:   const apiKey = await context.secrets.get('myApiKey');
-
-			vscode.window.showInformationMessage('Interceptor Proxy started on port ' + PROXY_PORT);
-		} catch (error) {
-			vscode.window.showErrorMessage('Failed to start Interceptor Proxy: ' + error);
-		}
-	});
-
-	let stopDisposable = vscode.commands.registerCommand('interceptor.stop', async () => {
-		// stop local server
-		if (proxyServer) {
-			proxyServer.stop();
-		}
-
-		// clear VSCode proxy settings
-		const config = vscode.workspace.getConfiguration('http');
-		await config.update('proxy', undefined, vscode.ConfigurationTarget.Global);
-		await config.update('proxyStrictSSL', undefined, vscode.ConfigurationTarget.Global);
-
-		vscode.window.showInformationMessage('Interceptor Proxy stopped. Proxy settings cleared.');
-	});
-
-	let terminalDisposable = vscode.commands.registerCommand('interceptor.openTerminal', async () => {
-		if (!proxyServer) {
-			vscode.window.showErrorMessage("There is no Interceptor Proxy Running. Please initiate `interceptor.start`");
-			return;
-		}
-
-		const proxyUrl = `http://127.0.0.1:${PROXY_PORT}`;
-
-		//create a new terminal with specific Environment Vars
-
-		const terminal = vscode.window.createTerminal({
-			name: "Estimating Carbon Terminal",
-			env: {
-				// proxy environment variables
-				"HTTP_PROXY": proxyUrl,
-				"HTTPS_PROXY": proxyUrl,
-				"http_proxy": proxyUrl,
-				"https_proxy": proxyUrl,
-
-				// python specific
-				"REQUESTS_CA_BUNDLE": proxyServer.certPath,
-
-				// nodejs specific
-				"NODE_EXTRA_CA_CERTS": proxyServer.certPath
-			}
-		});
-
-		terminal.show();
-		vscode.window.showInformationMessage("Opened Terminal with Proxy Environment Vars");
-	});
-
-	context.subscriptions.push(terminalDisposable);
-	context.subscriptions.push(startDisposable);
-	context.subscriptions.push(stopDisposable);
 }
 
 
@@ -364,8 +214,8 @@ export async function deactivate() {
 
 
 class MyTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
-    private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null | void> = new vscode.EventEmitter<vscode.TreeItem | undefined | null | void>();
-    readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null | void> = this._onDidChangeTreeData.event;
+    private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null> = new vscode.EventEmitter<vscode.TreeItem | undefined | null >();
+    readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null> = this._onDidChangeTreeData.event;
     private items: vscode.TreeItem[] = []; //creates a list of tree items starts empty obviously
 
     constructor() {
