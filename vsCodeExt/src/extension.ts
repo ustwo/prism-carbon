@@ -28,6 +28,8 @@ const PROXY_PORT = 3024;
 
 export function activate(context: vscode.ExtensionContext) {
 
+    // state.runningInterceptor = true;
+
     var barManager = new statusBarManager();
     const treeDataProvider = new MyTreeDataProvider();
 
@@ -76,6 +78,8 @@ export function activate(context: vscode.ExtensionContext) {
         treeDataProvider.clearTree();
         barManager.updateLimit(0);
         vscode.window.showInformationMessage('Past calls cleared.');
+        // state.runningInterceptor = true;
+
     });
 
     // Dashboard command 
@@ -139,8 +143,8 @@ export function activate(context: vscode.ExtensionContext) {
 
             //      // to retrieve key from secret store, use:   const apiKey = await context.secrets.get('myApiKey');
             state.runningInterceptor = true;
-            vscode.window.showInformationMessage('Interceptor Proxy started on port ' + "->" + PROXY_PORT + state.runningInterceptor + "DONE");
-            vscode.window.showInformationMessage("Status: " + state.runningInterceptor)
+            // vscode.window.showInformationMessage('Interceptor Proxy started on port ' + "->" + PROXY_PORT + state.runningInterceptor + "DONE");
+            vscode.window.showInformationMessage("Status: " + state.runningInterceptor);
         } catch (error) {
             vscode.window.showErrorMessage('Failed to start Interceptor Proxy: ' + error);
         }
@@ -194,12 +198,10 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(terminalDisposable);
     context.subscriptions.push(startDisposable);
     context.subscriptions.push(stopDisposable);
-
     return {
         isInterceptorRunning: () => state.runningInterceptor
     };
 }
-
 
 export async function deactivate() {
     // make sure that the vscode isn't always vulnerable, disable configurations

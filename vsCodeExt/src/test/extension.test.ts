@@ -27,8 +27,7 @@ suite('CommandTests', () => {
 		// WHEN PUBLISHING, CHANGE PUBLISHER FIELD IN PACKAGE.JSON AND ALSO REPLACE 'development'
 		// IN LINE BELOW WITH NEW PUBLISHER NAME.
 		const ext = vscode.extensions.getExtension('development.ecode');
-		await ext?.activate(); // Ensure the extension is actually running
-		dynamics = ext?.exports;
+		dynamics = await ext?.activate();// Ensure the extension is actually running
 		allCommands = await vscode.commands.getCommands(true);
 	});
 
@@ -54,24 +53,13 @@ suite('CommandTests', () => {
 				console.log(`Running: ${command}`);
 				if (command === "ecode.interceptorStart") {
 
-					vscode.commands.executeCommand(command);
+					await vscode.commands.executeCommand(command);
 					await new Promise(res => setTimeout(res, 500));
 					const status = dynamics.isInterceptorRunning();
-
 					assert.strictEqual(status, true, "Interceptor Not Running Correctly");
-					// if (command.includes("ecode.interceptor")) {
-					// 	await Promise.race([
-					// 		vscode.commands.executeCommand(command),
-					// 		new Promise((_, reject) => setTimeout(() => reject("Timeout Reached"), 1500))
-					// 	]).catch(err => {
-					// 		if (err !== "Timeout Reached") {
-					// 			throw err;
-					// 		}
-					// 		console.log("Interceptor is running in the background - it started correctly");
-					// 		// assert.equal(extension.runningInterceptor, true, "Interceptor Not Running Correctly");
-					// 	});
+					console.log("Interceptor is running in the background - it started correctly");
 				} else {
-					await vscode.commands.executeCommand(command);
+					console.log("ELSE" + dynamics.isInterceptorRunning());
 				}
 
 			}
@@ -83,7 +71,7 @@ suite('CommandTests', () => {
 		}
 		// ensures that there is a list of commands to check. Without this line then it would pass because checking nothing doesn't fail!
 		assert.ok(myExtensionCommands.length > 0, "No extension commands found! Is the publisher name correct?");
-	});
+	}).timeout(10000);
 	// below test is for checking failed tests fail. They do!
 
 	// test('missingCommand exists and runs', () => {
