@@ -19,38 +19,23 @@ import { appendFile } from 'fs';
 // 	});
 // });
 
-suite('CommandTests', () => {
+suite("CommandTests", () => {
 	// gets all registered commands
 	let allCommands: string[];
 	let dynamics: any;
 	setup(async () => {
 		// WHEN PUBLISHING, CHANGE PUBLISHER FIELD IN PACKAGE.JSON AND ALSO REPLACE 'development'
 		// IN LINE BELOW WITH NEW PUBLISHER NAME.
-		const ext = vscode.extensions.getExtension('development.ecode');
+		const ext = vscode.extensions.getExtension("development.ecode");
 		dynamics = await ext?.activate();// Ensure the extension is actually running
 		allCommands = await vscode.commands.getCommands(true);
 	});
-
-	// test('clearStore exists and runs', () => {
-	// 	const found = allCommands.indexOf('ecode.clearStore') > -1;
-	// 	assert.strictEqual(found, true, 'Command was not registered!');
-	// });
-
-	// test('inputdisplay exists and runs', () => {
-	// 	const found = allCommands.indexOf('ecode.inputdisplay') > -1;
-	// 	assert.strictEqual(found, true, 'Command was not registered!');
-	// });
-	// test('openDashboard exists and runs', () => {
-	// 	const found = allCommands.indexOf('ecode.openDashboard') > -1;
-	// 	assert.strictEqual(found, true, 'Command was not registered!');
-	// });
-
-	test('All written commands execute without crashing', async () => {
-		const stubInput = sinon.stub(vscode.window, 'showInputBox').resolves('50');
+	test("All written commands execute without crashing", async () => {
+		const stubInput = sinon.stub(vscode.window, 'showInputBox').resolves("50");
 		const myExtensionCommands = allCommands.filter(cmd => cmd.startsWith('ecode.'));
 		try {
 			for (const command of myExtensionCommands) {
-				console.log(`Running: ${command}`);
+				console.log("Running: ${command}");
 				if (command === "ecode.interceptorStart") {
 
 					await vscode.commands.executeCommand(command);
@@ -64,7 +49,7 @@ suite('CommandTests', () => {
 
 			}
 		} catch (error) {
-			assert.fail(`Command failed to execute: ${error}`);
+			assert.fail("Command failed to execute: ${error}");
 		}
 		finally {
 			stubInput.restore();
@@ -72,12 +57,21 @@ suite('CommandTests', () => {
 		// ensures that there is a list of commands to check. Without this line then it would pass because checking nothing doesn't fail!
 		assert.ok(myExtensionCommands.length > 0, "No extension commands found! Is the publisher name correct?");
 	}).timeout(10000);
-	// below test is for checking failed tests fail. They do!
+});
 
-	// test('missingCommand exists and runs', () => {
-	// 	const found = allCommands.indexOf('ecode.missingCommand') > -1;
+suite("UI Tests", () => {
+		
+});
 
-	// 	assert.strictEqual(found, true, 'Command was not registered!');
-	// });
+suite("RunTime Tests", () => {
+
+});
+
+suite("DevTime Tests", () => {
+
+});
+
+suite("Conversion Tests", () => {
+
 });
 
