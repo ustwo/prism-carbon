@@ -28,7 +28,7 @@ jobs:
       id: cache-vscode
       uses: actions/cache@v4
       with:
-        path: .vscode-test 
+        path: ./vsCodeExt/.vscode-test 
         key: ${{ runner.os }}-vscode-test-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-vscode-test-
