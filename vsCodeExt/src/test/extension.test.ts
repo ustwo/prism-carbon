@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import { isFunctionDeclaration } from 'typescript';
 import * as sinon from 'sinon';
 import { state } from '../state';
+import { appendFile } from 'fs';
 
 
 // suite('Extension Test Suite', () => {
@@ -21,11 +22,12 @@ import { state } from '../state';
 suite('CommandTests', () => {
 	// gets all registered commands
 	let allCommands: string[];
+	let dynamics: any;
 	setup(async () => {
 		// WHEN PUBLISHING, CHANGE PUBLISHER FIELD IN PACKAGE.JSON AND ALSO REPLACE 'development'
 		// IN LINE BELOW WITH NEW PUBLISHER NAME.
 		const ext = vscode.extensions.getExtension('development.ecode');
-		await ext?.activate(); // Ensure the extension is actually running
+		dynamics = await ext?.activate();// Ensure the extension is actually running
 		allCommands = await vscode.commands.getCommands(true);
 	});
 
@@ -51,23 +53,13 @@ suite('CommandTests', () => {
 				console.log(`Running: ${command}`);
 				if (command === "ecode.interceptorStart") {
 
-					vscode.commands.executeCommand(command);
-					await new Promise(res => setTimeout(res, 500));
-
-					assert.strictEqual(state.runningInterceptor, true, "Interceptor Not Running Correctly");
-					// if (command.includes("ecode.interceptor")) {
-					// 	await Promise.race([
-					// 		vscode.commands.executeCommand(command),
-					// 		new Promise((_, reject) => setTimeout(() => reject("Timeout Reached"), 1500))
-					// 	]).catch(err => {
-					// 		if (err !== "Timeout Reached") {
-					// 			throw err;
-					// 		}
-					// 		console.log("Interceptor is running in the background - it started correctly");
-					// 		// assert.equal(extension.runningInterceptor, true, "Interceptor Not Running Correctly");
-					// 	});
-				} else {
 					await vscode.commands.executeCommand(command);
+					await new Promise(res => setTimeout(res, 500));
+					const status = dynamics.isInterceptorRunning();
+					assert.strictEqual(status, true, "Interceptor Not Running Correctly");
+					console.log("Interceptor is running in the background - it started correctly");
+				} else {
+					console.log("ELSE" + dynamics.isInterceptorRunning());
 				}
 
 			}
@@ -79,7 +71,7 @@ suite('CommandTests', () => {
 		}
 		// ensures that there is a list of commands to check. Without this line then it would pass because checking nothing doesn't fail!
 		assert.ok(myExtensionCommands.length > 0, "No extension commands found! Is the publisher name correct?");
-	});
+	}).timeout(10000);
 	// below test is for checking failed tests fail. They do!
 
 	// test('missingCommand exists and runs', () => {

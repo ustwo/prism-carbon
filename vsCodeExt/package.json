@@ -75,17 +75,17 @@
         "title": "Set Api Key"
       },
       {
-        "command": "HIDDENecode.interceptorStart",
+        "command": "ecode.interceptorStart",
         "title": "Start Proxy Interceptor",
         "category": "Interceptor"
       },
       {
-        "command": "HIDDENecode.interceptorStop",
+        "command": "ecode.interceptorStop",
         "title": "Stop Proxy Interceptor",
         "category": "Interceptor"
       },
       {
-        "command": "HIDDENecode.interceptorOpenTerminal",
+        "command": "ecode.interceptorOpenTerminal",
         "title": "Open Runtime Terminal",
         "category": "Interceptor"
       }
