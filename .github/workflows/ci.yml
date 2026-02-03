@@ -32,22 +32,6 @@ jobs:
         key: ${{ runner.os }}-vscode-test-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-vscode-test-
-    # - name: Cache node modules
-    #   uses: actions/cache@v4
-    #   env: 
-    #     cache-name: cache-node-modules
-    #     id: 
-    #   with:
-    #     path: ~/.npm
-    #     key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-build-${{ env.cache-name }}-
-    #       ${{ runner.os }}-build-
-    #       ${{ runner.os }}-
-    # - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
-    #   name: List the state of node modules
-    #   continue-on-error: true
-    #   run: npm list
 
     - run: npm ci
 
