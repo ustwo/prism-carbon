@@ -90,29 +90,37 @@ suite('CommandTests', () => {
 
 	// 	assert.strictEqual(found, true, 'Command was not registered!');
 	// });
-
+	
+});
+suite('devtime', ()=>{
+	let ext:any;
+	setup(async () => {
+		// WHEN PUBLISHING, CHANGE PUBLISHER FIELD IN PACKAGE.JSON AND ALSO REPLACE 'development'
+		// IN LINE BELOW WITH NEW PUBLISHER NAME.
+		ext = vscode.extensions.getExtension('development.ecode');
+		assert.ok(ext);
+		await ext.activate();// Ensure the extension is actually running
+	});
 
 	test ('Copy and Paste tests', async () =>{
+	//var pCalls = budget.getCalls();
+
 		//var pCalls = budget.getCalls();
-		//var pCalls = budget.getCalls();
+		var pCalls = ext.exports.budget.getCalls();
+		const doc = await vscode.workspace.openTextDocument({content:" "});			
+		await vscode.window.showTextDocument(doc);
+		const position = new vscode.Position(10, 28);
+		new vscode.Selection(position, position);
+		await vscode.commands.executeCommand('type', { text: "HELLO" });
+
 		
-		vscode.commands.executeCommand("ecode.newFile");
+		var pCalls2 = ext.exports.budget.getCalls();
+
 		//await new Promise(res => setTimeout(res, 500));
-		//var pCalls2 = budget.getCalls();
-		//console.log("TESTSTSTSTST"+pCalls2);
-		assert.strictEqual(1, 1);
-		
+	//var pCalls2 = budget.getCalls();
+	//console.log("TESTSTSTSTST"+pCalls2);
+	assert.strictEqual(pCalls.length, pCalls2.length);
+	
 	});
-	test ('test TEST', async () =>{
-		//var pCalls = budget.getCalls();
-		//var pCalls = budget.getCalls();
-		
-		vscode.commands.executeCommand("ecode.newFile");
-
-		
-		assert.strictEqual(1, 1);
-		
-	});
-
 });
 

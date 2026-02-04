@@ -30,7 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     var barManager = new statusBarManager();
     const treeDataProvider = new MyTreeDataProvider();
-
+    console.log("Testing testing testing");
     vscode.window.registerTreeDataProvider(
         'myPrimaryView',
         treeDataProvider
@@ -53,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
     );
 
 
-    budget.initStorage(context.workspaceState);
+    budget.initStorage(context.globalState);
     restoreCallHistory(treeDataProvider);
     barManager.updateLimit(budget.updateLimit());
     const BarManager = vscode.window.createStatusBarItem();
@@ -203,6 +203,9 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(startDisposable);
     context.subscriptions.push(stopDisposable);
 
+    return budget;
+
+
 }
 
 
@@ -221,7 +224,7 @@ export async function deactivate() {
 class MyTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null> = new vscode.EventEmitter<vscode.TreeItem | undefined | null>();
     readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null> = this._onDidChangeTreeData.event;
-    private items: vscode.TreeItem[] = []; //creates a list of tree items starts empty obviously
+    public items: vscode.TreeItem[] = []; //creates a list of tree items starts empty obviously
 
     constructor() {
         this.items.push(new vscode.TreeItem(
