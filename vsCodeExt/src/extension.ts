@@ -25,8 +25,10 @@ export function setDisplay(t: MyTreeDataProvider, b: statusBarManager) {
 
 let proxyServer: InterceptorProxy;
 const PROXY_PORT = 3024;
+var budg: budget.budget;
 
 export function activate(context: vscode.ExtensionContext) {
+    budg = new budget.budget(context.workspaceState);
 
     var barManager = new statusBarManager();
     const treeDataProvider = new MyTreeDataProvider();
@@ -53,9 +55,9 @@ export function activate(context: vscode.ExtensionContext) {
     );
 
 
-    budget.initStorage(context.globalState);
-    restoreCallHistory(treeDataProvider);
-    barManager.updateLimit(budget.updateLimit());
+    // budget.initStorage(context.workspaceState);
+    restoreCallHistory(treeDataProvider,budg);
+    barManager.updateLimit(budg.updateLimit());
     const BarManager = vscode.window.createStatusBarItem();
 
 
@@ -81,7 +83,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     const reset = vscode.commands.registerCommand('ecode.clearStore', () => {
-        budget.resetBudget();
+        budg.resetBudget();
         treeDataProvider.clearTree();
         barManager.updateLimit(0);
         vscode.window.showInformationMessage('Past calls cleared.');
@@ -92,8 +94,6 @@ export function activate(context: vscode.ExtensionContext) {
         CarbonDashboardPanel.createOrShow(context.extensionUri);
         console.log('Carbon Dashboard command registered.');
     });
-
-
 
     const input = vscode.commands.registerCommand('ecode.inputdisplay', async () => {
         //vscode.window.showInformationMessage('Hello World from EstimatingCarbon!');
@@ -203,7 +203,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(startDisposable);
     context.subscriptions.push(stopDisposable);
 
-    return budget;
+    return {budg};
 
 
 }
@@ -224,7 +224,7 @@ export async function deactivate() {
 class MyTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
     private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null> = new vscode.EventEmitter<vscode.TreeItem | undefined | null>();
     readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null> = this._onDidChangeTreeData.event;
-    public items: vscode.TreeItem[] = []; //creates a list of tree items starts empty obviously
+    private items: vscode.TreeItem[] = []; //creates a list of tree items starts empty obviously
 
     constructor() {
         this.items.push(new vscode.TreeItem(
@@ -316,8 +316,8 @@ class statusBarManager {
     }
 }
 
-function restoreCallHistory(tree: MyTreeDataProvider) { //restores past calls to sidebar
-    var pCalls = budget.getCalls();
+function restoreCallHistory(tree: MyTreeDataProvider,budg:budget.budget) { //restores past calls to sidebar
+    var pCalls = budg.getCalls();
     console.log("CALLS:", pCalls);
     for (let i = 0; i < pCalls.length; i++) {
         tree.addMessage("Emissions: " + pCalls[i].Emissions + " - Model: " + pCalls[i].Model + " - Date: " + pCalls[i].DateTime);
@@ -325,10 +325,13 @@ function restoreCallHistory(tree: MyTreeDataProvider) { //restores past calls to
 }
 
 export function updateTree(call: budget.Call) {
-    budget.storeCall(call);
-    var cLimit = budget.updateLimit();
+    budg.storeCall(call);
+    var cLimit = budg.updateLimit();
     console.log("limit: " + cLimit);
     bar.updateBar(call.Emissions, cLimit);
     tree.addMessage("Emissions: " + call.Emissions + " - Model: " + call.Model + " - Date: " + call.DateTime);
 
+}
+export function wrappedGetCall(){
+    return budg.getCalls();
 }
