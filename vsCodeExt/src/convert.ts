@@ -44,6 +44,7 @@ export function getModel(inputString: string): TieredModel | null {
 }
 
 export function calculateEmission(model: string, tokenCount: number) {
+    if (tokenCount <0) { return 0; }
     // grams of co2 emitted per token (averaged over output and input)
     // const chatgpt4oshort = 0.000000370125;
     // const chatgpt4omedium = 0.000000212625;

@@ -81,19 +81,12 @@ suite("Conversion Tests", () => {
         }
     });
 
-    test("Class functions the same as previous if/else - negative tokens", () => {
+    test("Negative tokens are handled gracefully", () => {
         let tokens = -1;
-        assert.strictEqual(oldCalculateEmission("gpt-4o-mini", tokens), convert.calculateEmission("gpt-4o-mini", tokens));
-        assert.strictEqual(oldCalculateEmission("gpt-4o", tokens), convert.calculateEmission("gpt-4o", tokens));
-        assert.strictEqual(oldCalculateEmission("gpt-4.5", tokens), convert.calculateEmission("gpt-4.5", tokens));
-    });
-
-    // test("Negative tokens are handled gracefully", () => {
-    //     let tokens = -1;
-    //     assert.strictEqual(convert.getModel(modelString)?.modelName, "GPT4o");
-    //     assert.strictEqual(convert.getModel(modelString)?.modelName, "GPT4.5");
-    //     assert.strictEqual(convert.getModel(modelString)?.modelName, "GPT4oMini");
-    // });
+        assert.strictEqual(convert.calculateEmission("gpt-4o-mini", tokens), 0);
+        assert.strictEqual(convert.calculateEmission("gpt-4o", tokens), 0);
+        assert.strictEqual(convert.calculateEmission("gpt-4.5", tokens), 0);
+     });
 
     test("Correct models are chosen given input string", () => {
         let modelString = "ncdsdfj135tdsdfgpt-4o-bminiasdben123el.d"; // expecting gpt-4o
@@ -104,5 +97,7 @@ suite("Conversion Tests", () => {
         assert.strictEqual(convert.getModel(modelString)!.modelName, "GPT4oMini");
         modelString = "abcdefghijlkmnopqrstuvwxyz";
         assert.strictEqual(convert.getModel(modelString)?.modelName??null, null); // if null then assign null, and compare to null
+        modelString = "";
+        assert.strictEqual(convert.getModel(modelString)?.modelName??null, null); 
     });
 });
