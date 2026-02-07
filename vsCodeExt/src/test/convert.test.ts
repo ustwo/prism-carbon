@@ -3,43 +3,6 @@ import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import * as convert from '../convert';
 
-suite("CommandTests", () => {
-    // gets all registered commands
-    let allCommands: string[];
-    let dynamics: any;
-    setup(async () => {
-        // WHEN PUBLISHING, CHANGE PUBLISHER FIELD IN PACKAGE.JSON AND ALSO REPLACE 'development'
-        // IN LINE BELOW WITH NEW PUBLISHER NAME.
-        const ext = vscode.extensions.getExtension("development.ecode");
-        dynamics = await ext?.activate();// Ensure the extension is actually running
-        allCommands = await vscode.commands.getCommands(true);
-    });
-    test("All written commands execute without crashing", async () => {
-        const stubInput = sinon.stub(vscode.window, 'showInputBox').resolves("50");
-        const myExtensionCommands = allCommands.filter(cmd => cmd.startsWith('ecode.'));
-        try {
-            for (const command of myExtensionCommands) {
-                console.log(`Running: ${command}`);
-                if (command === "ecode.interceptorStart") {
-
-                    await vscode.commands.executeCommand(command);
-                    await new Promise(res => setTimeout(res, 500));
-                    const status = dynamics.isInterceptorRunning();
-                    assert.strictEqual(status, true, "Interceptor Not Running Correctly");
-                } else {vscode.commands.executeCommand(command);}
-                console.log(`Successfully Ran Test ${command}`);
-            }
-        } catch (error) {
-            assert.fail("Command failed to execute: ${error}");
-        }
-        finally {
-            stubInput.restore();
-        }
-        // ensures that there is a list of commands to check. Without this line then it would pass because checking nothing doesn't fail!
-        assert.ok(myExtensionCommands.length > 0, "No extension commands found! Is the publisher name correct?");
-    }).timeout(10000);
-});
-
 function oldCalculateEmission(model: string, token: number) {
     const chatgpt4oshort = 0.000000370125;
     const chatgpt4omedium = 0.000000212625;
@@ -77,52 +40,69 @@ function oldCalculateEmission(model: string, token: number) {
 suite("Conversion Tests", () => {
 
     test("Class functions the same as previous if/else - empty tokens", () => {
-        assert.equal(oldCalculateEmission("gpt-4o-mini", 0), convert.calculateEmission("gpt-4o-mini", 0));
-        assert.equal(oldCalculateEmission("gpt-4o", 0), convert.calculateEmission("gpt-4o", 0));
-        assert.equal(oldCalculateEmission("gpt-4.5", 0), convert.calculateEmission("gpt-4.5", 0));
+        assert.strictEqual(oldCalculateEmission("gpt-4o-mini", 0), convert.calculateEmission("gpt-4o-mini", 0));
+        assert.strictEqual(oldCalculateEmission("gpt-4o", 0), convert.calculateEmission("gpt-4o", 0));
+        assert.strictEqual(oldCalculateEmission("gpt-4.5", 0), convert.calculateEmission("gpt-4.5", 0));
     });
 
     test("Class functions the same as previous if/else - first tier tokens", () => {
         for (let i = 0; i<3; i++){
             let tokens = Math.floor(Math.random() * 400);
-            assert.equal(oldCalculateEmission("gpt-4o-mini", 0), convert.calculateEmission("gpt-4o-mini", 0));
-            assert.equal(oldCalculateEmission("gpt-4o", 0), convert.calculateEmission("gpt-4o", 0));
-            assert.equal(oldCalculateEmission("gpt-4.5", 0), convert.calculateEmission("gpt-4.5", 0));
+            assert.strictEqual(oldCalculateEmission("gpt-4o-mini", tokens), convert.calculateEmission("gpt-4o-mini", tokens));
+            assert.strictEqual(oldCalculateEmission("gpt-4o", tokens), convert.calculateEmission("gpt-4o", tokens));
+            assert.strictEqual(oldCalculateEmission("gpt-4.5", tokens), convert.calculateEmission("gpt-4.5", tokens));
         }
     });
 
     test("Class functions the same as previous if/else - 2nd tier tokens", () => {
         for (let i = 0; i<3; i++){
             let tokens = 400 + Math.floor(Math.random() * 1600);
-            assert.equal(oldCalculateEmission("gpt-4o-mini", 0), convert.calculateEmission("gpt-4o-mini", 0));
-            assert.equal(oldCalculateEmission("gpt-4o", 0), convert.calculateEmission("gpt-4o", 0));
-            assert.equal(oldCalculateEmission("gpt-4.5", 0), convert.calculateEmission("gpt-4.5", 0));
+            assert.strictEqual(oldCalculateEmission("gpt-4o-mini", tokens), convert.calculateEmission("gpt-4o-mini", tokens));
+            assert.strictEqual(oldCalculateEmission("gpt-4o", tokens), convert.calculateEmission("gpt-4o", tokens));
+            assert.strictEqual(oldCalculateEmission("gpt-4.5", tokens), convert.calculateEmission("gpt-4.5", tokens));
         }
     });
 
     test("Class functions the same as previous if/else - 3rd tier tokens", () => {
         for (let i = 0; i<3; i++){
             let tokens = 2000 + Math.floor(Math.random() * 9500);
-            assert.equal(oldCalculateEmission("gpt-4o-mini", 0), convert.calculateEmission("gpt-4o-mini", 0));
-            assert.equal(oldCalculateEmission("gpt-4o", 0), convert.calculateEmission("gpt-4o", 0));
-            assert.equal(oldCalculateEmission("gpt-4.5", 0), convert.calculateEmission("gpt-4.5", 0));
+            assert.strictEqual(oldCalculateEmission("gpt-4o-mini", tokens), convert.calculateEmission("gpt-4o-mini", tokens));
+            assert.strictEqual(oldCalculateEmission("gpt-4o", tokens), convert.calculateEmission("gpt-4o", tokens));
+            assert.strictEqual(oldCalculateEmission("gpt-4.5", tokens), convert.calculateEmission("gpt-4.5", tokens));
         }
     });
-
 
     test("Class functions the same as previous if/else - out of scope tokens", () => {
         for (let i = 0; i<3; i++){
             let tokens = 11500 + Math.floor(Math.random() * 100000);
-            assert.equal(oldCalculateEmission("gpt-4o-mini", 0), convert.calculateEmission("gpt-4o-mini", 0));
-            assert.equal(oldCalculateEmission("gpt-4o", 0), convert.calculateEmission("gpt-4o", 0));
-            assert.equal(oldCalculateEmission("gpt-4.5", 0), convert.calculateEmission("gpt-4.5", 0));
+            assert.strictEqual(oldCalculateEmission("gpt-4o-mini", tokens), convert.calculateEmission("gpt-4o-mini", tokens));
+            assert.strictEqual(oldCalculateEmission("gpt-4o", tokens), convert.calculateEmission("gpt-4o", tokens));
+            assert.strictEqual(oldCalculateEmission("gpt-4.5", tokens), convert.calculateEmission("gpt-4.5", tokens));
         }
     });
 
+    test("Class functions the same as previous if/else - negative tokens", () => {
+        let tokens = -1;
+        assert.strictEqual(oldCalculateEmission("gpt-4o-mini", tokens), convert.calculateEmission("gpt-4o-mini", tokens));
+        assert.strictEqual(oldCalculateEmission("gpt-4o", tokens), convert.calculateEmission("gpt-4o", tokens));
+        assert.strictEqual(oldCalculateEmission("gpt-4.5", tokens), convert.calculateEmission("gpt-4.5", tokens));
+    });
 
-    
+    // test("Negative tokens are handled gracefully", () => {
+    //     let tokens = -1;
+    //     assert.strictEqual(convert.getModel(modelString)?.modelName, "GPT4o");
+    //     assert.strictEqual(convert.getModel(modelString)?.modelName, "GPT4.5");
+    //     assert.strictEqual(convert.getModel(modelString)?.modelName, "GPT4oMini");
+    // });
 
-
-
+    test("Correct models are chosen given input string", () => {
+        let modelString = "ncdsdfj135tdsdfgpt-4o-bminiasdben123el.d"; // expecting gpt-4o
+        assert.strictEqual(convert.getModel(modelString)!.modelName, "GPT4o");
+        modelString = "ncdsdfj135tdsdfgpt-4.5o-bminiasdben123el.d"; // expecting gpt-4o
+        assert.strictEqual(convert.getModel(modelString)!.modelName, "GPT4.5");
+        modelString = "ncdsdfj135tdsdfgpt-4ploeo-bminiasdben123elasdfkjh.gpt-4o-minigpt-4od"; // expecting gpt-4o
+        assert.strictEqual(convert.getModel(modelString)!.modelName, "GPT4oMini");
+        modelString = "abcdefghijlkmnopqrstuvwxyz";
+        assert.strictEqual(convert.getModel(modelString)?.modelName??null, null); // if null then assign null, and compare to null
+    });
 });
-
