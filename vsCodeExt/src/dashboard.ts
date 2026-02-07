@@ -121,6 +121,30 @@ body.darkmode #theme-switch svg:last-child{ display: block; }
                 margin: 0 auto;
             }
                 h2 { text-align: center; font-weight: normal; margin-bottom; 10px;}
+
+                .widgetCard{
+    background-color: white;
+    border-radius: 20px;
+    width:100%;
+    overflow:hidden;
+    text-align:center;
+    margin: 10px auto;
+}
+
+#widgetsWrapper{
+    width:100%;
+}
+
+#widgetsWrapper p{
+    font-family: tahoma, geneva, sans-serif;
+    text-align:center;
+}
+
+.chartDiv{
+    width:100%;
+    height:100%;
+}
+
         </style>
 
         
@@ -137,7 +161,12 @@ body.darkmode #theme-switch svg:last-child{ display: block; }
 
 
   <h1>chart 1</h1>
-  <p> something here</p>
+  <div id="widgetsWrapper">
+  <p>token usage</p>
+  <div class="widgetCard" style="max-width:700px;height:300px">
+    <div id="chartDiv1" class="chartDiv"></div>
+  </div>
+</div>
 </header>
        <section> 
         <h2>File by Size in Repo</h2>
@@ -145,6 +174,9 @@ body.darkmode #theme-switch svg:last-child{ display: block; }
         <canvas id="emissionChart"></canvas>
     </div>
     </section>
+
+    <script src="https://code.jscharting.com/latest/jscharting.js"></script>
+
     <script>
 
 // listens for clicking and change color for it
@@ -153,6 +185,61 @@ body.darkmode #theme-switch svg:last-child{ display: block; }
   btn.addEventListener('click', () => {
     document.body.classList.toggle('darkmode');
   });
+
+  /* ---------- heatmap ---------- */
+var palette = [
+  '#3c506b',
+  '#577399',
+  '#BDD5EA',
+  '#F7F7FF'
+].reverse();
+
+var data = [
+  { x: 'Jan', y: 'file 1', z: 90 },
+  { x: 'Feb', y: 'file 1', z: 177 },
+  { x: 'Mar', y: 'file 1', z: 147 },
+  { x: 'Apr', y: 'file 1', z: 193 },
+  { x: 'May', y: 'file 1', z: 120 },
+  { x: 'Jun', y: 'file 1', z: 116 },
+  { x: 'Jul', y: 'file 1', z: 176 },
+  { x: 'Aug', y: 'file 1', z: 198 },
+  { x: 'Sep', y: 'file 1', z: 98 },
+  { x: 'Oct', y: 'file 1', z: 124 },
+  { x: 'Nov', y: 'file 1', z: 109 },
+  { x: 'Dec', y: 'file 1', z: 136 },
+
+  { x: 'Jan', y: 'file 2', z: 185 },
+  { x: 'Feb', y: 'file 2', z: 103 },
+  { x: 'Mar', y: 'file 2', z: 199 },
+  { x: 'Apr', y: 'file 2', z: 190 },
+  { x: 'May', y: 'file 2', z: 174 },
+  { x: 'Jun', y: 'file 2', z: 189 },
+  { x: 'Jul', y: 'file 2', z: 132 },
+  { x: 'Aug', y: 'file 2', z: 200 },
+  { x: 'Sep', y: 'file 2', z: 176 },
+  { x: 'Oct', y: 'file 2', z: 97 },
+  { x: 'Nov', y: 'file 2', z: 171 },
+  { x: 'Dec', y: 'file 2', z: 120 }
+];
+
+// wait until DOM exists
+window.addEventListener('load', () => {
+  JSC.chart('chartDiv1', {
+    type: 'heatmap solid',
+    margin: [-4, -4],
+    box_fill: 'none',
+    palette: {
+      pointValue: p => p.options('z'),
+      colors: palette
+    },
+    legend_visible: false,
+    defaultPoint: {
+      outline_width: 0,
+      tooltip: '%yValue - %xValue<br><b>%zValue sales</b>'
+    },
+    series: [{ points: data }]
+  });
+});
 
        
         const fileSizes = [300, 150, 80, 60,25];  // dummy data representing file sizes 
