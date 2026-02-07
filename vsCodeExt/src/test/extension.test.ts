@@ -25,7 +25,7 @@ suite("CommandTests", () => {
 					await new Promise(res => setTimeout(res, 500));
 					const status = dynamics.isInterceptorRunning();
 					assert.strictEqual(status, true, "Interceptor Not Running Correctly");
-				} else vscode.commands.executeCommand(command);
+				} else {vscode.commands.executeCommand(command);}
 				console.log(`Successfully Ran Test ${command}`);
 			}
 		} catch (error) {
