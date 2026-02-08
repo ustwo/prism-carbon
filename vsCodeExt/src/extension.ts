@@ -95,9 +95,12 @@ export function activate(context: vscode.ExtensionContext) {
     const refresh = vscode.commands.registerCommand('ecode.refreshLogs', () => {
         try {
 
+        // concactenates correct file name to access Copilot logs
         const filePath = logCap.getLogFilePath(context);
         console.log(filePath);
         const logUri = path.join(path.dirname(filePath), "GitHub.copilot-chat", "GitHub Copilot Chat.log");
+
+        // reads file and outputs lines to console one at a time
         const content = fs.readFileSync(logUri, 'utf-8');
         const lines: string[] = content.split(/\r?\n/);
         for (const line of lines) {

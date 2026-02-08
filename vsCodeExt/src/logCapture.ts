@@ -5,5 +5,5 @@ export function getLogFilePath(context: vscode.ExtensionContext) {
 }
 
 export function parseLogForCalls(rawLog: string) {
-        
+    // TODO - regex to convert log file lines to usable data 
 }

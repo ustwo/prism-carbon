@@ -124,6 +124,7 @@ We aim to design a toolkit that:
     │   ├── budget.ts # interface for Call structure and usage calculations
     │   ├── serverWorker.ts # listens on proxyServer and handles parsing
     │   ├── proxyServer.ts # starts server, receives parsed information
+    │   ├── logCapture.ts # handles collection and parsing of Copilot log files
     ├── tsconfig.json
     └── vsc-extension-quickstart.md
 
