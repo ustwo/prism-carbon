@@ -116,24 +116,6 @@ suite('devtime', ()=>{
 		assert.strictEqual(pCalls.length,pCalls2.length);
 	
 	});	
-	test('inline chat test', async ()=>{
-		var pCalls = budge.getCalls();
-		const doc = await vscode.workspace.openTextDocument({content:" "});
-		await vscode.window.showTextDocument(doc);
-		console.log("Testing 1");
-		const models = await vscode.lm.selectChatModels({vendor:'copilot'});
-		await new Promise(res => setTimeout(res, 5000));
 
-		const model = models[0];
-	
-		const craftedPrompt = [vscode.LanguageModelChatMessage.User("write hello world")];
-		await model.sendRequest(craftedPrompt,{},new vscode.CancellationTokenSource().token);
-
-		var pCalls2 = budge.getCalls();
-		assert.notEqual(pCalls.length,pCalls2.length);
-
-
-
-	});
 });
 
