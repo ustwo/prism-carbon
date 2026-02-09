@@ -61,7 +61,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 
     disposables.push(vscode.workspace.onDidChangeTextDocument(async evt => {
-        const tokens = Number(await devTok.change(evt));
+        const tokens = -1;
+        //Number(await devTok.change(evt));
 
         if (tokens !== -1) {
             var emissions = convert(tokens);
@@ -94,12 +95,7 @@ export function activate(context: vscode.ExtensionContext) {
         CarbonDashboardPanel.createOrShow(context.extensionUri);
         console.log('Carbon Dashboard command registered.');
     });
-    vscode.commands.registerCommand('ecode.testInput',async () =>{
-        let date = new Date();
-        var newCall: budget.Call = { Emissions: 5, Model: "TEST", DateTime: date.toLocaleString() };
-        updateTree(newCall);
 
-    });
 
     const input = vscode.commands.registerCommand('ecode.inputdisplay', async () => {
         //vscode.window.showInformationMessage('Hello World from EstimatingCarbon!');
@@ -122,7 +118,6 @@ export function activate(context: vscode.ExtensionContext) {
 
     });
     context.subscriptions.push(input);
-    context.subscriptions.push(devTok.inline);
     context.subscriptions.push(dashboardCommand);
 
     console.log('Interceptor Proxy Server is active');
