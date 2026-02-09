@@ -83,7 +83,7 @@ body.darkmode{
 * { margin:0; padding:0; box-sizing:border-box; }
 html{ font-family: sans-serif; }
 
-/* main pag style, paddings  */
+/* main page style, paddings  */
 
 body{ min-height:100vh; background-color:var(--base-color); color:var(--text-color); transition: all 0.3s ease; }
 header, section{ padding:70px min(50px,7%); }
@@ -235,7 +235,7 @@ window.addEventListener('load', () => {
     legend_visible: false,
     defaultPoint: {
       outline_width: 0,
-      tooltip: '%yValue - %xValue<br><b>%zValue sales</b>'
+      tooltip: '%yValue - %xValue<br><b>%zValue kg CO2</b>'
     },
     series: [{ points: data }]
   });
