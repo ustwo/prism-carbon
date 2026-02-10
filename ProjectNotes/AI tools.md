@@ -1,4 +1,57 @@
-<h1>AI tools used in production</h1>
+<h1>AI </h1>
+<p>We declare that any and all AI usage within the project has been recorded and noted below. This includes (but is not limited to) usage of text generation methods incl. LLMs, text summarisation methods, or image generation methods. We understand that failing to divulge use of AI within our work counts as contract cheating and can result in a zero mark for SEP.</p>
+
+<h2>Project AI</h2>
+We used AI throughout the project to test our extension's token tracking ability (copilot and cursor)
+
+<h2>Jacob Connor</h2>
+<p>I, Jacob Connor declare that this document is accurate to my AI usage throughout the course of SEP.</p>
+
+<h3>Development</h3>
+Research into testing Development time 
+
+> Prompt used - "How can I programatically invoke the copilot chat within vscode in order to test how my extension responds?"
+  
+ When conducting research into how to use and test the extensions response to copliot chat I found out that copilot does not allow for this. So I have since decided to research into testing options (without AI)
+
+
+<h3>Debugging</h3>
+
+<h3>Review</h3>
+
+<h2>Iman</h2>
+<h3>Development</h3>
+
+<h3>Debugging</h3>
+
+<h3>Review</h3>
+
+<h2>Max Davies</h2>
+<h3>Development</h3>
+
+<h3>Debugging</h3>
+
+<h3>Review</h3>
+
+<h2>Hao Ni</h2>
+
+<h3>Development</h3>
+
+<h3>Debugging</h3>
+
+<h3>Review</h3>
+
+<h2>Morgan Parry</h2>
+
+<h3>Development</h3>
+
+<h3>Debugging</h3>
+
+<h3>Review</h3>
+
+
+after this point will be deleted so delete when you use it
+
 
 <h2>AI Generated code<h2>
 
@@ -28,15 +81,8 @@ These are small scripts that are hard to remember all of the details for. AI is 
 <li> When encountering error messages chatGPT was used to quickly explain the solution in a more clear manner and give possible solutions. I used this when my graph panel implementation had an error ' view Extension 'undefined_publisher.vsCodeExt' not found' to find a solution to this quickly </li>
   <li> Used Ai to help figure out why my webview was not running, gave me steps on what needed to be refreshed and how I needed to change my code so that it would work.  Prompt: i am getting this error ( image was inserted of the error), what does it mean? </li>
 </ul>
-  <h3>Testing</h3>
-
-### Research into testing - @JacobConnor5
-> Prompt used - "How can I programatically invoke the copilot chat within vscode in order to test how my extension responds?"
-  
- When conducting research into how to use and test the extensions response to copliot chat I found out that copilot does not allow for this. So I have since decided to research into testing options (without AI)
 
 <h3>Other AI uses</h3>
-
 
 
 
