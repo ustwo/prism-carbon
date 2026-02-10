@@ -30,6 +30,10 @@ These are small scripts that are hard to remember all of the details for. AI is 
 </ul>
   <h3>Testing</h3>
 
+### Research into testing - @JacobConnor5
+> Prompt used - "How can I programatically invoke the copilot chat within vscode in order to test how my extension responds?"
+  
+ When conducting research into how to use and test the extensions response to copliot chat I found out that copilot does not allow for this. So I have since decided to research into testing options (without AI)
 
 <h3>Other AI uses</h3>
 
