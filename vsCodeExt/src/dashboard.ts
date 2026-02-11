@@ -166,6 +166,7 @@ body.darkmode #theme-switch svg:last-child{ display: block; }
         </div>
     </div>
     </section>
+    // this section will be used for the drilldown view, it is hidden by default and will be shown when a file is clicked on the pie chart
     <section id="drilldown-view" style = "display:none; padding:20px; text-align: center;">
     <button id="back-btn" style="margin-bottom: 20px; padding: 10px 20px; cursor: pointer;"> <-Back to Overview</button>
      <h2 id="drilldown-title"> File Carbon vs Budget</h2>
