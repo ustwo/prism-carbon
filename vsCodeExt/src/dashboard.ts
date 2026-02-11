@@ -166,6 +166,15 @@ body.darkmode #theme-switch svg:last-child{ display: block; }
         </div>
     </div>
     </section>
+    <section id="drilldown-view" style = "display:none; padding:20px; text-align: center;">
+    <button id="back-btn" style="margin-bottom: 20px; padding: 10px 20px; cursor: pointer;"> <-Back to Overview</button>
+     <h2 id="drilldown-title"> File Carbon vs Budget</h2>
+        <div class="chart-container" style="max-width: 600px; margin: 0 auto;">
+            <canvas id="budgetChart"></canvas>
+        </div>
+    </section>
+
+    
     <script>
 
 // listens for clicking and change color for it
