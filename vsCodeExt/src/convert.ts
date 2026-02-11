@@ -29,22 +29,23 @@ export class TieredModel extends LLMModel {
         //     water : waterRate * tokens{}};
     };
 }
-
+const veryLarge = 99999999999999999999999999999999999999999999999999999999999999;
 export const modelRegistry: Record<string, TieredModel> = {
     "gpt-4o-mini": new TieredModel("GPT4oMini", [{ limit: 400, carbonPerToken: 0.00923 }, { limit: 2000, carbonPerToken: 0.00369 }, { limit: 11500, carbonPerToken: 0.0006293 }]),
     "gpt-4o": new TieredModel("GPT4o", [{ limit: 400, carbonPerToken: 0.000000370125 }, { limit: 2000, carbonPerToken: 0.000000212625 }, { limit: 11500, carbonPerToken: 0.0000000875 }]),
-    "gpt-4.5": new TieredModel("GPT4.5", [{ limit: 999999999999, carbonPerToken: 0.0003 }])
+    "gpt-4.5": new TieredModel("GPT4.5", [{ limit: veryLarge, carbonPerToken: 0.0003 }]),
+    "gemini": new TieredModel("Gemini", [{ limit: veryLarge, carbonPerToken: 0.00036 }]) // emissions based on 0.09g per median gemini prompt. Assuming this to be 250 tokens (input and output) then 0.09/250
 };
 
 export function getModel(inputString: string): TieredModel | null {
     const lowerModel = inputString.toLowerCase();
-    if (modelRegistry[lowerModel]) {return modelRegistry[inputString];}
+    if (modelRegistry[lowerModel]) { return modelRegistry[inputString]; }
     const key = Object.keys(modelRegistry).find(k => inputString.includes(k));
     return key ? modelRegistry[key] : null;
 }
 
 export function calculateEmission(model: string, tokenCount: number) {
-    if (tokenCount <0) { return 0; }
+    if (tokenCount < 0) { return 0; }
     // grams of co2 emitted per token (averaged over output and input)
     // const chatgpt4oshort = 0.000000370125;
     // const chatgpt4omedium = 0.000000212625;
