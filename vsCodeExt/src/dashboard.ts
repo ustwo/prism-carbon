@@ -305,8 +305,21 @@ body.darkmode #theme-switch svg:last-child{ display: block; }
             //Logic fo r budget (dummy values used : budget of 500)
             const bdget = 500;
             const remainingBudget = Math.max(0, budget - value);)
+
+            // update thebudget chart with the new values
+            document.getElementById('drilldown-title').innerText = label + "vs Carbon Budget";
+            budgetChart.update();
+
+            //Switch views
+
+            document.getElementById('drilldown-view').style.display = 'block';
+            document.getElementById('main-view').style.display= 'none';
+    
             
         }
+    };
+    
+
     
         </script>
     </body>
