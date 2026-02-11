@@ -292,7 +292,23 @@ body.darkmode #theme-switch svg:last-child{ display: block; }
             responsive: true,
             maintainAspectRatio: false,
     });
-    </script>
+        // function to handle the click on the carbon cost chart
+    ctxCarbon.onclick = function(evt) {
+
+    // allows the dashboard to know which file was clicked
+        const points = carbonChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+        if (points.length) {
+            const firstPoint = points[0];
+            const label = carbonChart.data.labels[firstPoint.index];
+            const value = carbonChart.data.datasets[firstPoint.datasetIndex].data[firstPoint.index];
+            
+            //Logic fo r budget (dummy values used : budget of 500)
+            const bdget = 500;
+            const remainingBudget = Math.max(0, budget - value);)
+            
+        }
+    
+        </script>
     </body>
     </html>`;
         }
