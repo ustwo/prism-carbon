@@ -318,7 +318,11 @@ body.darkmode #theme-switch svg:last-child{ display: block; }
             
         }
     };
-    
+    // adding the logic for the back button in the drilldown view
+    document.getElementById('back-btn').onclick = function() {
+        document.getElementById('drilldown-view').style.display = 'none';
+        document.getElementById('main-view').style.display = 'flex';
+    };
 
     
         </script>
