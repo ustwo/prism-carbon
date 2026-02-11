@@ -120,6 +120,18 @@ body.darkmode #theme-switch svg:last-child{ display: block; }
                 max-width: 800px;
                 margin: 0 auto;
             }
+            .chart-wrapper{
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            }
+            .dashboard.grid{
+            display:flex;
+            flex-wrap:wrap;
+            justify-content: space-around;
+            gap: 20px;
+            padding: 20px;
+            }
                 h2 { text-align: center; font-weight: normal; margin-bottom; 10px;}
         </style>
 
