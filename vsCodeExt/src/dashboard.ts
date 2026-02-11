@@ -125,14 +125,14 @@ body.darkmode #theme-switch svg:last-child{ display: block; }
             min-width: 300px;
             max-width: 500px;
             }
-            .dashboard.grid{
+            .dashboard-grid{
             display:flex;
             flex-wrap:wrap;
             justify-content: space-around;
             gap: 20px;
             padding: 20px;
             }
-                h2 { text-align: center; font-weight: normal; margin-bottom; 10px;}
+                h2 { text-align: center; font-weight: normal; margin-bottom: 10px;}
         </style>
 
         
@@ -225,11 +225,12 @@ body.darkmode #theme-switch svg:last-child{ display: block; }
             const message = event.data;
             if (message.command === 'updateData') {
                 // This will be used when real data is available, the dummy data used above will be ignored
+                carbonChart.data.datasets[0].data = message.carbonData;
+                carbonChart.update();
                 myChart.data.datasets[0].data = message.fileSizes;
                 carbonChart.update();
                 
-                carbonChart.data.datasets[0].data = message.carbonData;
-                carbonChart.update();
+                
 
                 myChart.data.datasets[0].backgroundColor = generateColors(message.data.length);
                 myChart.update();
