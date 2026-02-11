@@ -16,6 +16,7 @@
     "onCommand:ecode.inputdisplay",
     "onCommand:ecode.setApiKey",
     "onCommand:ecode.openDashboard",
+    "onCommand:ecode.refreshLogs",
     "onView:myPrimaryView"
   ],
   "main": "./dist/extension.js",
@@ -73,6 +74,11 @@
       {
         "command": "ecode.setApiKey",
         "title": "Set Api Key"
+      },
+      {
+        "command": "ecode.refreshLogs",
+        "title": "Refresh carbon data",
+        "category": "Logging"
       },
       {
         "command": "ecode.interceptorStart",
