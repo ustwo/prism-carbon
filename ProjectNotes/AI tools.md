@@ -24,10 +24,12 @@ Research into testing Development time
 
 <h3>Development</h3>
 Research into creating a dashboard and adding features
+
 > Prompt used - " 'I will be creating a dashboard for a VsCode extension that will include a pie chart and heatmap what resources could I use to build this'"
 I found it a bit difficult finding clear ways of implementing this as examples when I was initially conducting research were too simple or complex, by doing so research time was also expedited. 
 
 <h3>Debugging</h3>
+
 > Prompt used - " I am getting this error (Image was inserted of the error) what does it mean"
 The error occured when I would run the webview when I was initially creating it for the dashboard. I was having issues finding a way to alleviate this problem using online resources so I used AI which gave me a reason for this and steps to fix the error.
 
