@@ -107,12 +107,12 @@ We aim to design a toolkit that:
 7. To access the dashboard, run "Open Carbon Dashboard" command.
 <br>
 
+7. For development time analysis, run the "Refresh carbon data" command to fetch the most recent data from Copilot. 
+<br>
    
-<p>
-    This is currently the same for both developers and users. However, we plan to have the extension downloadable from the VScode store for users.
-</p>
+<p>This is currently the same for both developers and users. However, we plan to have the extension downloadable from the VScode store for users.</p>
+
     
-  
 <h2 id="structure">Project Structure</h2>
 <pre>
 ├── Images # architecture diagrams
@@ -127,6 +127,7 @@ We aim to design a toolkit that:
     │   ├── budget.ts # interface for Call structure and usage calculations
     │   ├── serverWorker.ts # listens on proxyServer and handles parsing
     │   ├── proxyServer.ts # starts server, receives parsed information
+    │   ├── logCapture.ts # handles collection and parsing of Copilot log files
     ├── tsconfig.json
     └── vsc-extension-quickstart.md
 

@@ -31,7 +31,15 @@ These are small scripts that are hard to remember all of the details for. AI is 
   <h3>Testing</h3>
 
 
-<h3>Other AI uses</h3>
+## Other AI uses 
+
+
+### Research into regex - @m0g56
+
+> Prompt used - "Give an overview of regexes and how they work, in particular how they can be formatted to exclude lines of text based on a phrase they contain."
+> Prompt used - "How can I use a regex to capture text between two characters?"
+
+When conducting research into how I can use a regex to exclude the lines I need from the captured log files in development time analysis, I used ChatGPT to research how I can use them for the specific task I need (excluding lines containing unneeded levels of Copilot logging). I did this after conducting my own research which left me unsure of how to achieve this. I did not copy any regexes directly from ChatGPT's response, but I used them to start playing around with more specific regexes using a [regex sandbox website](https://regexr.com/).
 
 
 
