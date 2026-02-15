@@ -2,7 +2,7 @@
 <p>We declare that any and all AI usage within the project has been recorded and noted below. This includes (but is not limited to) usage of text generation methods incl. LLMs, text summarisation methods, or image generation methods. We understand that failing to divulge use of AI within our work counts as contract cheating and can result in a zero mark for SEP.</p>
 
 <h2>Project AI</h2>
-We used AI throughout the project to test our extension's token tracking ability (copilot and cursor)
+We used AI throughout the project to test our extension's token tracking ability (copilot and cursor). This consisted of using AI autocomplete in dummy code files to track tokens produced during these generations, and using basic python and java scripts that act as a basic AI interface and make API calls to varying AI models. None of the generations used in this testing were implemented within our codebase, but the metadata results from these tests (output logs and json formats) were used to refine our approach and help our data parsing.
 
 <h2>Jacob Connor</h2>
 <p>I, Jacob Connor declare that this document is accurate to my AI usage throughout the course of SEP.</p>
@@ -25,7 +25,7 @@ Research into testing Development time
 <h3>Development</h3>
 Research into creating a dashboard and adding features
 
-> Prompt used - " 'I will be creating a dashboard for a VsCode extension that will include a pie chart and heatmap what resources could I use to build this'"
+> Prompt used - "I will be creating a dashboard for a VsCode extension that will include a pie chart and heatmap what resources could I use to build this"
 I found it a bit difficult finding clear ways of implementing this as examples when I was initially conducting research were too simple or complex, by doing so research time was also expedited. 
 
 <h3>Debugging</h3>
@@ -36,11 +36,29 @@ The error occured when I would run the webview when I was initially creating it 
 <h3>Review</h3>
 
 <h2>Max Davies</h2>
+<p> I, Max Davies, declare that this document is accurate to my AI usage throughout the course of SEP</p>
 <h3>Development</h3>
+<h4>Test Development - trying to optimise test speed using caching</h4>
+
+> Prompt used - "how do I add a caching section to my ci.yml file to make sure that the vscode-test folder isn't recreated every time I run my action? It is large and slows down my CI"
+
+The resulting information told me how to implement the `actions/cache@v4` action and how it should be used within my action file to make the tests run faster. As a result, the code I had written benefitted from the caching, and the tests ran quicker, making the CI more responsive.
+
+<h4>Initial prototyping of RunTime Analysis - Certificates</h4>
+During research into the development of custom SSL certificates that allowed me to interact with https API endpoints, I used AI to research and create a prototype structure for the certificate generation and deployment at runtime. This has since been improved upon, and made more secure without the use of AI.
 
 <h3>Debugging</h3>
+In cases when I have run into errors, and cannot find information regarding the error online, I will provide an AI with some context of the project, and then the error message. I make sure not to expose the full workings of the project or any sensitive data when pasting the error message.
+
+> Example Prompt Used - "I am writing a security certificate generating script in typescript. I am trying to assign a commonName variable to the signed CA, and I get this error. Please explain why this is caused. The line it refers to is below:
+> {line}
+> And this is the error message:
+> "Object literal may only specify known properties, and 'commonName' does not exist in type '{ subject?: { [key: string]: string | undefined; commonName?: string | undefined; organizationName?: string | undefined; countryName?: string | undefined; } | undefined; bits?: number | undefined; nameConstraints?: { ...; } | undefined; }'"
+
+This helped me to fix this error. I only use AI as a last resort when common helpful resources such as geeksforgeeks or StackOverflow have no helpful solutions.
 
 <h3>Review</h3>
+I don't use AI to review my code, I have only used it for small excerpts, prototyping and error analysis.
 
 <h2>Hao Ni</h2>
 <p> I, Hao Ni declare that this document is accurate to my AI usage throughout the course of SEP</p>
