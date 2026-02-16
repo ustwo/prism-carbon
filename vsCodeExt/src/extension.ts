@@ -98,9 +98,8 @@ export function activate(context: vscode.ExtensionContext) {
         console.log('Carbon Dashboard command registered.');
     });
 
-    const refresh = vscode.commands.registerCommand('ecode.refreshLogs', () => {
+    const refresh = vscode.commands.registerCommand('ecode.refreshLogs', async () => {
         try {
-
         // concactenates correct file name to access Copilot logs
         const filePath = logCap.getLogFilePath(context);
         console.log(filePath);
@@ -108,10 +107,8 @@ export function activate(context: vscode.ExtensionContext) {
 
         // reads file and outputs lines to console one at a time
         const content = fs.readFileSync(logUri, 'utf-8');
-        const lines: string[] = content.split(/\r?\n/);
-        for (const line of lines) {
-            console.log(line.trim());
-        }
+        const models: string[] = await logCap.identifyModel(content);
+        console.log("MODELS DETECTED: ", models);
         vscode.window.showInformationMessage("Copilot log files refreshed.");
         }
         catch (error) {
