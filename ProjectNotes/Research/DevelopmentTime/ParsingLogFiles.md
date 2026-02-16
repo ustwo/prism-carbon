@@ -3,7 +3,7 @@
 <h2>Model</h2>
 Regex command for accessing the model used for the call 
 <br><br>  
-<code>(?<= chat request received from extension host(((\s|\S))*) chat model )(.*(\..*))</code> 
+<code>(?<=chat request received from extension host(((\s|\S))*)\[debug\] chat model )(.*(\..*))</code> 
 
 
 <h2>Anthropic Tokens</h2>
