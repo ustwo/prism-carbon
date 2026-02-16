@@ -228,11 +228,7 @@ body.darkmode #theme-switch svg:last-child{ display: block; }
                 carbonChart.data.datasets[0].data = message.carbonData;
                 carbonChart.update();
                 myChart.data.datasets[0].data = message.fileSizes;
-                carbonChart.update();
-                
-                
-
-                myChart.data.datasets[0].backgroundColor = generateColors(message.data.length);
+                myChart.data.datasets[0].backgroundColor = generateColors(message.fileSizes.length);
                 myChart.update();
             }
         });
