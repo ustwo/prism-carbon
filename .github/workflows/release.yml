@@ -1,33 +1,44 @@
 name: Create Github Release
 
 on: 
-  merge:
+  push:
     branches:
-      -dev
       -main
   workflow_dispatch:
-
-publish:
-    name: Release and publish
-    needs: test
-    runs-on: ubuntu-18.04
+jobs:
+  
+  release:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    defaults:
+      run:
+        working-directory: ./vsCodeExt
+    runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12
-      - name: Install dependencies
-        run: npm install
-      - name: Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npx semantic-release
-      - name: Vscode release plugin
-        uses: JCofman/vscodeaction@master
-        env:
-          PUBLISHER_TOKEN: ${{ secrets.PUBLISHER_TOKEN }}
-        with:
-          args: publish -p $PUBLISHER_TOKEN 
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18.x
+        cache: npm
+        cache-dependency-path: ./vsCodeExt/package-lock.json
+    - name: Cache VS Code Test instance
+      id: cache-vscode
+      uses: actions/cache@v4
+      with:
+        path: ./vsCodeExt/.vscode-test 
+        key: ${{ runner.os }}-vscode-test-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-vscode-test-
+
+    - run: npm ci
+
+    - run: xvfb-run -a npm test
+      if: runner.os == 'Linux'
+
+    - run: npm test
+      if: runner.os != 'Linux'
+    
+    - run: npm release
