@@ -1,9 +1,9 @@
 :root{
-    --base-color: rgb(22, 87, 237);
-    --base-variant:#f29108;
-    --text-color:#ed1414;
-    --secondary-text: #1137dd;
-    --primary-color: #0af33d;
+    --base-color: rgb(255, 255, 255);
+    --base-variant:#526d8d;
+    --text-color:#000000;
+    --secondary-text: #000000;
+    --primary-color: #ffffff;
 }
 
 .darkmode{
@@ -66,3 +66,41 @@ p{
 .darkmode #theme-switch svg:last-child{
   display: block;
 }
+.chart-container {
+                position: relative;
+                height: 300px;
+                width: 100%;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            .chart-wrapper{
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            }
+            .dashboard-grid{
+            display: flex;
+            flex-wrap:wrap;
+            justify-content: space-around;
+            gap: 20px;
+            padding: 20px;
+            }
+h2 { text-align: center; font-weight: normal; margin-bottom: 15px; }
+            .chart-container p, #drilldown-view p { color: var(--secondary-text); margin-bottom: 20px; }
+
+            #drilldown-view {
+                display: none;
+                text-align: center;
+                background-color: var(--base-variant);
+                min-height: 500px;
+            }
+
+            .back-btn {
+                padding: 10px 20px;
+                margin-bottom: 20px;
+                background-color: var(--primary-color);
+                color: rgb(0, 0, 0);
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
