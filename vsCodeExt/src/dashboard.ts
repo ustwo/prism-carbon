@@ -45,11 +45,11 @@ export class CarbonDashboardPanel {
             if (x) { x.dispose(); }
         }
     }
-// generates the HTML content for the webview
-// importing chart.js for that charts can be drawn and its libraries will handle the math and drawing
+    // generates the HTML content for the webview
+    // importing chart.js for that charts can be drawn and its libraries will handle the math and drawing
     private _getWebviewContent() {
 
-            return `<!DOCTYPE html>
+        return `<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -115,36 +115,24 @@ body.darkmode #theme-switch svg:first-child{ display: none; }
 body.darkmode #theme-switch svg:last-child{ display: block; }
             .chart-container {
                 position: relative;
-                height: 400px;
+                height: 300px;
                 width: 100%;
                 max-width: 800px;
                 margin: 0 auto;
             }
-                h2 { text-align: center; font-weight: normal; margin-bottom; 10px;}
-
-                .widgetCard{
-    background-color: white;
-    border-radius: 20px;
-    width:100%;
-    overflow:hidden;
-    text-align:center;
-    margin: 10px auto;
-}
-
-#widgetsWrapper{
-    width:100%;
-}
-
-#widgetsWrapper p{
-    font-family: tahoma, geneva, sans-serif;
-    text-align:center;
-}
-
-.chartDiv{
-    width:100%;
-    height:100%;
-}
-
+            .chart-wrapper{
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            }
+            .dashboard-grid{
+            display: flex;
+            flex-wrap:wrap;
+            justify-content: space-around;
+            gap: 20px;
+            padding: 20px;
+            }
+                h2 { text-align: center; font-weight: normal; margin-bottom: 10px;}
         </style>
 
         
@@ -160,18 +148,22 @@ body.darkmode #theme-switch svg:last-child{ display: block; }
   <header>
 
 
-  <h1>chart 1</h1>
-  <div id="widgetsWrapper">
-  <p>token usage</p>
-  <div class="widgetCard" style="max-width:700px;height:300px">
-    <div id="chartDiv1" class="chartDiv"></div>
-  </div>
-</div>
+  <h1>Carbon Analysis</h1>
+  <p> Carbon impact based on each file will be depicted below via pie charts</p>
 </header>
-       <section> 
+       <section class = "dashboard-grid"> 
+       <div class="chart-wrapper">
         <h2>File by Size in Repo</h2>
         <div class="chart-container">
-        <canvas id="emissionChart"></canvas>
+            <canvas id="emissionChart"></canvas>
+        </div>
+
+    </div>
+    <div class="chart-wrapper">
+        <h2>Carbon Cost in Repo by File</h2>
+        <div class="chart-container">
+            <canvas id="carbonCostChart"></canvas>
+        </div>
     </div>
     </section>
 
@@ -291,17 +283,45 @@ window.addEventListener('load', () => {
             const message = event.data;
             if (message.command === 'updateData') {
                 // This will be used when real data is available, the dummy data used above will be ignored
-                myChart.data.datasets[0].data = message.data;
-                myChart.data.datasets[0].backgroundColor = generateColors(message.data.length);
+                carbonChart.data.datasets[0].data = message.carbonData;
+                carbonChart.update();
+                myChart.data.datasets[0].data = message.fileSizes;
+                myChart.data.datasets[0].backgroundColor = generateColors(message.fileSizes.length);
                 myChart.update();
             }
         });
 
+       const carbonData = [400, 200, 50, 30, 100]; // dummy data
+       
+       const ctxCarbon = document.getElementById('carbonCostChart');
+       const carbonChart = new Chart(ctxCarbon, {
+              type: 'pie',
+                data: {
+                    labels: ['Main.js', 'test.js', 'worker1.js', 'Helperfunction.js', 'Other Files'],
+                    datasets: [{
+                        data: carbonData,
+                        backgroundColor: generateColors(carbonData.length),
+                        borderColor: '#1e1e1e',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#ccc' }   
+                        }
+                    }
+                }
+       });
         
+         
     </script>
     </body>
     </html>`;
-        }
+    }
 }
 
 

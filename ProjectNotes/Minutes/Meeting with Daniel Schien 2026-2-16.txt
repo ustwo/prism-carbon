@@ -1,0 +1,36 @@
+Professor Daniel Schien is working on area similar with our project so we have held this meeting with him to ask him some questions and show him our project
+
+1.How to keep data accurate and findings on environmental impact of AI and computation ?
+
+Dan is working on this exactly now but it might be private. Will look into whether he can share this with us. 
+Potentially see if there's a publication that we can write about our work at the conference. See if this would be open to this.
+He also mentioned that it is not a simple question. We need to clearly define the boundary of what we measure.
+There is a difference between current marginal effects and long-term infrastructure effects. 
+For example, some energy use (like street lights) does not change even if traffic changes. 
+Similarly, some data centre energy use does not scale directly with each API call.
+Network effects and routing costs also need to be considered.
+
+2.Improvements on estimation
+
+Dan suggested that before focusing on complex modelling, we should first make sure the system is stable. 
+Token counting must be bug free and work in different contexts. If the foundation is not stable, then any further estimation will not be reliable.
+He suggested that we can arrange a dedicated session with him to go deeper into how estimation should work.
+We discussed session-based carbon footprint tracking by workspace. If we open a single file, we need to ensure the carbon costs stay in the same workspace.
+After that, we can extend to tracking carbon over time and responsibility over time.
+We also discussed that previously there were natural ceilings to power usage of a computer due to charger limits.
+But now with generative AI API calls, power usage can be massively boosted for a short time because computation happens in remote data centres.
+This changes how we think about responsibility and estimation.
+
+3.Solutions to present in the dashboard forcing the use of smaller models, carbon offset etc.
+
+We discussed whether programmers should be guided to choose smaller models. One key question is: is one choice more energy or carbon intense than another?
+However, carbon is not the only attribute we care about. Model quality and latency are also important.
+For some models, it may be acceptable to sacrifice a small amount of quality or speed if there is a significant carbon efficiency benefit.
+Dan suggested that we should look at code generation accuracy benchmarks when comparing models. 
+The trade-off between quality and carbon efficiency should be made visible in the dashboard rather than forcing a single rule.
+This is a complex design question and requires careful thinking about how to present trade-offs clearly.
+
+addition notes :
+Dan is very interested in the project as a whole. He would like to be involved in the demo together with Chris Priest and be kept updated on the progress.
+
+
