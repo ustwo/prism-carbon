@@ -228,14 +228,15 @@ export function activate(context: vscode.ExtensionContext) {
 				command: "ecode.runtimeAnalysis"
 			},
 			{
-				label: `$(play) Reset Stored Session`,
-				description: "Resets the current record of carbon emissions",
-				command: "ecode.clearStore"
-			},
-			{
 				label: `$(play) Stop Runtime Proxy`,
 				description: "Stops the recording of carbon emissions",
 				command: "ecode.interceptorStop"
+				// TODO need to have a way to keep the environment variables (gemini api key) so that it doesn't need to be input every time
+			},
+			{
+				label: `$(play) Reset Stored Session`,
+				description: "Resets the current record of carbon emissions",
+				command: "ecode.clearStore"
 			}
 		];
 
