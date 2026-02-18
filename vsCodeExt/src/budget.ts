@@ -3,7 +3,7 @@ import { Memento } from "vscode";
 export interface Call {
     //File: string;
     Model: string;
-    DateTime: string;
+    DateTime: number;
     //InputTokens: number;
     //OutputTokens: number;
     //TotalTokens: number;

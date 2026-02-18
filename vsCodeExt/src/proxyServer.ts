@@ -58,7 +58,7 @@ export class InterceptorProxy {
                     }
                     if (fullCall === true) {
                         console.log(`id: ${id}, model: ${mod}, cost: ${cost}`);
-                        var call: budget.Call = { DateTime: id, Model: mod, Emissions: +cost };
+                        var call: budget.Call = { DateTime: new Date(id).getTime(), Model: mod, Emissions: +cost };
                         updateTree(call);
                     }
                 } else if (msg.type === 'error') {

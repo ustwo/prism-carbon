@@ -19,6 +19,7 @@ import { privateEncrypt } from 'crypto';
 
 export let tree: MyTreeDataProvider;
 export let bar: statusBarManager;
+export let lastAccess: number;
 
 export function setDisplay(t: MyTreeDataProvider, b: statusBarManager) {
     tree = t;
@@ -35,6 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     var barManager = new statusBarManager();
     const treeDataProvider = new MyTreeDataProvider();
+    lastAccess = 0;
 
     vscode.window.registerTreeDataProvider(
         'myPrimaryView',
@@ -76,7 +78,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 
             let date = new Date();
-            var newCall: budget.Call = { Emissions: emissions, Model: "TEST", DateTime: date.toLocaleString() };
+            var newCall: budget.Call = { Emissions: emissions, Model: "TEST", DateTime: date.getTime() };
             updateTree(newCall);
 
         }
@@ -110,9 +112,12 @@ export function activate(context: vscode.ExtensionContext) {
         const models: budget.Call[] = await logCap.identifyModel(content);
         console.log("CALLS: ", models);
         for (let index = 0; index < models.length; index++) {
-            updateTree(models[index]);
+            if (models[index].DateTime > lastAccess){
+                updateTree(models[index]);
+            }
         }
         vscode.window.showInformationMessage("Copilot log files refreshed.");
+        lastAccess = new Date().getTime();
         }
         catch (error) {
             vscode.window.showErrorMessage("Error: Copilot log files not found.");
@@ -131,7 +136,7 @@ export function activate(context: vscode.ExtensionContext) {
         var num = Number(limit);
         if (!Number.isNaN(num)) {
             let date = new Date();
-            var newCall: budget.Call = { Emissions: num, Model: "TEST", DateTime: date.toLocaleString() };
+            var newCall: budget.Call = { Emissions: num, Model: "TEST", DateTime: date.getTime() };
             updateTree(newCall);
         }
         else {
@@ -354,6 +359,6 @@ export function updateTree(call: budget.Call) {
     var cLimit = budget.updateLimit();
     console.log("limit: " + cLimit);
     bar.updateBar(call.Emissions, cLimit);
-    tree.addMessage("Emissions: " + call.Emissions + " - Model: " + call.Model + " - Date: " + call.DateTime);
+    tree.addMessage("Emissions: " + call.Emissions + " - Model: " + call.Model + " - Date: " + new Date(call.DateTime).toLocaleString());
 
 }
