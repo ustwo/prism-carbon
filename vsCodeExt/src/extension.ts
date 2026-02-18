@@ -214,9 +214,19 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
+	const runtimeLaunchButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+	runtimeLaunchButton.text = `$(play) Start Ecode Runtime Analysis`;
+	runtimeLaunchButton.tooltip = "Click to open terminal to run file to be analysed";
+	runtimeLaunchButton.command = "ecode.runtimeAnalysis";
+	runtimeLaunchButton.show();
+
+
+
 	context.subscriptions.push(terminalDisposable);
 	context.subscriptions.push(startDisposable);
 	context.subscriptions.push(stopDisposable);
+	context.subscriptions.push(runtimeDisposable);
+	context.subscriptions.push(runtimeLaunchButton);
 	return {
 		isInterceptorRunning: () => state.runningInterceptor
 	};
