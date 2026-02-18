@@ -32,10 +32,15 @@ export class TieredModel extends LLMModel {
 const veryLarge = 99999999999999999999999999999999999999999999999999999999999999;
 export const modelRegistry: Record<string, TieredModel> = {
     "gpt-4o-mini": new TieredModel("GPT4oMini", [{ limit: 400, carbonPerToken: 0.00923 }, { limit: 2000, carbonPerToken: 0.00369 }, { limit: 11500, carbonPerToken: 0.0006293 }]),
-    "gpt-4-turbo": new TieredModel("GPT4Turbo", [{ limit: 300, carbonPerToken: 2 }]),
+    // "gpt-4-turbo": new TieredModel("GPT4Turbo", [{ limit: 300, carbonPerToken: 2 }]),
     "gpt-4o": new TieredModel("GPT4o", [{ limit: 400, carbonPerToken: 0.000000370125 }, { limit: 2000, carbonPerToken: 0.000000212625 }, { limit: 11500, carbonPerToken: 0.0000000875 }]),
     "gpt-4.5": new TieredModel("GPT4.5", [{ limit: veryLarge, carbonPerToken: 0.0003 }]),
-    "gemini": new TieredModel("Gemini", [{ limit: veryLarge, carbonPerToken: 0.00036 }]) // emissions based on 0.09g per median gemini prompt. Assuming this to be 250 tokens (input and output) then 0.09/250
+    "gpt-5": new TieredModel("GPT5", [{ limit: veryLarge, carbonPerToken: 0.00269722222 }]), // ESTIMATED //https://impact.esg.ai/
+    "claude-haiku-5": new TieredModel("ClaudeHaiku5", [{ limit: veryLarge, carbonPerToken: 0.000269444444 }]),  //https://impact.esg.ai/
+    "claude-sonnet-4.5": new TieredModel("ClaudeSonnet4.5", [{ limit: veryLarge, carbonPerToken: 0.0005388888889 }]),  //https://impact.esg.ai/
+    "claude-opus-4.5": new TieredModel("ClaudeOpus4.5", [{ limit: veryLarge, carbonPerToken: 0.0561888888888889 }]),  //https://impact.esg.ai/
+    "gemini": new TieredModel("Gemini", [{ limit: veryLarge, carbonPerToken: 0.00036 }]), // emissions based on 0.09g per median gemini prompt. Assuming this to be 250 tokens (input and output) then 0.09/250
+
 };
 
 export function getModel(inputString: string): TieredModel | null {
@@ -47,14 +52,6 @@ export function getModel(inputString: string): TieredModel | null {
 
 export function calculateEmission(model: string, tokenCount: number) {
     if (tokenCount < 0) { return 0; }
-    // grams of co2 emitted per token (averaged over output and input)
-    // const chatgpt4oshort = 0.000000370125;
-    // const chatgpt4omedium = 0.000000212625;
-    // const chatgpt4olong = 0.0000000875;
-    // const chatgpt4ominishort = 0.00923;
-    // const chatgpt4ominimedium = 0.00369;
-    // const chatgpt4ominilong = 0.0006293;
-    // const chatgpt4point5 = 0.0003;
     const chosenModel = getModel(model);
     const impact = chosenModel?.calculate(tokenCount) ?? 0;
     return impact;
