@@ -122,7 +122,13 @@ export class CarbonDashboardPanel {
                     <canvas id="carbonCostChart"></canvas>
                 </div>
             </div>
-            
+            <div class="chart-wrapper">
+                <h2>Emissions by Model</h2>
+                <div class="chart-container">
+                    <canvas id="modelEmissionsChart"></canvas>
+                </div>
+                <p id="model-empty-msg" style="text-align:center; margin-top:12px;">No calls recorded yet.</p>
+            </div>
         </section>
 
         <section id="drilldown-view">

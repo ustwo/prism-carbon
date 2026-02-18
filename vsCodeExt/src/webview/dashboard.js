@@ -1,4 +1,4 @@
- (function(){
+(function(){
 
  const btn = document.getElementById('theme-switch');
             btn.addEventListener('click', () => { document.body.classList.toggle('darkmode'); });
@@ -50,6 +50,33 @@
                 options: commonOptions
             });
 
+            // --- Emissions by Model chart (live data from backend) ---
+            const modelEmissionsChart = new Chart(document.getElementById('modelEmissionsChart'), {
+                type: 'pie',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: generateColors(0)
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    plugins: {
+                        ...commonOptions.plugins,
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    return label + ': ' + value.toFixed(8) + ' g CO₂e';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
             // this is the logic for the drill down, when a section of the carbon cost chart is clicked, it will update the budget chart to show how much of the budget that file is using and how much is remaining
             ctxCarbon.onclick = function(evt) {
                 const points = carbonChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
@@ -79,11 +106,23 @@
             window.addEventListener('message', event => {
                 const message = event.data;
                 if (message.command === 'updateData') {
+                    // existing file size / carbon cost charts
                     if(message.fileSizes) sizeChart.data.datasets[0].data = message.fileSizes;
                     if(message.carbonData) carbonChart.data.datasets[0].data = message.carbonData;
                     sizeChart.update();
                     carbonChart.update();
+
+                    // live Emissions by Model chart
+                    if (message.modelLabels && message.modelEmissions) {
+                        const hasData = message.modelLabels.length > 0;
+                        const emptyMsg = document.getElementById('model-empty-msg');
+                        if (emptyMsg) { emptyMsg.style.display = hasData ? 'none' : 'block'; }
+
+                        modelEmissionsChart.data.labels = message.modelLabels;
+                        modelEmissionsChart.data.datasets[0].data = message.modelEmissions;
+                        modelEmissionsChart.data.datasets[0].backgroundColor = generateColors(message.modelLabels.length);
+                        modelEmissionsChart.update();
+                    }
                 }
             });
-    })();   
-    
+    })();
