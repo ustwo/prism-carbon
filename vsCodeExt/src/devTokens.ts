@@ -22,8 +22,6 @@ export function getTextAroundCursor(linesBefore: number = 150, linesAfter: numbe
 //let lastInlineState = false;
 var accept = false;
 
-
-
 export async function change(evt: vscode.TextDocumentChangeEvent) {
     //disposables.push(vscode.workspace.onDidChangeTextDocument(async evt => {
     const enc = await encoding_for_model("gpt-4o"); //use gpt-4o for now because copilot very secretive
