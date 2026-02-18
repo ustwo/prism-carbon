@@ -46,7 +46,7 @@ suite("Conversion Tests", () => {
     });
 
     test("Class functions the same as previous if/else - first tier tokens", () => {
-        for (let i = 0; i<3; i++){
+        for (let i = 0; i < 3; i++) {
             let tokens = Math.floor(Math.random() * 400);
             assert.strictEqual(oldCalculateEmission("gpt-4o-mini", tokens), convert.calculateEmission("gpt-4o-mini", tokens));
             assert.strictEqual(oldCalculateEmission("gpt-4o", tokens), convert.calculateEmission("gpt-4o", tokens));
@@ -55,7 +55,7 @@ suite("Conversion Tests", () => {
     });
 
     test("Class functions the same as previous if/else - 2nd tier tokens", () => {
-        for (let i = 0; i<3; i++){
+        for (let i = 0; i < 3; i++) {
             let tokens = 400 + Math.floor(Math.random() * 1600);
             assert.strictEqual(oldCalculateEmission("gpt-4o-mini", tokens), convert.calculateEmission("gpt-4o-mini", tokens));
             assert.strictEqual(oldCalculateEmission("gpt-4o", tokens), convert.calculateEmission("gpt-4o", tokens));
@@ -64,7 +64,7 @@ suite("Conversion Tests", () => {
     });
 
     test("Class functions the same as previous if/else - 3rd tier tokens", () => {
-        for (let i = 0; i<3; i++){
+        for (let i = 0; i < 3; i++) {
             let tokens = 2000 + Math.floor(Math.random() * 9500);
             assert.strictEqual(oldCalculateEmission("gpt-4o-mini", tokens), convert.calculateEmission("gpt-4o-mini", tokens));
             assert.strictEqual(oldCalculateEmission("gpt-4o", tokens), convert.calculateEmission("gpt-4o", tokens));
@@ -73,7 +73,7 @@ suite("Conversion Tests", () => {
     });
 
     test("Class functions the same as previous if/else - out of scope tokens", () => {
-        for (let i = 0; i<3; i++){
+        for (let i = 0; i < 3; i++) {
             let tokens = 11500 + Math.floor(Math.random() * 100000);
             assert.strictEqual(oldCalculateEmission("gpt-4o-mini", tokens), convert.calculateEmission("gpt-4o-mini", tokens));
             assert.strictEqual(oldCalculateEmission("gpt-4o", tokens), convert.calculateEmission("gpt-4o", tokens));
@@ -86,7 +86,7 @@ suite("Conversion Tests", () => {
         assert.strictEqual(convert.calculateEmission("gpt-4o-mini", tokens), 0);
         assert.strictEqual(convert.calculateEmission("gpt-4o", tokens), 0);
         assert.strictEqual(convert.calculateEmission("gpt-4.5", tokens), 0);
-     });
+    });
 
     test("Correct models are chosen given input string", () => {
         let modelString = "ncdsdfj135tdsdfgpt-4o-bminiasdben123el.d"; // expecting gpt-4o
@@ -96,8 +96,22 @@ suite("Conversion Tests", () => {
         modelString = "ncdsdfj135tdsdfgpt-4ploeo-bminiasdben123elasdfkjh.gpt-4o-minigpt-4od"; // expecting gpt-4o
         assert.strictEqual(convert.getModel(modelString)!.modelName, "GPT4oMini");
         modelString = "abcdefghijlkmnopqrstuvwxyz";
-        assert.strictEqual(convert.getModel(modelString)?.modelName??null, null); // if null then assign null, and compare to null
+        assert.strictEqual(convert.getModel(modelString)?.modelName ?? null, null); // if null then assign null, and compare to null
         modelString = "";
-        assert.strictEqual(convert.getModel(modelString)?.modelName??null, null); 
+        assert.strictEqual(convert.getModel(modelString)?.modelName ?? null, null);
+    });
+
+
+    test("Conversion fails gracefully given valid tokens and invalid model string", () => {
+        let modelString = "ncdsdfj135tdsdf335334pt-yrgadgasd42352351-bminiasdben123el.d"; // expecting gpt-4o
+        assert.strictEqual(convert.calculateEmission(modelString, 450), 0);
+        modelString = "ncdsdfj135tdsdfgpt-2534.52o-bminiasdben123el.d"; // expecting gpt-4o
+        assert.strictEqual(convert.calculateEmission(modelString, 450), 0);
+        modelString = "ncdsdfj135tdsdfgptkhgc-4ploeo-bminiasdben123elasdfkjh.gpt-4dfghno-minigpthvjh-4od"; // expecting gpt-4o
+        assert.strictEqual(convert.calculateEmission(modelString, 450), 0);
+        modelString = "abcdefghijlkmnopqrstuvwxyz";
+        assert.strictEqual(convert.calculateEmission(modelString, 450), 0); // if null then assign null, and compare to null
+        modelString = "";
+        assert.strictEqual(convert.calculateEmission(modelString, 450), 0);
     });
 });
