@@ -15,7 +15,6 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:ecode.helloWorld",
     "onCommand:ecode.resetStore",
     "onCommand:ecode.inputdisplay",
     "onCommand:ecode.setApiKey",
@@ -91,6 +90,11 @@
       {
         "command": "ecode.interceptorOpenTerminal",
         "title": "Open Runtime Terminal",
+        "category": "Interceptor"
+      },
+      {
+        "command": "ecode.runtimeAnalysis",
+        "title": "Ecode: Analyse Runtime",
         "category": "Interceptor"
       }
     ]
