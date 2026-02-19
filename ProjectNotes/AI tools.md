@@ -41,6 +41,7 @@ The error occured when I would run the webview when I was initially creating it 
 <h2>Max Davies</h2>
 <p> I, Max Davies, declare that this document is accurate to my AI usage throughout the course of SEP</p>
 <h3>Development</h3>
+The LLM model I have exclusively used is Gemini
 <h4>Test Development - trying to optimise test speed using caching</h4>
 
 > Prompt used - "how do I add a caching section to my ci.yml file to make sure that the vscode-test folder isn't recreated every time I run my action? It is large and slows down my CI"
