@@ -1,8 +1,15 @@
 import * as assert from 'assert';
 import * as vscode from 'vscode';
 import * as sinon from 'sinon';
+import * as budget from '../budget';
+import { Memento } from "vscode";
+import { wrappedGetCall } from '../extension';
 
-suite("CommandTests", () => {
+import { state } from '../state';
+import { appendFile } from 'fs';
+
+
+suite('CommandTests', () => {
 	// gets all registered commands
 	let allCommands: string[];
 	let dynamics: any;
@@ -37,6 +44,32 @@ suite("CommandTests", () => {
 		// ensures that there is a list of commands to check. Without this line then it would pass because checking nothing doesn't fail!
 		assert.ok(myExtensionCommands.length > 0, "No extension commands found! Is the publisher name correct?");
 	}).timeout(10000);
+	// below test is for checking failed tests fail. They do!
+	
+});
+suite('Dev Time', ()=>{
+	let ext:any;
+	var budge:budget.budget;
+	setup(async () => {
+		ext = vscode.extensions.getExtension('development.ecode');
+		assert.ok(ext);
+		
+		const exports = await ext.activate();// Ensure the extension is actually running
+		budge = exports.budg;
+		assert.ok(budge);
+	});
+
+	test ('Copy and Paste tests', async () =>{
+
+		var pCalls = budge.getCalls();
+		const doc = await vscode.workspace.openTextDocument({content:" "});			
+		await vscode.window.showTextDocument(doc);
+		await vscode.commands.executeCommand('type', { text: "HELLO" });
+		var pCalls2 = budge.getCalls();
+
+		assert.strictEqual(pCalls.length,pCalls2.length);
+	
+	});	
 });
 
 suite("UI Tests", () => {
@@ -44,10 +77,6 @@ suite("UI Tests", () => {
 });
 
 suite("RunTime Tests", () => {
-
-});
-
-suite("DevTime Tests", () => {
 
 });
 

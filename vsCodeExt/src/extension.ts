@@ -28,14 +28,15 @@ export function setDisplay(t: MyTreeDataProvider, b: statusBarManager) {
 
 let proxyServer: InterceptorProxy;
 const PROXY_PORT = 3024;
+var budg: budget.budget;
 
 export function activate(context: vscode.ExtensionContext) {
+    budg = new budget.budget(context.workspaceState);
 
     // state.runningInterceptor = true;
 
     var barManager = new statusBarManager();
     const treeDataProvider = new MyTreeDataProvider();
-
     vscode.window.registerTreeDataProvider(
         'myPrimaryView',
         treeDataProvider
@@ -45,8 +46,6 @@ export function activate(context: vscode.ExtensionContext) {
         //treeDataProvider.addMessage(String(x));
         return x;
     }
-
-    devTok.getTextAroundCursor();
 
     //let lastInlineState = false;
     const disposables: vscode.Disposable[] = [];
@@ -60,13 +59,15 @@ export function activate(context: vscode.ExtensionContext) {
     );
 
 
-    budget.initStorage(context.workspaceState);
-    restoreCallHistory(treeDataProvider);
-    barManager.updateLimit(budget.updateLimit());
+    // budget.initStorage(context.workspaceState);
+    restoreCallHistory(treeDataProvider,budg);
+    barManager.updateLimit(budg.updateLimit());
     const BarManager = vscode.window.createStatusBarItem();
 
+
     disposables.push(vscode.workspace.onDidChangeTextDocument(async evt => {
-        const tokens = Number(await devTok.change(evt));
+        const tokens = -1;
+        //Number(await devTok.change(evt));
 
         if (tokens !== -1) {
             var emissions = convert(tokens);
@@ -82,9 +83,18 @@ export function activate(context: vscode.ExtensionContext) {
         }
     }));
 
-    const reset = vscode.commands.registerCommand('ecode.clearStore', () => {
+    const newF = vscode.commands.registerCommand('ecode.newFile',async () =>{
+        vscode.workspace.openTextDocument({content:" "}).then(async doc => {				
+            await vscode.window.showTextDocument(doc);
+            const position = new vscode.Position(10, 28);
+            new vscode.Selection(position, position);
+            await vscode.commands.executeCommand('type', { text: "HELLO" });
 
-        budget.resetBudget();
+        });
+    });
+
+    const reset = vscode.commands.registerCommand('ecode.clearStore', () => {
+        budg.resetBudget();
         treeDataProvider.clearTree();
         barManager.updateLimit(0);
         vscode.window.showInformationMessage('Past calls cleared.');
@@ -120,7 +130,6 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
 
-
     const input = vscode.commands.registerCommand('ecode.inputdisplay', async () => {
         //vscode.window.showInformationMessage('Hello World from EstimatingCarbon!');
         const limit = await vscode.window.showInputBox({ //opens an input box currently representing the carbon footprint
@@ -138,11 +147,8 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showInformationMessage('Error: NaN inputted.');
         }
 
-
-
     });
     context.subscriptions.push(input);
-    context.subscriptions.push(devTok.inline);
     context.subscriptions.push(dashboardCommand);
 
     console.log('Interceptor Proxy Server is active');
@@ -230,6 +236,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(startDisposable);
     context.subscriptions.push(stopDisposable);
     return {
+        budg,
         isInterceptorRunning: () => state.runningInterceptor
     };
 }
@@ -294,11 +301,6 @@ class statusBarManager {
         this.mainItem.text = 'Average carbon cost: g CO₂e';
         this.mainItem.show();//displays the limit item
 
-        // for (var i:number = 0;i<10;i++){
-        //  this.loading.push(vscode.window.createStatusBarItem());
-        //  this.loading[i].text = "-"; //fills the loading array with some items
-        //  this.loading[i].show(); //displays them
-        // }
 
     }
 
@@ -341,8 +343,8 @@ class statusBarManager {
     }
 }
 
-function restoreCallHistory(tree: MyTreeDataProvider) { //restores past calls to sidebar
-    var pCalls = budget.getCalls();
+function restoreCallHistory(tree: MyTreeDataProvider,budg:budget.budget) { //restores past calls to sidebar
+    var pCalls = budg.getCalls();
     console.log("CALLS:", pCalls);
     for (let i = 0; i < pCalls.length; i++) {
         tree.addMessage("Emissions: " + pCalls[i].Emissions + " - Model: " + pCalls[i].Model + " - Date: " + pCalls[i].DateTime);
@@ -350,10 +352,13 @@ function restoreCallHistory(tree: MyTreeDataProvider) { //restores past calls to
 }
 
 export function updateTree(call: budget.Call) {
-    budget.storeCall(call);
-    var cLimit = budget.updateLimit();
+    budg.storeCall(call);
+    var cLimit = budg.updateLimit();
     console.log("limit: " + cLimit);
     bar.updateBar(call.Emissions, cLimit);
     tree.addMessage("Emissions: " + call.Emissions + " - Model: " + call.Model + " - Date: " + call.DateTime);
 
+}
+export function wrappedGetCall(){
+    return budg.getCalls();
 }

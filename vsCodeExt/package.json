@@ -26,16 +26,7 @@
   "main": "./dist/extension.js",
   "contributes": {
     "keybindings": [
-      {
-        "command": "ecode.wrappedInline",
-        "key": "tab",
-        "when": "editorTextFocus && inlineSuggestionVisible && !isSnippetMode"
-      },
-      {
-        "key": "ctrl+i",
-        "command": "ecode.wrappedInlineChat",
-        "when": "editorFocus && inlineChatHasEditsAgent && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor != 'workbench.editor.notebook' || editorFocus && inlineChatHasNotebookAgent && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor == 'workbench.editor.notebook' || editorFocus && inlineChatHasNotebookInline && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor == 'workbench.editor.notebook' || editorFocus && inlineChatHasProvider && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor != 'workbench.editor.notebook'"
-      }
+
     ],
     "viewsContainers": {
       "activitybar": [
@@ -61,6 +52,10 @@
         "title": "Open Carbon Dashboard"
       },
       {
+        "command": "ecode.testInput",
+        "title": "test input"
+      },
+      {
         "command": "ecode.clearStore",
         "title": "Clear stored calls"
       },
@@ -68,14 +63,12 @@
         "command": "ecode.inputdisplay",
         "title": "Input Display"
       },
+
       {
-        "command": "ecode.wrappedInline",
-        "title": "Inline Commit"
+        "command": "ecode.newFile",
+        "title": "Open New File"
       },
-      {
-        "command": "ecode.wrappedInlineChat",
-        "title": "Inline chat accepted"
-      },
+
       {
         "command": "ecode.setApiKey",
         "title": "Set Api Key"
@@ -138,6 +131,7 @@
     "@vscode/codicons": "^0.0.44",
     "axios": "^1.13.5",
     "http-proxy": "^1.18.1",
+    "mocha": "^11.7.5",
     "mockttp": "^4.2.1",
     "tiktoken": "^1.0.22"
   }

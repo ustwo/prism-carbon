@@ -92,14 +92,15 @@ We aim to design a toolkit that:
     <li>As a Project Manager, I want to know how impactful my project is, and which areas of a coded solution are the most environmentally costly so I can identify less carbon heavy implementations, and utilise this to re-design prototypes</li>
     <li>As an engineer at an Artifical Intelligence company, I can easily see and discover any massive inefficiencies in my AI model due to an overtly large relative carbon cost.</li>
   </ul>
-<h2 id ="devIn">How To Run</h2>
+<h2 id ="devIn">Dev instructions</h2>
 
 1. Clone Repository
 2. Open in VScode
 3. Run <code>npm install</code>
 4. Run <code>npm run compile</code>
-5. Run extension.ts to start the extension development environment window
-6. For runtime analysis, within the extension development environment:
+5. install Extension Test Runner in vscode
+6. Run extension.ts to start the extension development environment window
+7. For runtime analysis, within the extension development environment:
    - run "Start Proxy Interceptor" command
    - run "Open Runtime Terminal" command
    - In the "Runtime Terminal" that appears, run your file.

@@ -22,11 +22,6 @@ export function getTextAroundCursor(linesBefore: number = 150, linesAfter: numbe
 //let lastInlineState = false;
 var accept = false;
 
-export const inline = vscode.commands.registerCommand('ecode.wrappedInline', async () => { //adds my functionality to accepting an autocomplete
-    accept = true;
-    await vscode.commands.executeCommand("editor.action.inlineSuggest.commit"); //then does the accept command
-});
-
 export async function change(evt: vscode.TextDocumentChangeEvent) {
     //disposables.push(vscode.workspace.onDidChangeTextDocument(async evt => {
     const enc = await encoding_for_model("gpt-4o"); //use gpt-4o for now because copilot very secretive
