@@ -101,211 +101,210 @@ export function activate(context: vscode.ExtensionContext) {
 		// state.runningInterceptor = true;
 
 	});
-};
-	}));
+	// }));
 
-// Dashboard command 
-const dashboardCommand = vscode.commands.registerCommand('ecode.openDashboard', () => {
-	CarbonDashboardPanel.createOrShow(context.extensionUri);
-	console.log('Carbon Dashboard command registered.');
-});
-const refresh = vscode.commands.registerCommand('ecode.refreshLogs', () => {
-	try {
-
-		// concactenates correct file name to access Copilot logs
-		const filePath = logCap.getLogFilePath(context);
-		console.log(filePath);
-		const logUri = path.join(path.dirname(filePath), "GitHub.copilot-chat", "GitHub Copilot Chat.log");
-
-		// reads file and outputs lines to console one at a time
-		const content = fs.readFileSync(logUri, 'utf-8');
-		const lines: string[] = content.split(/\r?\n/);
-		for (const line of lines) {
-			console.log(line.trim());
-		}
-		vscode.window.showInformationMessage("Copilot log files refreshed.");
-	}
-	catch (error) {
-		vscode.window.showErrorMessage("Error: Copilot log files not found.");
-	}
-});
-
-
-const input = vscode.commands.registerCommand('ecode.inputdisplay', async () => {
-	//vscode.window.showInformationMessage('Hello World from EstimatingCarbon!');
-	const limit = await vscode.window.showInputBox({ //opens an input box currently representing the carbon footprint
-		prompt: 'Enter test call: ',
-		placeHolder: 'eg. 5',
-		ignoreFocusOut: true // keep input box open even if focus moves away from window
+	// Dashboard command 
+	const dashboardCommand = vscode.commands.registerCommand('ecode.openDashboard', () => {
+		CarbonDashboardPanel.createOrShow(context.extensionUri);
+		console.log('Carbon Dashboard command registered.');
 	});
-	var num = Number(limit);
-	if (!Number.isNaN(num)) {
-		let date = new Date();
-		var newCall: budget.Call = { Emissions: num, Model: "TEST", DateTime: date.toLocaleString() };
-		updateTree(newCall);
-	}
-	else {
-		vscode.window.showInformationMessage('Error: NaN inputted.');
-	}
+	const refresh = vscode.commands.registerCommand('ecode.refreshLogs', () => {
+		try {
 
-});
-context.subscriptions.push(input);
-context.subscriptions.push(dashboardCommand);
+			// concactenates correct file name to access Copilot logs
+			const filePath = logCap.getLogFilePath(context);
+			console.log(filePath);
+			const logUri = path.join(path.dirname(filePath), "GitHub.copilot-chat", "GitHub Copilot Chat.log");
 
-console.log('Interceptor Proxy Server is active');
+			// reads file and outputs lines to console one at a time
+			const content = fs.readFileSync(logUri, 'utf-8');
+			const lines: string[] = content.split(/\r?\n/);
+			for (const line of lines) {
+				console.log(line.trim());
+			}
+			vscode.window.showInformationMessage("Copilot log files refreshed.");
+		}
+		catch (error) {
+			vscode.window.showErrorMessage("Error: Copilot log files not found.");
+		}
+	});
 
-let startDisposable = vscode.commands.registerCommand('ecode.interceptorStart', async () => {
-	try {
-		// start local server
-		proxyServer = new InterceptorProxy(PROXY_PORT);
-		await proxyServer.start(context.globalStorageUri.fsPath);
 
-		// set VSCode to use local proxy
+	const input = vscode.commands.registerCommand('ecode.inputdisplay', async () => {
+		//vscode.window.showInformationMessage('Hello World from EstimatingCarbon!');
+		const limit = await vscode.window.showInputBox({ //opens an input box currently representing the carbon footprint
+			prompt: 'Enter test call: ',
+			placeHolder: 'eg. 5',
+			ignoreFocusOut: true // keep input box open even if focus moves away from window
+		});
+		var num = Number(limit);
+		if (!Number.isNaN(num)) {
+			let date = new Date();
+			var newCall: budget.Call = { Emissions: num, Model: "TEST", DateTime: date.toLocaleString() };
+			updateTree(newCall);
+		}
+		else {
+			vscode.window.showInformationMessage('Error: NaN inputted.');
+		}
+
+	});
+	context.subscriptions.push(input);
+	context.subscriptions.push(dashboardCommand);
+
+	console.log('Interceptor Proxy Server is active');
+
+	let startDisposable = vscode.commands.registerCommand('ecode.interceptorStart', async () => {
+		try {
+			// start local server
+			proxyServer = new InterceptorProxy(PROXY_PORT);
+			await proxyServer.start(context.globalStorageUri.fsPath);
+
+			// set VSCode to use local proxy
+			// const config = vscode.workspace.getConfiguration('http');
+			// await config.update('proxy', `http://localhost:${PROXY_PORT}`, vscode.ConfigurationTarget.Global);
+
+			// //QUICK FIX TO NOT NEED SSL CERTS FOR NOW
+			// // NEED TO CHANGE FOR BETA
+			// await config.update('proxyStrictSSL', false, vscode.ConfigurationTarget.Global);
+
+
+			// const disposableAPIKEY = vscode.commands.registerCommand('ecode.setApiKey', async () => {
+			//  const apiKey = await vscode.window.showInputBox({
+			//      prompt: 'Enter your API Key',
+			//      placeHolder: 'e.g.   sk - xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+			//      ignoreFocusOut: true // keep input box open even if focus moves away from window
+
+			//  });
+			//  if (apiKey) {
+			//      await context.secrets.store('myApiKey', apiKey); // securely stores apikey using key 'myApiKey'
+
+			//      // to retrieve key from secret store, use:   const apiKey = await context.secrets.get('myApiKey');
+			state.runningInterceptor = true;
+			// vscode.window.showInformationMessage('Interceptor Proxy started on port ' + "->" + PROXY_PORT + state.runningInterceptor + "DONE");
+			// vscode.window.showInformationMessage("Status: " + state.runningInterceptor);
+		} catch (error) {
+			vscode.window.showErrorMessage('Failed to start Interceptor Proxy: ' + error);
+		}
+	});
+
+	let terminal: vscode.Terminal;
+
+	let terminalDisposable = vscode.commands.registerCommand('ecode.interceptorOpenTerminal', async () => {
+		if (!proxyServer) {
+			vscode.window.showErrorMessage("There is no Interceptor Proxy Running. Please initiate `ecode.InterceptorStart`");
+			return;
+		}
+
+		const proxyUrl = `http://127.0.0.1:${PROXY_PORT}`;
+
+		//create a new terminal with specific Environment Vars
+
+		terminal = vscode.window.createTerminal({
+			name: "Ecode RunTime Analysis Terminal",
+			env: {
+				// proxy environment variables
+				"HTTP_PROXY": proxyUrl,
+				"HTTPS_PROXY": proxyUrl,
+				"http_proxy": proxyUrl,
+				"https_proxy": proxyUrl,
+
+				// python specific
+				"REQUESTS_CA_BUNDLE": proxyServer.certPath,
+
+				"SSL_CERT_FILE": proxyServer.certPath,
+
+				// nodejs specific
+				"NODE_EXTRA_CA_CERTS": proxyServer.certPath,
+				"NODE_OPTIONS": "--use-env-proxy"
+
+			}
+		});
+
+		terminal.show();
+		vscode.window.showInformationMessage("Opened Terminal with Proxy Environment Vars");
+	});
+
+	let stopDisposable = vscode.commands.registerCommand('ecode.interceptorStop', async () => {
+		// stop local server
+		if (proxyServer) {
+			proxyServer.stop();
+		}
+
+		if (terminal) {
+			terminal.dispose();
+		}
+
+		// clear VSCode proxy settings
 		// const config = vscode.workspace.getConfiguration('http');
-		// await config.update('proxy', `http://localhost:${PROXY_PORT}`, vscode.ConfigurationTarget.Global);
+		// await config.update('proxy', undefined, vscode.ConfigurationTarget.Global);
+		// await config.update('proxyStrictSSL', undefined, vscode.ConfigurationTarget.Global);
 
-		// //QUICK FIX TO NOT NEED SSL CERTS FOR NOW
-		// // NEED TO CHANGE FOR BETA
-		// await config.update('proxyStrictSSL', false, vscode.ConfigurationTarget.Global);
+		vscode.window.showInformationMessage('Interceptor Proxy stopped. ');//Proxy settings cleared.');
+	});
 
-
-		// const disposableAPIKEY = vscode.commands.registerCommand('ecode.setApiKey', async () => {
-		//  const apiKey = await vscode.window.showInputBox({
-		//      prompt: 'Enter your API Key',
-		//      placeHolder: 'e.g.   sk - xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-		//      ignoreFocusOut: true // keep input box open even if focus moves away from window
-
-		//  });
-		//  if (apiKey) {
-		//      await context.secrets.store('myApiKey', apiKey); // securely stores apikey using key 'myApiKey'
-
-		//      // to retrieve key from secret store, use:   const apiKey = await context.secrets.get('myApiKey');
-		state.runningInterceptor = true;
-		// vscode.window.showInformationMessage('Interceptor Proxy started on port ' + "->" + PROXY_PORT + state.runningInterceptor + "DONE");
-		// vscode.window.showInformationMessage("Status: " + state.runningInterceptor);
-	} catch (error) {
-		vscode.window.showErrorMessage('Failed to start Interceptor Proxy: ' + error);
-	}
-});
-
-let terminal: vscode.Terminal;
-
-let terminalDisposable = vscode.commands.registerCommand('ecode.interceptorOpenTerminal', async () => {
-	if (!proxyServer) {
-		vscode.window.showErrorMessage("There is no Interceptor Proxy Running. Please initiate `ecode.InterceptorStart`");
-		return;
-	}
-
-	const proxyUrl = `http://127.0.0.1:${PROXY_PORT}`;
-
-	//create a new terminal with specific Environment Vars
-
-	terminal = vscode.window.createTerminal({
-		name: "Ecode RunTime Analysis Terminal",
-		env: {
-			// proxy environment variables
-			"HTTP_PROXY": proxyUrl,
-			"HTTPS_PROXY": proxyUrl,
-			"http_proxy": proxyUrl,
-			"https_proxy": proxyUrl,
-
-			// python specific
-			"REQUESTS_CA_BUNDLE": proxyServer.certPath,
-
-			"SSL_CERT_FILE": proxyServer.certPath,
-
-			// nodejs specific
-			"NODE_EXTRA_CA_CERTS": proxyServer.certPath,
-			"NODE_OPTIONS": "--use-env-proxy"
-
+	let runtimeDisposable = vscode.commands.registerCommand("ecode.runtimeAnalysis", async () => {
+		try {
+			await vscode.commands.executeCommand("ecode.interceptorStart");
+			await vscode.commands.executeCommand("ecode.interceptorOpenTerminal");
+		} catch (error) {
+			vscode.window.showErrorMessage("Failed to launch runtime analysis service");
 		}
 	});
 
-	terminal.show();
-	vscode.window.showInformationMessage("Opened Terminal with Proxy Environment Vars");
-});
+	let ecodeMenu = vscode.commands.registerCommand("ecode.menu", async () => {
+		const ecodeCommands = [
+			{
+				label: `$(play) Start Runtime Analysis`,
+				description: "Opens Ecode Terminal where files to be analysed are run",
+				command: "ecode.runtimeAnalysis"
+			},
+			{
+				label: `$(play) Stop Runtime Proxy`,
+				description: "Stops the recording of carbon emissions",
+				command: "ecode.interceptorStop"
+				// TODO need to have a way to keep the environment variables (gemini api key) so that it doesn't need to be input every time
+			},
+			{
+				label: `$(play) Reset Stored Session`,
+				description: "Resets the current record of carbon emissions",
+				command: "ecode.clearStore"
+			}
+		];
 
-let stopDisposable = vscode.commands.registerCommand('ecode.interceptorStop', async () => {
-	// stop local server
-	if (proxyServer) {
-		proxyServer.stop();
-	}
+		const selection = await vscode.window.showQuickPick(ecodeCommands, {
+			placeHolder: "Select an Ecode function",
+		});
 
-	if (terminal) {
-		terminal.dispose();
-	}
-
-	// clear VSCode proxy settings
-	// const config = vscode.workspace.getConfiguration('http');
-	// await config.update('proxy', undefined, vscode.ConfigurationTarget.Global);
-	// await config.update('proxyStrictSSL', undefined, vscode.ConfigurationTarget.Global);
-
-	vscode.window.showInformationMessage('Interceptor Proxy stopped. ');//Proxy settings cleared.');
-});
-
-let runtimeDisposable = vscode.commands.registerCommand("ecode.runtimeAnalysis", async () => {
-	try {
-		await vscode.commands.executeCommand("ecode.interceptorStart");
-		await vscode.commands.executeCommand("ecode.interceptorOpenTerminal");
-	} catch (error) {
-		vscode.window.showErrorMessage("Failed to launch runtime analysis service");
-	}
-});
-
-let ecodeMenu = vscode.commands.registerCommand("ecode.menu", async () => {
-	const ecodeCommands = [
-		{
-			label: `$(play) Start Runtime Analysis`,
-			description: "Opens Ecode Terminal where files to be analysed are run",
-			command: "ecode.runtimeAnalysis"
-		},
-		{
-			label: `$(play) Stop Runtime Proxy`,
-			description: "Stops the recording of carbon emissions",
-			command: "ecode.interceptorStop"
-			// TODO need to have a way to keep the environment variables (gemini api key) so that it doesn't need to be input every time
-		},
-		{
-			label: `$(play) Reset Stored Session`,
-			description: "Resets the current record of carbon emissions",
-			command: "ecode.clearStore"
+		if (selection) {
+			vscode.commands.executeCommand(selection.command);
 		}
-	];
-
-	const selection = await vscode.window.showQuickPick(ecodeCommands, {
-		placeHolder: "Select an Ecode function",
 	});
 
-	if (selection) {
-		vscode.commands.executeCommand(selection.command);
-	}
-});
+	const runtimeLaunchButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+	// runtimeLaunchButton.text = `$(play) Start Ecode Runtime Analysis`;
+	// runtimeLaunchButton.tooltip = "Click to open terminal to run file to be analysed";
+	// runtimeLaunchButton.command = "ecode.runtimeAnalysis";
+	// runtimeLaunchButton.show();
+	runtimeLaunchButton.text = `$(list-unordered) Ecode`;
+	runtimeLaunchButton.tooltip = "Click to see AI Analysis Options";
+	runtimeLaunchButton.command = "ecode.menu";
+	runtimeLaunchButton.show();
 
-const runtimeLaunchButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-// runtimeLaunchButton.text = `$(play) Start Ecode Runtime Analysis`;
-// runtimeLaunchButton.tooltip = "Click to open terminal to run file to be analysed";
-// runtimeLaunchButton.command = "ecode.runtimeAnalysis";
-// runtimeLaunchButton.show();
-runtimeLaunchButton.text = `$(list-unordered) Ecode`;
-runtimeLaunchButton.tooltip = "Click to see AI Analysis Options";
-runtimeLaunchButton.command = "ecode.menu";
-runtimeLaunchButton.show();
-
-// TODO need to make sure that multiple interceptors can't be started at once. 
-// This isn't handled very gracefully at the moment.
+	// TODO need to make sure that multiple interceptors can't be started at once. 
+	// This isn't handled very gracefully at the moment.
 
 
 
-context.subscriptions.push(terminalDisposable);
-context.subscriptions.push(startDisposable);
-context.subscriptions.push(stopDisposable);
-context.subscriptions.push(runtimeDisposable);
-context.subscriptions.push(runtimeLaunchButton);
-context.subscriptions.push(ecodeMenu);
-return {
-	budg,
-	isInterceptorRunning: () => state.runningInterceptor
-};
+	context.subscriptions.push(terminalDisposable);
+	context.subscriptions.push(startDisposable);
+	context.subscriptions.push(stopDisposable);
+	context.subscriptions.push(runtimeDisposable);
+	context.subscriptions.push(runtimeLaunchButton);
+	context.subscriptions.push(ecodeMenu);
+	return {
+		budg,
+		isInterceptorRunning: () => state.runningInterceptor
+	};
 }
 export async function deactivate() {
 	// make sure that the vscode isn't always vulnerable, disable configurations
