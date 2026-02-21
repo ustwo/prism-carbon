@@ -23,6 +23,31 @@ if(ref){
     container.appendChild(title);
     container.appendChild(mainGraphArea);
 
+    const exampleMockBranches = ["main", "customer/sign-up", "customer/favourites", "component/footer"];
+
+    const horizontalLineWrapper = document.createElement("div");
+    horizontalLineWrapper.style.display = "flex";
+    horizontalLineWrapper.style.flexDirection = "column";
+    horizontalLineWrapper.style.height = "100%";
+    horizontalLineWrapper.style.justifyContent = "space-evenly";
+
+    exampleMockBranches.forEach(branch => {
+
+        const horizontalPath = document.createElement("div");
+        horizontalPath.style.display = "flex";
+        horizontalPath.style.alignItems = "center";
+
+        const graphHeading = document.createElement("span");
+        graphHeading.innerText = branch;
+        graphHeading.style.width = "150px";
+        graphHeading.style.color = "var(--text-color)";
+        graphHeading.style.fontSize = "12px";
+
+        horizontalPath.appendChild(graphHeading);
+        horizontalLineWrapper.appendChild(horizontalPath);
+    });
+
+    mainGraphArea.appendChild(horizontalLineWrapper);
     ref.appendChild(container);
 }
 
