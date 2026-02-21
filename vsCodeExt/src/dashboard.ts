@@ -154,7 +154,7 @@ body.darkmode #theme-switch svg:last-child{ display: block; }
 
 
   <h1>Carbon Analysis</h1>
-  <p> Carbon impact based on each file will be depicted below via pie charts</p>
+  <p> Carbon impact based on each file will be depicted below: </p>
 </header>
        <section class = "dashboard-grid"> 
        <div id="branchGraph" style="width:100%; height:350px; margin:bottom:40px"></div>
