@@ -22,16 +22,7 @@
   "main": "./dist/extension.js",
   "contributes": {
     "keybindings": [
-      {
-        "command": "ecode.wrappedInline",
-        "key": "tab",
-        "when": "editorTextFocus && inlineSuggestionVisible && !isSnippetMode"
-      },
-      {
-        "key": "ctrl+i",
-        "command": "ecode.wrappedInlineChat",
-        "when": "editorFocus && inlineChatHasEditsAgent && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor != 'workbench.editor.notebook' || editorFocus && inlineChatHasNotebookAgent && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor == 'workbench.editor.notebook' || editorFocus && inlineChatHasNotebookInline && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor == 'workbench.editor.notebook' || editorFocus && inlineChatHasProvider && inlineChatPossible && !editorReadonly && !editorSimpleInput && activeEditor != 'workbench.editor.notebook'"
-      }
+
     ],
     "viewsContainers": {
       "activitybar": [
@@ -63,14 +54,7 @@
         "command": "ecode.inputdisplay",
         "title": "Input Display"
       },
-      {
-        "command": "ecode.wrappedInline",
-        "title": "Inline Commit"
-      },
-      {
-        "command": "ecode.wrappedInlineChat",
-        "title": "Inline chat accepted"
-      },
+
       {
         "command": "ecode.setApiKey",
         "title": "Set Api Key"

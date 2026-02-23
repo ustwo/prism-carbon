@@ -67,28 +67,11 @@ export function activate(context: vscode.ExtensionContext) {
     barManager.updateLimit(budget.updateLimit());
     const BarManager = vscode.window.createStatusBarItem();
 
-    // disposables.push(vscode.workspace.onDidChangeTextDocument(async evt => {
-    //     const tokens = Number(await devTok.change(evt));
-
-    //     if (tokens !== -1) {
-    //         var emissions = convert(tokens);
-
-            
-    //         treeDataProvider.addMessage("Call ID: xxxx - Emissions: " + emissions + ' g CO₂e');
-
-
-    //         let date = new Date();
-    //         var newCall: budget.Call = { Emissions: emissions, Model: "TEST", DateTime: date.getTime() };
-    //         updateTree(newCall);
-
-    //     }
-    // }));
 
     disposables.push(vscode.workspace.onDidSaveTextDocument(async evt => {
         console.log("Updating logs..........");
         getLogs(context);
     }));
-
 
 
     const reset = vscode.commands.registerCommand('ecode.clearStore', () => {
@@ -134,7 +117,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     });
     context.subscriptions.push(input);
-    context.subscriptions.push(devTok.inline);
+    //context.subscriptions.push(devTok.inline);
     context.subscriptions.push(dashboardCommand);
 
     console.log('Interceptor Proxy Server is active');
@@ -362,11 +345,8 @@ export async function getLogs(context: vscode.ExtensionContext) {
         const models: budget.Call[] = await logCap.identifyModel(content);
         console.log("CALLS: ", models);
         for (let index = 0; index < models.length; index++) {
-            console.log("---------------------------------------"+models[index]);
 
             if (models[index].DateTime > lastAccess){
-                console.log("UPDATED TREE?");
-
                 updateTree(models[index]);
             }
         }

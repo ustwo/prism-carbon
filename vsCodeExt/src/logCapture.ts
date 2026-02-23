@@ -26,13 +26,12 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
     //console.log(rawLog+"\n\n\n\n");
     const chunks:string[] = rawLog.split(modelPattern);
     if (chunks===null){
-        console.log("no chunks?????????????????????????????");
+        console.log("No chunks have been made");
     }
     for (var i = 0; i<chunks.length; i++){
         var models = chunks[i].match(modelPattern2);
         if (models!==null){
             var model = models[0];
-            console.log("-----------------------------model found "+model);
             switch (model) { //rn this is obvs only working with the first model but we dont want that
                 case 'claude-haiku-4.5':
                     activeCall.Model = model;
@@ -73,34 +72,8 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
                 var activeCall: budget.Call = { Emissions: 0, Model: "TEST", DateTime: 0 };
             }
         }
-        //put the rest of the matching mlarky here please
     }
 
-    // var lines:string[];
-    // if (claudeFlag){
-    //     console.log("claude model found ----------------------------------");
-    //     lines= rawLog.split(claudeLine1);}
-    // else{lines= rawLog.split(/\r?\n/);}
-
-    // for (var line of lines) {
-    //     const match = line.match(modelPattern);
-    //     console.log("--------------------------------matching"+match);
-    //     if (claudeFlag) {
-    //         const [time, result] = findClaude(line);
-    //         if (result !== -1) { 
-    //             activeCall.Emissions = convert.calculateEmission(activeCall.Model, result);
-    //             activeCall.DateTime = time;
-    //             claudeFlag = false;
-    //             matches.push(activeCall);
-    //             var activeCall: budget.Call = { Emissions: 0, Model: "TEST", DateTime: 0 };
-    //         }
-    //     }
-
-    //     if (match === null) {continue;}
-
-        
-        
-    // }
     console.log("FOUND MATCHES:\n", matches);
     return matches;
 }
