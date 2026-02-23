@@ -362,7 +362,11 @@ export async function getLogs(context: vscode.ExtensionContext) {
         const models: budget.Call[] = await logCap.identifyModel(content);
         console.log("CALLS: ", models);
         for (let index = 0; index < models.length; index++) {
+            console.log("---------------------------------------"+models[index]);
+
             if (models[index].DateTime > lastAccess){
+                console.log("UPDATED TREE?");
+
                 updateTree(models[index]);
             }
         }
