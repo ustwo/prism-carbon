@@ -47,23 +47,6 @@ if(ref){
         graphHeading.style.fontWeight = "500";
 
         const horizontalLine = document.createElement("div");
-
-        const exampleMockCommits = [30, 55, 95, 110, 175];
-        exampleMockCommits.forEach(commit => {
-
-            const commitDot = document.createElement("div");
-            commitDot.style.width = "10px";
-            commitDot.style.height = "10px";
-            commitDot.style.borderRadius = "50%";
-            commitDot.style.background = "var(--primary-color)";
-            commitDot.style.position = "absolute";
-            commitDot.style.left = commit + "px";
-            commitDot.style.transform = "translateY(-4px)";
-
-            horizontalLine.style.position = "relative";
-            horizontalLine.appendChild(commitDot);
-        });
-
         horizontalLine.style.flex = "1";
         horizontalLine.style.height = "2px";
         horizontalLine.style.background = "var(--secondary-text)";
@@ -82,7 +65,32 @@ if(ref){
 window.addEventListener("message", event => {
     const message = event.data;
     if(message.command === "commitDots"){
-        console.log("Received commit dots: " , message.data);
+        const commitData = message.data;
+        const horizontalPaths = document.querySelectorAll("#carbon-usage-graph-main-area > div > div");
+
+        horizontalPaths.forEach(horizontalPath => {
+            const branchName = horizontalPath.querySelector("span").innerText;
+            const horizontalLine = horizontalPath.querySelector("div");
+
+            const commitDots = commitData[branchName];
+
+            if(commitDots){
+                commitDots.forEach(commit => {
+                    const commitDot = document.createElement("div");
+                    commitDot.style.width = "10px";
+                    commitDot.style.height = "10px";
+                    commitDot.style.borderRadius = "50%";
+                    commitDot.style.background = "var(--primary-color)";
+                    commitDot.style.position = "absolute";
+                    commitDot.style.left = commit + "px";
+                    commitDot.style.transform = "translateY(-4px)";
+
+                    horizontalLine.style.position = "relative";
+                    horizontalLine.appendChild(commitDot);
+                    
+                })
+            }
+        })
     }
 });
 
