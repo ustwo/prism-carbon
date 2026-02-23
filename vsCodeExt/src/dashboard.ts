@@ -13,6 +13,18 @@ export class CarbonDashboardPanel {
         this._extensionUri = extensionUri;
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
         this._panel.webview.html = this._getWebviewContent();
+
+        setTimeout(() => {
+            this._panel.webview.postMessage({
+                command: "commitDots",
+                data: {
+                    main: [30, 55, 95],
+                    "customer/sign-up": [110, 175],
+                    "customer/favourites": [210, 245],
+                    "component/footer": [270]
+                }
+            });
+        }, 500);
     }
 
     public static createOrShow(extensionUri: vscode.Uri) {

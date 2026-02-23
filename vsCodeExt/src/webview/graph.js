@@ -78,3 +78,11 @@ if(ref){
     ref.appendChild(container);
 }
 
+
+window.addEventListener("message", event => {
+    const message = event.data;
+    if(message.command === "commitDots"){
+        console.log("Received commit dots: " , message.data);
+    }
+});
+
