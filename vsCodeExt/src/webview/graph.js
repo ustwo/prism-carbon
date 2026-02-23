@@ -6,9 +6,10 @@ if(ref){
     container.style.width = "100%";
     container.style.height = "300px";
     container.style.position = "relative";
-    container.style.border = "1px solid #ccc";
+    container.style.border = "1px solid var(--secondary-text)";
     container.style.borderRadius = "8px";
-    container.style.background = "#f9f9f9";
+    container.style.background = "var(--base-variant)";
+    container.style.color = "var(--text-color)";
 
     const title = document.createElement("h3");
     title.innerText = "Carbon Usage Timeline (Commits per branch)";
@@ -36,14 +37,23 @@ if(ref){
         const horizontalPath = document.createElement("div");
         horizontalPath.style.display = "flex";
         horizontalPath.style.alignItems = "center";
+        horizontalPath.style.paddingLeft = "12px";
 
         const graphHeading = document.createElement("span");
         graphHeading.innerText = branch;
         graphHeading.style.width = "150px";
         graphHeading.style.color = "var(--text-color)";
-        graphHeading.style.fontSize = "12px";
+        graphHeading.style.fontSize = "14px";
+        graphHeading.style.fontWeight = "500";
+
+        const horizontalLine = document.createElement("div");
+        horizontalLine.style.flex = "1";
+        horizontalLine.style.height = "2px";
+        horizontalLine.style.background = "var(--secondary-text)";
+        horizontalLine.style.marginLeft = "10px";
 
         horizontalPath.appendChild(graphHeading);
+        horizontalPath.appendChild(horizontalLine);
         horizontalLineWrapper.appendChild(horizontalPath);
     });
 
