@@ -58,5 +58,45 @@ window.addEventListener("message", event => {
             }
         })
     }
+
+    if(message.command === "workspaceBranches"){
+        const branches = message.data;
+
+        const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
+        mainGraphArea.innerHTML = "";
+
+        const horizontalLineWrapper = document.createElement("div");
+        horizontalLineWrapper.style.display = "flex";
+        horizontalLineWrapper.style.flexDirection = "column";
+        horizontalLineWrapper.style.height = "100%";
+        horizontalLineWrapper.style.justifyContent = "space-evenly";
+
+        branches.forEach(branch => {
+
+            const horizontalPath = document.createElement("div");
+            horizontalPath.style.display = "flex";
+            horizontalPath.style.alignItems = "center";
+            horizontalPath.style.paddingLeft = "12px";
+
+            const graphHeading = document.createElement("span");
+            graphHeading.innerText = branch;
+            graphHeading.style.width = "150px";
+            graphHeading.style.color = "var(--text-color)";
+            graphHeading.style.fontSize = "14px";
+            graphHeading.style.fontWeight = "500";
+
+            const horizontalLine = document.createElement("div");
+            horizontalLine.style.flex = "1";
+            horizontalLine.style.height = "2px";
+            horizontalLine.style.background = "var(--secondary-text)";
+            horizontalLine.style.marginLeft = "10px";
+
+            horizontalPath.appendChild(graphHeading);
+            horizontalPath.appendChild(horizontalLine);
+            horizontalLineWrapper.appendChild(horizontalPath);
+        });
+
+        mainGraphArea.appendChild(horizontalLineWrapper);
+    }
 });
 
