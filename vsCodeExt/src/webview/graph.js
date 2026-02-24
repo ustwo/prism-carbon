@@ -1,3 +1,5 @@
+let pendingCommitDots = null;
+
 const ref = document.getElementById("branchGraph");
 
 if(ref){
@@ -31,32 +33,8 @@ if(ref){
 window.addEventListener("message", event => {
     const message = event.data;
     if(message.command === "commitDots"){
-        const commitData = message.data;
-        const horizontalPaths = document.querySelectorAll("#carbon-usage-graph-main-area > div > div");
-
-        horizontalPaths.forEach(horizontalPath => {
-            const branchName = horizontalPath.querySelector("span").innerText;
-            const horizontalLine = horizontalPath.querySelector("div");
-
-            const commitDots = commitData[branchName];
-
-            if(commitDots){
-                commitDots.forEach(commit => {
-                    const commitDot = document.createElement("div");
-                    commitDot.style.width = "10px";
-                    commitDot.style.height = "10px";
-                    commitDot.style.borderRadius = "50%";
-                    commitDot.style.background = "var(--primary-color)";
-                    commitDot.style.position = "absolute";
-                    commitDot.style.left = commit + "px";
-                    commitDot.style.transform = "translateY(-4px)";
-
-                    horizontalLine.style.position = "relative";
-                    horizontalLine.appendChild(commitDot);
-                    
-                })
-            }
-        })
+        pendingCommitDots = message.data;
+        drawCommitDots();
     }
 
     if(message.command === "workspaceBranches"){
@@ -97,6 +75,45 @@ window.addEventListener("message", event => {
         });
 
         mainGraphArea.appendChild(horizontalLineWrapper);
+
+        drawCommitDots();
     }
 });
+
+
+function drawCommitDots(){
+    if (!pendingCommitDots){
+        return;
+    } 
+
+    const horizontalPaths = document.querySelectorAll("#carbon-usage-graph-main-area > div > div");
+
+    if (horizontalPaths.length === 0){
+        return;
+    } 
+
+    horizontalPaths.forEach(horizontalPath => {
+        const branchName = horizontalPath.querySelector("span").innerText;
+        const horizontalLine = horizontalPath.querySelector("div");
+
+        const commitDots = pendingCommitDots[branchName];
+
+        if(commitDots){
+            commitDots.forEach(commit => {
+                const commitDot = document.createElement("div");
+                commitDot.style.width = "10px";
+                commitDot.style.height = "10px";
+                commitDot.style.borderRadius = "50%";
+                commitDot.style.background = "var(--primary-color)";
+                commitDot.style.position = "absolute";
+                commitDot.style.left = commit + "px";
+                commitDot.style.transform = "translateY(-4px)";
+
+                horizontalLine.style.position = "relative";
+                horizontalLine.appendChild(commitDot);
+                
+            })
+        }
+    })
+}
 
