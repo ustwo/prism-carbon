@@ -30,10 +30,10 @@ export class CarbonDashboardPanel {
             this._panel.webview.postMessage({
                 command: "commitDots",
                 data: {
-                    main: [30, 55, 95],
-                    "customer/sign-up": [110, 175],
-                    "customer/favourites": [210, 245],
-                    "component/footer": [270]
+                    main: [{xAxis : 30 , carbon : 35} , {xAxis : 55 , carbon : 10} , {xAxis : 95 , carbon : 110}],
+                    "customer/sign-up": [{xAxis : 110 , carbon : 229}, {xAxis : 175 , carbon : 23}],
+                    "customer/favourites": [{xAxis : 210 , carbon : 57}, {xAxis : 245 , carbon : 3}],
+                    "component/footer": [{xAxis : 270 , carbon : 313}]
                 }
             });
         }, 500);

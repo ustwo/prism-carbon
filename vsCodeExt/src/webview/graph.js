@@ -80,6 +80,15 @@ window.addEventListener("message", event => {
     }
 });
 
+function getCColor(carbon){
+    if(carbon < 15){
+        return "#4CAF50";
+    }
+    if(carbon < 40){
+        return "#FFC107";
+    }
+    return "#F44336";
+}
 
 function drawCommitDots(){
     if (!pendingCommitDots){
@@ -102,14 +111,14 @@ function drawCommitDots(){
 
         if(commitDots){
             commitDots.forEach(commit => {
-                const position = typeof commit === "number" ? commit : commit.position;
                 const commitDot = document.createElement("div");
                 commitDot.classList.add("commit-dot");
                 commitDot.style.width = "10px";
                 commitDot.style.height = "10px";
                 commitDot.style.borderRadius = "50%";
                 commitDot.style.position = "absolute";
-                commitDot.style.left = commit + "px";
+                commitDot.style.left = commit.xAxis + "px";
+                commitDot.style.background = getCColor(commit.carbon);
                 commitDot.style.transform = "translateY(-4px)";
 
                 horizontalLine.style.position = "relative";
