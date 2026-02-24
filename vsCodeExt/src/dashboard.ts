@@ -95,6 +95,7 @@ export class CarbonDashboardPanel {
   --text-color: #111528;
   --secondary-text: #232738;
   --primary-color: #3a435d;
+  --commit-dot-color: #3a435d;
 }
 
 /* night mode color setting */
@@ -105,6 +106,10 @@ body.darkmode{
     --text-color:#ffffff;
     --secondary-text: #a4a5b8;
     --primary-color: #3a435d;
+    --commit-dot-color: #BDD5EA
+}
+.commit-dot{
+    background: var(--commit-dot-color);
 }
 
 /* basic browser setting, and font */

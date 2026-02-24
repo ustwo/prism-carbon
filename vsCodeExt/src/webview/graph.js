@@ -96,15 +96,18 @@ function drawCommitDots(){
         const branchName = horizontalPath.querySelector("span").innerText;
         const horizontalLine = horizontalPath.querySelector("div");
 
+        horizontalLine.querySelectorAll(".commit-dot").forEach(dot => dot.remove());
+
         const commitDots = pendingCommitDots[branchName];
 
         if(commitDots){
             commitDots.forEach(commit => {
+                const position = typeof commit === "number" ? commit : commit.position;
                 const commitDot = document.createElement("div");
+                commitDot.classList.add("commit-dot");
                 commitDot.style.width = "10px";
                 commitDot.style.height = "10px";
                 commitDot.style.borderRadius = "50%";
-                commitDot.style.background = "var(--primary-color)";
                 commitDot.style.position = "absolute";
                 commitDot.style.left = commit + "px";
                 commitDot.style.transform = "translateY(-4px)";
