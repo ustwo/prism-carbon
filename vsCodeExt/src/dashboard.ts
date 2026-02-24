@@ -16,6 +16,18 @@ export class CarbonDashboardPanel {
 
         setTimeout(() => {
             this._panel.webview.postMessage({
+                command: "workspaceBranches",
+                data: [
+                    "main",
+                    "customer/sign-up",
+                    "customer/favourites",
+                    "component/footer"
+                ]
+            });
+        }, 300);
+
+        setTimeout(() => {
+            this._panel.webview.postMessage({
                 command: "commitDots",
                 data: {
                     main: [30, 55, 95],
