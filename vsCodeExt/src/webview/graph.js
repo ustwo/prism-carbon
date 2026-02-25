@@ -20,9 +20,9 @@ if(ref){
     referenceStrip.style.fontSize = "12px";
     referenceStrip.style.alignItems = "center";
     [
-        {label: "Low Emission" , color: "#4CAF50"},
-        {label: "Average Emission" , color: "#FFC107"},
-        {label: "High Emission" , color: "#F44336"},
+        {label: "Low Emission" , color: "var(--low-carbon)"},
+        {label: "Average Emission" , color: "var(--avg-carbon)"},
+        {label: "High Emission" , color: "var(--high-carbon)"},
     ].forEach(strip => {
         const reference = document.createElement("div");
         reference.style.display = "flex";
@@ -121,12 +121,12 @@ window.addEventListener("message", event => {
 
 function getCColor(carbon){
     if(carbon < 15){
-        return "#4CAF50";
+        return "var(--low-carbon)";
     }
     if(carbon < 40){
-        return "#FFC107";
+        return "var(--avg-carbon)";
     }
-    return "#F44336";
+    return "var(--high-carbon)";
 }
 
 function drawCommitDots(){

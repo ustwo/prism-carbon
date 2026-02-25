@@ -96,6 +96,9 @@ export class CarbonDashboardPanel {
   --secondary-text: #232738;
   --primary-color: #3a435d;
   --commit-dot-color: #3a435d;
+  --low-carbon: #2e7d32;
+  --avg-carbon: #ef6c00;
+  --high-carbon: #c62828;
 }
 
 /* night mode color setting */
@@ -106,7 +109,10 @@ body.darkmode{
     --text-color:#ffffff;
     --secondary-text: #a4a5b8;
     --primary-color: #3a435d;
-    --commit-dot-color: #BDD5EA
+    --commit-dot-color: #BDD5EA;
+    --low-carbon: #66bb6a;
+    --avg-carbon: #ffca28;
+    --high-carbon: #ef5350;
 }
 .commit-dot{
     background: var(--commit-dot-color);
