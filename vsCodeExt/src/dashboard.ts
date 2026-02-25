@@ -106,22 +106,11 @@ export class CarbonDashboardPanel {
   </button>
   <header id="header">
             <h1>Carbon Analysis</h1>
-            <p>Click a section in 'Carbon Cost' to see budget details.</p>
+        
         </header>
 
         <section id="main-view" class="dashboard-grid"> 
-            <div class="chart-wrapper">
-                <h2>File by Size in Repo</h2>
-                <div class="chart-container">
-                    <canvas id="emissionChart"></canvas>
-                </div>
-            </div>
-            <div class="chart-wrapper">
-                <h2>Carbon Cost in Repo by File</h2>
-                <div class="chart-container">
-                    <canvas id="carbonCostChart"></canvas>
-                </div>
-            </div>
+            
             <div class="chart-wrapper">
                 <h2>Emissions by Model</h2>
                 <div class="chart-container">
@@ -131,13 +120,7 @@ export class CarbonDashboardPanel {
             </div>
         </section>
 
-        <section id="drilldown-view">
-            <button class="back-btn" id="back-btn">← Back to Overview</button>
-            <h2 id="drilldown-title">File vs Budget</h2>
-            <div class="chart-container" style="max-width: 500px; margin: 0 auto;">
-                <canvas id="budgetChart"></canvas>
-            </div>
-        </section>
+       
 
         <script src="${scriptUri}"></script>
     
