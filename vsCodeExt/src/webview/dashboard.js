@@ -49,20 +49,21 @@
             
 
             window.addEventListener('message', event => {
-                const message = event.data;
-                if (message.command === 'updateData') 
+    const message = event.data;
+    if (message.command === 'updateData') {
+        
+        // live emission by model data from backend
+        if (message.modelLabels && message.modelEmissions) {
+            const hasData = message.modelLabels.length > 0;
+            const emptyMsg = document.getElementById('model-empty-msg');
+            if (emptyMsg) { emptyMsg.style.display = hasData ? 'none' : 'block'; }
 
-                    // live Emissions by Model chart
-                    if (message.modelLabels && message.modelEmissions) {
-                        const hasData = message.modelLabels.length > 0;
-                        const emptyMsg = document.getElementById('model-empty-msg');
-                        if (emptyMsg) { emptyMsg.style.display = hasData ? 'none' : 'block'; }
-
-                        modelEmissionsChart.data.labels = message.modelLabels;
-                        modelEmissionsChart.data.datasets[0].data = message.modelEmissions;
-                        modelEmissionsChart.data.datasets[0].backgroundColor = generateColors(message.modelLabels.length);
-                        modelEmissionsChart.update();
-                    }
-                
-            });
+            modelEmissionsChart.data.labels = message.modelLabels;
+            modelEmissionsChart.data.datasets[0].data = message.modelEmissions;
+            modelEmissionsChart.data.datasets[0].backgroundColor = generateColors(message.modelLabels.length);
+            modelEmissionsChart.update();
+            
+            
+    }
+});
     })();

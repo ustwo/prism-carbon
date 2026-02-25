@@ -110,7 +110,18 @@ export class CarbonDashboardPanel {
         </header>
 
         <section id="main-view" class="dashboard-grid"> 
-            
+            <div class="budget-tracker-container">
+                <div class="budget-header">
+                    <h2>Session Budget</h2>
+                </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="session-progress-fill"></div>
+                </div>
+                <div class="budget-footer">
+                    <span id="session-percent-used" class="budget-percent">0% used</span>
+                    <span id="session-text-right" class="budget-detail">0g / 0g</span>
+                </div>
+    </div>
             <div class="chart-wrapper">
                 <h2>Emissions by Model</h2>
                 <div class="chart-container">
