@@ -12,6 +12,10 @@ Architecture
 
 
 Issues currently being faced
+    cannot programatically test copilot because as copilot dont let you programatically call the model when testing.
+    
+
+Issues been faced
     intercepting the message and sending it to the model ourselves seems to breach ToS under privacy
     Copilot seems to keep the model used hidden and is unable to access
     Unable to access inline code generation which is not accepted as it is "Ghost text"

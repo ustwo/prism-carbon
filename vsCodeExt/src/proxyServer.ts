@@ -14,6 +14,7 @@ export class InterceptorProxy {
 
     constructor(port: number) {
         this.port = port;
+        
         this.logger = vscode.window.createOutputChannel("Interceptor");
     }
 
