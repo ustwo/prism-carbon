@@ -50,8 +50,22 @@ if(ref){
     header.style.justifyContent = "space-between";
     header.style.margin = "10px";
 
+    const references = document.createElement("div");
+    references.style.display = "flex";
+    references.style.alignItems = "center";
+    references.style.gap = "14px";
+
     title.innerText = "Carbon Usage Timeline (Commits per branch)";
-    title.style.margin = "10px";
+    title.style.margin = "0px";
+
+    const toggleButtonContainer = document.createElement("div");
+    toggleButtonContainer.style.display = "flex";
+
+    const cumulativeGraphButton = document.createElement("div");
+    cumulativeGraphButton.innerText = "Cumulative Graph";
+
+    const timelineGraphButton = document.createElement("div");
+    timelineGraphButton.innerText = "Timeline Graph";
 
     const mainGraphArea = document.createElement("div");
     mainGraphArea.id = "carbon-usage-graph-main-area";
@@ -59,10 +73,16 @@ if(ref){
     mainGraphArea.style.height = "240px";
     mainGraphArea.style.position = "relative";
 
-    header.appendChild(title);
-    header.appendChild(referenceStrip);
-    container.appendChild(header);
+    toggleButtonContainer.appendChild(cumulativeGraphButton);
+    toggleButtonContainer.appendChild(timelineGraphButton);
 
+    references.appendChild(title);
+    references.appendChild(toggleButtonContainer);
+
+    header.appendChild(references);
+    header.appendChild(referenceStrip);
+
+    container.appendChild(header);
     container.appendChild(mainGraphArea);
 
     ref.appendChild(container);
