@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as budget from './budget';
+import * as extension from './extension';
 
 
 
