@@ -129,14 +129,7 @@ window.addEventListener("message", event => {
 function deletePreviousGraph(){
 
     const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
-    mainGraphArea.querySelectorAll("svg").forEach(svg => svg.remove());
-
-    const horizontalPaths = document.querySelectorAll("#carbon-usage-graph-main-area > div > div");
-
-    horizontalPaths.forEach(horizontalPath => {
-        const horizontalLine = horizontalPath.querySelector("div");
-        horizontalLine.querySelectorAll(".commit-dot").forEach(dot => dot.remove());
-    });
+    mainGraphArea.innerHTML = "";
 }
 
 function buildGraph(){
@@ -227,32 +220,120 @@ function getCumulativeGraphData(){
 function drawCumulativeGraph(){
     const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.style.width = "100%";
-    svg.style.height = "100%"
+    const height = mainGraphArea.clientHeight;
+    const margin = {top:20, right:40, bottom: 40, left: 60};
+    let maxTime = 0;
+    let maxCarbon = 0;
+    const timeScale = 5;
 
     const cumulativeGraphData = getCumulativeGraphData();
+    
+
+    Object.values(cumulativeGraphData).forEach(branch => {
+        branch.forEach(graphPoint => {
+            if(graphPoint.time > maxTime){
+                maxTime = graphPoint.time;
+            }
+            if(graphPoint.netCarbon > maxCarbon){
+                maxCarbon = graphPoint.netCarbon;
+            }
+        });
+    });
+
+    if(maxTime === 0){
+        maxTime = 1;
+    }
+    if(maxCarbon === 0){
+        maxCarbon = 1;
+    }
+
+    const oldWidth = mainGraphArea.clientWidth;
+    const width = Math.max(oldWidth, maxTime * timeScale + margin.left + margin.right + 100);
+
+    svg.setAttribute("width", width);
+    svg.setAttribute("height", height);
+
+    const graphWidth = width - margin.left - margin.right;
+    const graphHeight = height - margin.top - margin.bottom;
 
     Object.keys(cumulativeGraphData).forEach(branch => {
 
         let graphPoints = "";
+        let endPoint = null;
 
         cumulativeGraphData[branch].forEach(graphPoint => {
-            const xAxis = graphPoint.time;
-            const yAxis = 240 - (graphPoint.netCarbon / 5);
+            const xAxis = margin.left + graphPoint.time * timeScale;
+            const yAxis = margin.top + graphHeight - (graphPoint.netCarbon / maxCarbon) * graphHeight;
 
             graphPoints += `${xAxis},${yAxis} `;
+            endPoint = { x:xAxis, y:yAxis};
         });
 
         const path = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
 
         path.setAttribute("points" , graphPoints);
         path.setAttribute("fill" , "none");
-        path.setAttribute("stroke" , "var(--primary-color)");
+        path.setAttribute("stroke" , "var(--text-color)");
         path.setAttribute("stroke-width" , "2");
 
         svg.appendChild(path);
+
+        if(endPoint){
+            const branchHeading = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            branchHeading.setAttribute("x", endPoint.x + 4);
+            branchHeading.setAttribute("y", endPoint.y - 6);
+            branchHeading.setAttribute("fill", "var(--text-color)");
+            branchHeading.setAttribute("font-size", "11");
+            branchHeading.textContent = branch;
+            svg.appendChild(branchHeading);
+        }
     });
-    mainGraphArea.appendChild(svg);
+
+    const yAxisLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    yAxisLine.setAttribute("x1", margin.left);
+    yAxisLine.setAttribute("y1", margin.top);
+    yAxisLine.setAttribute("x2", margin.left);
+    yAxisLine.setAttribute("y2", height - margin.bottom);
+    yAxisLine.setAttribute("stroke", "var(--text-color)");
+    svg.appendChild(yAxisLine);
+
+    const xAxisLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    xAxisLine.setAttribute("x1", margin.left);
+    xAxisLine.setAttribute("y1", height - margin.bottom);
+    xAxisLine.setAttribute("x2", width - margin.right);
+    xAxisLine.setAttribute("y2", height - margin.bottom);
+    xAxisLine.setAttribute("stroke", "var(--text-color)");
+    svg.appendChild(xAxisLine);
+
+    const yAxisHeading = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    yAxisHeading.setAttribute("x", 15);
+    yAxisHeading.setAttribute("y", height/2);
+    yAxisHeading.setAttribute("fill", "var(--text-color)");
+    yAxisHeading.setAttribute("transform", `rotate(-90 15 ${height/2})`);
+    yAxisHeading.textContent = "Carbon";
+    svg.appendChild(yAxisHeading);
+
+    const xAxisHeading = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    xAxisHeading.setAttribute("x", width/2);
+    xAxisHeading.setAttribute("y", height - 5);
+    xAxisHeading.setAttribute("fill", "var(--text-color)");
+    xAxisHeading.setAttribute("text-anchor", "middle");
+    xAxisHeading.textContent = "Time";
+    svg.appendChild(xAxisHeading);
+
+    const horizontalScrollContainer = document.createElement("div");
+    horizontalScrollContainer.style.width = "100%";
+    horizontalScrollContainer.style.height = "100%";
+    horizontalScrollContainer.style.overflowX = "auto";
+    horizontalScrollContainer.style.overflowY = "hidden";
+    horizontalScrollContainer.style.display = "block";
+    horizontalScrollContainer.style.whiteSpace = "nowrap";
+
+    svg.style.minWidth = width + "px";
+    svg.style.flexShrink = "0";
+
+    horizontalScrollContainer.appendChild(svg);
+    mainGraphArea.appendChild(horizontalScrollContainer);
 }
 
 function getCColor(carbon){
