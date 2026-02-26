@@ -20,13 +20,12 @@
     "onCommand:ecode.setApiKey",
     "onCommand:ecode.openDashboard",
     "onCommand:ecode.refreshLogs",
-    "onView:myPrimaryView"
+    "onView:myPrimaryView",
+    "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "keybindings": [
-
-    ],
+    "keybindings": [],
     "viewsContainers": {
       "activitybar": [
         {
@@ -62,12 +61,10 @@
         "command": "ecode.inputdisplay",
         "title": "Input Display"
       },
-
       {
         "command": "ecode.newFile",
         "title": "Open New File"
       },
-
       {
         "command": "ecode.setApiKey",
         "title": "Set Api Key"
