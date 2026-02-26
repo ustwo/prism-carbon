@@ -3,6 +3,7 @@ let cumulativeGraphButton;
 let timelineGraphButton;
 let slider;
 let graphType = "cumulative"
+let workspaceBranches = [];
 
 const ref = document.getElementById("branchGraph");
 
@@ -111,6 +112,7 @@ if(ref){
 }
 
 
+
 window.addEventListener("message", event => {
     const message = event.data;
     if(message.command === "commitDots"){
@@ -119,9 +121,26 @@ window.addEventListener("message", event => {
     }
 
     if(message.command === "workspaceBranches"){
-        const branches = message.data;
+        workspaceBranches = message.data;
+        drawGraphs();
+    }
+});
 
-        const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
+function deletePreviousGraph(){
+
+    const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
+    mainGraphArea.querySelectorAll("svg").forEach(svg => svg.remove());
+
+    const horizontalPaths = document.querySelectorAll("#carbon-usage-graph-main-area > div > div");
+
+    horizontalPaths.forEach(horizontalPath => {
+        const horizontalLine = horizontalPath.querySelector("div");
+        horizontalLine.querySelectorAll(".commit-dot").forEach(dot => dot.remove());
+    });
+}
+
+function buildGraph(){
+    const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
         mainGraphArea.innerHTML = "";
 
         const horizontalLineWrapper = document.createElement("div");
@@ -130,7 +149,7 @@ window.addEventListener("message", event => {
         horizontalLineWrapper.style.height = "100%";
         horizontalLineWrapper.style.justifyContent = "space-evenly";
 
-        branches.forEach(branch => {
+        workspaceBranches.forEach(branch => {
 
             const horizontalPath = document.createElement("div");
             horizontalPath.style.display = "flex";
@@ -157,16 +176,26 @@ window.addEventListener("message", event => {
         });
 
         mainGraphArea.appendChild(horizontalLineWrapper);
+}
 
-        drawGraphs();
-    }
-});
+function deleteBranches(){
+    const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
+    mainGraphArea.innerHTML = "";
+}
 
 function drawGraphs(){
+
+    deletePreviousGraph();
+
     if(graphType === "timeline"){
+        if(workspaceBranches.length === 0){
+            return;
+        }
+        buildGraph();
         drawCommitDots();
     }
     else{
+        deleteBranches();
         drawCumulativeGraph();
     }
 }
@@ -196,53 +225,34 @@ function getCumulativeGraphData(){
 }
 
 function drawCumulativeGraph(){
+    const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.style.width = "100%";
+    svg.style.height = "100%"
+
     const cumulativeGraphData = getCumulativeGraphData();
-    const horizontalPaths = document.querySelectorAll("#carbon-usage-graph-main-area > div > div");
 
-    if(horizontalPaths.length === 0){
-        return;
-    }
-
-    horizontalPaths.forEach(horizontalPath => {
-        const branchName = horizontalPath.querySelector("span").innerText;
-        const horizontalLine = horizontalPath.querySelector("div");
-
-        const prevGraph = horizontalLine.querySelector("svg");
-        if(prevGraph){
-            prevGraph.remove();
-        }
-
-        const branchData = cumulativeGraphData[branchName];
-        if(!branchData){
-            return;
-        }
-
-        const cumulativeGraph = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        cumulativeGraph.style.position = "absolute";
-        cumulativeGraph.style.left = "0";
-        cumulativeGraph.style.top = "-60px";
-        cumulativeGraph.style.width = "100%";
-        cumulativeGraph.style.height = "120px";
-
-        const path = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+    Object.keys(cumulativeGraphData).forEach(branch => {
 
         let graphPoints = "";
 
-        branchData.forEach(graphPoint => {
+        cumulativeGraphData[branch].forEach(graphPoint => {
             const xAxis = graphPoint.time;
-            const yAxis = 120 - (graphPoint.netCarbon / 5);
+            const yAxis = 240 - (graphPoint.netCarbon / 5);
 
             graphPoints += `${xAxis},${yAxis} `;
         });
+
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
 
         path.setAttribute("points" , graphPoints);
         path.setAttribute("fill" , "none");
         path.setAttribute("stroke" , "var(--primary-color)");
         path.setAttribute("stroke-width" , "2");
 
-        cumulativeGraph.appendChild(path);
-        horizontalLine.appendChild(cumulativeGraph);
+        svg.appendChild(path);
     });
+    mainGraphArea.appendChild(svg);
 }
 
 function getCColor(carbon){
@@ -293,9 +303,6 @@ function drawCommitDots(){
                 });
             }
         });
-    }
-    if (graphType === "cumulative"){
-        drawCumulativeGraph();
     }
 }
 
