@@ -30,7 +30,8 @@ export class TieredModel extends LLMModel {
     };
 }
 
-const veryLarge = 99999999999999999999999999999999999999999999999999999999999999;
+const veryLarge = Number.MAX_SAFE_INTEGER;
+//99999999999999999999999999999999999999999999999999999999999999;
 export const modelRegistry: Record<string, TieredModel> = {
     "gpt-4o-mini": new TieredModel("GPT4oMini", [{ limit: 400, carbonPerToken: 0.00923 }, { limit: 2000, carbonPerToken: 0.00369 }, { limit: 11500, carbonPerToken: 0.0006293 }]),
     "gpt-4o": new TieredModel("GPT4o", [{ limit: 400, carbonPerToken: 0.000000370125 }, { limit: 2000, carbonPerToken: 0.000000212625 }, { limit: 11500, carbonPerToken: 0.0000000875 }]),
