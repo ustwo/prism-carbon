@@ -1,4 +1,7 @@
 let pendingCommitDots = null;
+let cumulativeGraphButton;
+let timelineGraphButton;
+let slider;
 
 const ref = document.getElementById("branchGraph");
 
@@ -56,16 +59,33 @@ if(ref){
     references.style.gap = "14px";
 
     title.innerText = "Carbon Usage Timeline (Commits per branch)";
-    title.style.margin = "0px";
 
     const toggleButtonContainer = document.createElement("div");
-    toggleButtonContainer.style.display = "flex";
+    toggleButtonContainer.style.display = "grid";
+    toggleButtonContainer.style.gridTemplateColumns = "1fr 1fr";
+    toggleButtonContainer.style.border = "1px solid var(--secondary-text)";
+    toggleButtonContainer.style.borderRadius = "999px";
+    toggleButtonContainer.style.padding = "3px";
+    toggleButtonContainer.style.cursor = "pointer";
+    toggleButtonContainer.style.position = "relative";
 
-    const cumulativeGraphButton = document.createElement("div");
-    cumulativeGraphButton.innerText = "Cumulative Graph";
+    slider = document.createElement("div");
+    slider.style.position = "absolute";
+    slider.style.inset = "3px";
+    slider.style.width = "calc(50% - 3px)";
+    slider.style.borderRadius = "999px";
+    slider.style.transition = "transform 0.25s cubic-bezier(.4,0,.2,1)";
+    slider.style.transform = "translateX(0%)";
+    slider.style.background = "linear-gradient(to bottom, rgba(255,255,255,0.25), rgba(255,255,255,0.05))";
+    slider.style.border = "1px solid rgba(0,0,0,0.35)"
+    slider.style.boxShadow = `0 2px 6px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.6), inset 0 -1px 2px rgba(0,0,0,0.15)`;
+    slider.style.backdropFilter = "blur(4px)";
 
-    const timelineGraphButton = document.createElement("div");
-    timelineGraphButton.innerText = "Timeline Graph";
+    cumulativeGraphButton = makeButtons("Cumulative Graph", "cumulative-button");
+    timelineGraphButton = makeButtons("Timeline Graph", "timeline-button");
+
+    cumulativeGraphButton.classList.add("toggle-active");
+    timelineGraphButton.classList.add("toggle-inactive");
 
     const mainGraphArea = document.createElement("div");
     mainGraphArea.id = "carbon-usage-graph-main-area";
@@ -73,6 +93,7 @@ if(ref){
     mainGraphArea.style.height = "240px";
     mainGraphArea.style.position = "relative";
 
+    toggleButtonContainer.appendChild(slider);
     toggleButtonContainer.appendChild(cumulativeGraphButton);
     toggleButtonContainer.appendChild(timelineGraphButton);
 
@@ -123,6 +144,7 @@ window.addEventListener("message", event => {
             graphHeading.style.fontWeight = "500";
 
             const horizontalLine = document.createElement("div");
+            horizontalLine.style.position = "relative";
             horizontalLine.style.flex = "1";
             horizontalLine.style.height = "2px";
             horizontalLine.style.background = "var(--secondary-text)";
@@ -180,7 +202,6 @@ function drawCommitDots(){
                 commitDot.style.background = getCColor(commit.carbon);
                 commitDot.style.transform = "translateY(-4px)";
 
-                horizontalLine.style.position = "relative";
                 horizontalLine.appendChild(commitDot);
                 
             });
@@ -188,3 +209,35 @@ function drawCommitDots(){
     });
 }
 
+function makeButtons(text, id){
+    const button = document.createElement("div");
+    button.innerText = text;
+    button.id = id;
+    button.style.cssText = `padding:4px 10px; font-size:12px; color:var(--text-color); z-index:1; display:flex; align-items:center; 
+    justify-content:center; height:28px; font-weight:500; transition:color 0.2s ease;`;
+    return button;
+}
+
+cumulativeGraphButton.addEventListener("click", () => {
+    slider.style.transform = "translateX(0%)";
+
+    cumulativeGraphButton.classList.add("toggle-active");
+    cumulativeGraphButton.classList.remove("toggle-inactive");
+
+    timelineGraphButton.classList.add("toggle-inactive");
+    timelineGraphButton.classList.remove("toggle-active");
+
+    drawCommitDots();
+});
+
+timelineGraphButton.addEventListener("click", () => {
+    slider.style.transform = "translateX(calc(100% + 3px))";
+
+    timelineGraphButton.classList.add("toggle-active");
+    timelineGraphButton.classList.remove("toggle-inactive");
+
+    cumulativeGraphButton.classList.add("toggle-inactive");
+    cumulativeGraphButton.classList.remove("toggle-active");
+
+    drawCommitDots();
+});

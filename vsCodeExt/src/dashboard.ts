@@ -117,6 +117,12 @@ body.darkmode{
 .commit-dot{
     background: var(--commit-dot-color);
 }
+.toggle-active{
+    color: var(--base-variant);
+}
+.toggle-inactive{
+    color: var(--text-color);
+}
 
 /* basic browser setting, and font */
 
