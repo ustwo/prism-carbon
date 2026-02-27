@@ -180,9 +180,9 @@ function getJsonTokenCount(body: string) {
 //     const chatgpt4oshort = 0.000000370125;
 //     const chatgpt4omedium = 0.000000212625;
 //     const chatgpt4olong = 0.0000000875;
-//     const chatgpt4ominishort = 0.00923;
-//     const chatgpt4ominimedium = 0.00369;
-//     const chatgpt4ominilong = 0.0006293;
+//     const chatgpt4ominishort = 0.000504875;
+//     const chatgpt4ominimedium = 0.000331975;
+//     const chatgpt4ominilong = 0.000094286;
 //     const chatgpt4point5 = 0.0003;
 
 //     let carbon = 0;
