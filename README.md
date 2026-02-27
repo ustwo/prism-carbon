@@ -104,8 +104,8 @@ We aim to design a toolkit that:
    - run "Open Runtime Terminal" command
    - In the "Runtime Terminal" that appears, run your file.
    - The carbon costs and log will appear in the sidebar, and a coloured indicator in the status bar. They show the cost of using an LLM in real time, as each API call happens.
-7. For development time analysis, first set microsoft copilot log levels to     trace
-8. run the "Refresh carbon data" command or save a document to fetch the most recent data from Copilot. 
+7. For development time analysis, run "Developer: Set Log Level" :arrow_right: "GitHub Copilot Chat" :arrow_right: "Trace"
+
 <br>
    
 <p>This is currently the same for both developers and users. However, we plan to have the extension downloadable from the VScode store for users.</p>
