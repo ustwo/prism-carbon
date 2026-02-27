@@ -5,10 +5,10 @@ import { RawBodyIncludesMatcher } from 'mockttp/dist/rules/matchers';
 import * as convert from './convert';
 
 // Clean Environment: Ensure this process ignores the VS Code proxy settings
-process.env.HTTP_PROXY = '';
-process.env.HTTPS_PROXY = '';
-process.env.NO_PROXY = '*';
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+// process.env.HTTP_PROXY = '';
+// process.env.HTTPS_PROXY = '';
+// process.env.NO_PROXY = '*';
+// process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 let server: mockttp.Mockttp | null = null;
 
@@ -140,13 +140,27 @@ function scanJsonForTokens(obj: any) {
     });
 }
 
+interface ModelData {
+    inputTokens: number,
+    ouputTokens: number,
+    totalTokens: number,
+    modelName: string
+};
+
 function getJsonTokenCount(body: string) {
     const jsonBody = JSON.parse(body);
+    let inputTokens = 0;
+    let outputTokens = 0;
     let totalTokens = 0;
     let modelName = "Unknown Model";
 
     // OpenAI uses this format in response
-    if (jsonBody.usage && jsonBody.model) {
+    if (
+        (jsonBody.usage && jsonBody.model) || // basic text
+        (jsonBody.usage && jsonBody.quality && jsonBody.size && jsonBody.output_format) // image models
+    ) {
+        inputTokens = jsonBody.usage.input_tokens;
+        outputTokens = jsonBody.usage.output_tokens;
         totalTokens = jsonBody.usage.total_tokens;
         modelName = jsonBody.model;
     }
