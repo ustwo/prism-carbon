@@ -419,6 +419,7 @@ function restoreCallHistory(tree: MyTreeDataProvider, budg: budget.budget) { //r
 }
 
 export function updateTree(call: budget.Call) {
+<<<<<<< HEAD
 	budg.storeCall(call);
 	var cLimit = budg.updateLimit();
 	console.log("limit: " + cLimit);
@@ -428,4 +429,12 @@ export function updateTree(call: budget.Call) {
 }
 export function wrappedGetCall() {
 	return budg.getCalls();
+=======
+    budget.storeCall(call);
+    var cLimit = budget.updateLimit();
+    console.log("limit: " + cLimit);
+    bar.updateBar(call.Emissions, cLimit);
+    tree.addMessage("Emissions: " + call.Emissions + " - Model: " + call.Model + " - Date: " + call.DateTime);
+    CarbonDashboardPanel.sendData();
+>>>>>>> ConnectDashBoardFiles
 }
