@@ -92,24 +92,28 @@ We aim to design a toolkit that:
     <li>As a Project Manager, I want to know how impactful my project is, and which areas of a coded solution are the most environmentally costly so I can identify less carbon heavy implementations, and utilise this to re-design prototypes</li>
     <li>As an engineer at an Artifical Intelligence company, I can easily see and discover any massive inefficiencies in my AI model due to an overtly large relative carbon cost.</li>
   </ul>
-<h2 id ="devIn">How To Run</h2>
+<h2 id ="devIn">Dev instructions</h2>
 
 1. Clone Repository
 2. Open in VScode
 3. Run <code>npm install</code>
 4. Run <code>npm run compile</code>
-5. Run extension.ts to start the extension development environment window
-6. For runtime analysis, within the extension development environment:
+5. install Extension Test Runner in vscode
+6. Run extension.ts to start the extension development environment window
+7. For runtime analysis, within the extension development environment:
    - run "Start Proxy Interceptor" command
    - run "Open Runtime Terminal" command
    - In the "Runtime Terminal" that appears, run your file.
    - The carbon costs and log will appear in the sidebar, and a coloured indicator in the status bar. They show the cost of using an LLM in real time, as each API call happens.
+7. To access the dashboard, run "Open Carbon Dashboard" command.
+<br>
+
+7. For development time analysis, run the "Refresh carbon data" command to fetch the most recent data from Copilot. 
+<br>
    
-<p>
-    This is currently the same for both developers and users. However, we plan to have the extension downloadable from the VScode store for users.
-</p>
+<p>This is currently the same for both developers and users. However, we plan to have the extension downloadable from the VScode store for users.</p>
+
     
-  
 <h2 id="structure">Project Structure</h2>
 <pre>
 ├── Images # architecture diagrams
@@ -124,6 +128,7 @@ We aim to design a toolkit that:
     │   ├── budget.ts # interface for Call structure and usage calculations
     │   ├── serverWorker.ts # listens on proxyServer and handles parsing
     │   ├── proxyServer.ts # starts server, receives parsed information
+    │   ├── logCapture.ts # handles collection and parsing of Copilot log files
     ├── tsconfig.json
     └── vsc-extension-quickstart.md
 

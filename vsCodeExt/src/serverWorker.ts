@@ -2,6 +2,7 @@ import * as mockttp from 'mockttp';
 import * as fs from 'fs';
 import * as path from 'path';
 import { RawBodyIncludesMatcher } from 'mockttp/dist/rules/matchers';
+import * as convert from './convert';
 
 // Clean Environment: Ensure this process ignores the VS Code proxy settings
 process.env.HTTP_PROXY = '';
@@ -27,11 +28,37 @@ async function startServer(port: number, storagePath: string) {
         if (!fs.existsSync(storagePath)) { fs.mkdirSync(storagePath, { recursive: true }); };
 
         // generate certificate of authorisation
-        const https = await mockttp.generateCACertificate();
-        const certPath = path.join(storagePath, 'mockttp-ca.pem');
-        fs.writeFileSync(certPath, https.cert);
+        // const https = await mockttp.generateCACertificate();
+        const certPath = path.join(storagePath, "local-ca.pem");
+        const keyPath = path.join(storagePath, "local-ca.key");
 
-        server = mockttp.getLocal({ https, debug: true });
+        let httpsConfig;
+
+        if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
+            httpsConfig = {
+                key: fs.readFileSync(keyPath, "utf-8"),
+                cert: fs.readFileSync(certPath, "utf-8"),
+            };
+        } else {
+            // generate new certificates and keys
+            const generated = await mockttp.generateCACertificate({
+                subject: {
+                    commonName: "Ecode Proxy CA"
+                },
+                bits: 2048,
+            });
+
+            fs.writeFileSync(keyPath, generated.key);
+            fs.writeFileSync(certPath, generated.cert);
+
+            httpsConfig = {
+                key: generated.key,
+                cert: generated.cert,
+            };
+        }
+        // fs.writeFileSync(certPath, https.cert);
+
+        server = mockttp.getLocal({ https: httpsConfig, debug: true });
         await server.enableDebug();
 
         await server.forAnyRequest().thenPassThrough({
@@ -115,54 +142,70 @@ function scanJsonForTokens(obj: any) {
 
 function getJsonTokenCount(body: string) {
     const jsonBody = JSON.parse(body);
+    let totalTokens = 0;
+    let modelName = "Unknown Model";
 
     // OpenAI uses this format in response
     if (jsonBody.usage && jsonBody.model) {
-        const totalTokens = jsonBody.usage.total_tokens;
-        const modelName = jsonBody.model;
-        const emission = calculateEmission(modelName, totalTokens);
-        let dateTime = new Date();
-        // sendLog(`{ID: ${dateTime}, Model: ${modelName}, Emissions: ${emission.toFixed(8)} gCO2e}🔥`)
-        sendLog(`   >> DateTime: ${dateTime.toLocaleString()}`);
-        sendLog(`   >> Model: ${modelName}`);
-        sendLog(`   >> Tokens: ${totalTokens}`);
-        sendLog(`   >> Emissions: ${emission.toFixed(8)}`);
-        return { "Tokens": totalTokens, "Model": modelName };
+        totalTokens = jsonBody.usage.total_tokens;
+        modelName = jsonBody.model;
     }
+    // Gemini uses this format in response
+    else if (jsonBody.usageMetadata) {
+        totalTokens = jsonBody.usageMetadata.totalTokenCount;
+        // gemini gives model version directly
+        if (jsonBody.modelVersion) {
+            modelName = jsonBody.modelVersion;
+        } else {
+            modelName = "Unknown Gemini Model";
+        }
+    } else {
+        return "UNKNOWN AI USED";
+    }
+    // const emission = calculateEmission(modelName, totalTokens);
+    const emission = convert.calculateEmission(modelName, totalTokens);
 
+    let dateTime = new Date();
+    // sendLog(`{ID: ${dateTime}, Model: ${modelName}, Emissions: ${emission.toFixed(8)} gCO2e}🔥`)
+    sendLog(`   >> DateTime: ${dateTime.toLocaleString()}`);
+    sendLog(`   >> Model: ${modelName}`);
+    sendLog(`   >> Tokens: ${totalTokens}`);
+    sendLog(`   >> Emissions: ${emission.toFixed(8)}`);
+    return { "Tokens": totalTokens, "Model": modelName };
 }
+
 
 // convert tokens to carbon
-function calculateEmission(model: string, token: number) {
-    const chatgpt4oshort = 0.000000370125;
-    const chatgpt4omedium = 0.000000212625;
-    const chatgpt4olong = 0.0000000875;
-    const chatgpt4ominishort = 0.00923;
-    const chatgpt4ominimedium = 0.00369;
-    const chatgpt4ominilong = 0.0006293;
-    const chatgpt4point5 = 0.0003;
+// function calculateEmission(model: string, token: number) {
+//     const chatgpt4oshort = 0.000000370125;
+//     const chatgpt4omedium = 0.000000212625;
+//     const chatgpt4olong = 0.0000000875;
+//     const chatgpt4ominishort = 0.00923;
+//     const chatgpt4ominimedium = 0.00369;
+//     const chatgpt4ominilong = 0.0006293;
+//     const chatgpt4point5 = 0.0003;
 
-    let carbon = 0;
-    const lowerModel = model.toLowerCase();
+//     let carbon = 0;
+//     const lowerModel = model.toLowerCase();
 
-    if (lowerModel.includes("gpt-4o-mini")) {
-        if (token <= 400) {
-            carbon = chatgpt4ominishort * token;
-        } else if (token <= 2000) {
-            carbon = chatgpt4ominimedium * token;
-        } else if (token <= 11500) {
-            carbon = chatgpt4ominilong * token;
-        }
-    } else if (lowerModel.includes("gpt-4o")) {
-        if (token <= 400) {
-            carbon = chatgpt4oshort * token;
-        } else if (token <= 2000) {
-            carbon = chatgpt4omedium * token;
-        } else if (token <= 11500) {
-            carbon = chatgpt4olong * token;
-        }
-    } else if (lowerModel.includes("gpt-4.5")) {
-        carbon = chatgpt4point5 * token;
-    }
-    return carbon;
-}
+//     if (lowerModel.includes("gpt-4o-mini")) {
+//         if (token <= 400) {
+//             carbon = chatgpt4ominishort * token;
+//         } else if (token <= 2000) {
+//             carbon = chatgpt4ominimedium * token;
+//         } else if (token <= 11500) {
+//             carbon = chatgpt4ominilong * token;
+//         }
+//     } else if (lowerModel.includes("gpt-4o")) {
+//         if (token <= 400) {
+//             carbon = chatgpt4oshort * token;
+//         } else if (token <= 2000) {
+//             carbon = chatgpt4omedium * token;
+//         } else if (token <= 11500) {
+//             carbon = chatgpt4olong * token;
+//         }
+//     } else if (lowerModel.includes("gpt-4.5")) {
+//         carbon = chatgpt4point5 * token;
+//     }
+//     return carbon;
+// }

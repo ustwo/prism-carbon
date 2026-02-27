@@ -64,7 +64,7 @@ export class CarbonDashboardPanel {
 
     private _sendData() {
         // Aggregate emissions by model from stored calls
-        const calls = budget.getCalls();
+        const calls = require('./extension').wrappedGetCall();
         const modelMap: Record<string, number> = {};
         for (const call of calls) {
             const model = call.Model || 'Unknown';
