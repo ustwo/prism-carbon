@@ -5,11 +5,13 @@ let slider;
 let graphType = "cumulative";
 let workspaceBranches = [];
 let referenceStrip;
+let hoverFunctionality;
+let container;
 
 const ref = document.getElementById("branchGraph");
 
 if(ref){
-    const container = document.createElement("div");
+    container = document.createElement("div");
     container.id = "carbon-graph-wrapper";
     container.style.width = "100%";
     container.style.height = "300px";
@@ -96,6 +98,22 @@ if(ref){
     mainGraphArea.style.width = "100%";
     mainGraphArea.style.height = "240px";
     mainGraphArea.style.position = "relative";
+
+    hoverFunctionality = document.createElement("div");
+    hoverFunctionality.id = "hover-functionality";
+    hoverFunctionality.style.position = "absolute";
+    hoverFunctionality.style.padding = "6px 10px";
+    hoverFunctionality.style.fontSize = "12px";
+    hoverFunctionality.style.borderRadius = "6px";
+    hoverFunctionality.style.background = "var(--base-variant)";
+    hoverFunctionality.style.border = "1px solid var(--secondary-text)"
+    hoverFunctionality.style.color = "var(--text-color)";
+    hoverFunctionality.style.pointerEvents = "none";
+    hoverFunctionality.style.opacity = "0";
+    hoverFunctionality.style.transition = "opacity 0.15s ease";
+    hoverFunctionality.style.zIndex = "999";
+
+    container.appendChild(hoverFunctionality);
 
     toggleButtonContainer.appendChild(slider);
     toggleButtonContainer.appendChild(cumulativeGraphButton);
@@ -389,6 +407,23 @@ function drawCommitDots(){
                     commitDot.style.left = commit.xAxis + "px";
                     commitDot.style.background = getCColor(commit.carbon);
                     commitDot.style.transform = "translateY(-4px)";
+                    commitDot.style.cursor = "pointer";
+
+                    commitDot.addEventListener("mouseenter", (e) => {
+                        hoverFunctionality.innerHTML = `<strong>${branchName}</strong><br/>
+                                                        Carbon: ${commit.carbon}g CO2`;
+                        hoverFunctionality.style.opacity = "1";
+                    });
+
+                    commitDot.addEventListener("mousemove", (e) => {
+                        const position = container.getBoundingClientRect();
+                        hoverFunctionality.style.left = (e.clientX - position.left + 12) + "px";
+                        hoverFunctionality.style.top = (e.clientY - position.top - 20) + "px";
+                    });
+
+                    commitDot.addEventListener("mouseleave", () => {
+                        hoverFunctionality.style.opacity = "0";
+                    });
 
                     horizontalLine.appendChild(commitDot);
                     

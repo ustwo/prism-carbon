@@ -1,9 +1,14 @@
 :root{
-    --base-color: rgb(255, 255, 255);
-    --base-variant:#526d8d;
+    --base-color: #ffffff;
+    --base-variant: #ffffff;
     --text-color:#000000;
     --secondary-text: #000000;
     --primary-color: #ffffff;
+    --low-carbon: #2e7d32;
+    --avg-carbon: #ef6c00;
+    --high-carbon: #c62828;
+    --theme-button-bg: #000000;
+    --theme-button-icon: #ffffff;
 }
 
 .darkmode{
@@ -12,6 +17,17 @@
     --text-color:#ffffff;
     --secondary-text: #a4a5b8;
     --primary-color: #3a435d;
+    --low-carbon: #66bb6a;
+    --avg-carbon: #ffca28;
+    --high-carbon: #ef5350;
+    --theme-button-bg: #ffffff;
+    --theme-button-icon: #000000;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 * {
@@ -25,7 +41,7 @@ html{
 
 body{
   min-height: 100vh;
-  background-color: var(--base-color);
+  background-color: var(--base-variant);
   color: var(--text-color);
 }
 
@@ -45,13 +61,15 @@ p{
   width: 50px;
   padding: 0;
   border-radius: 50%;
-  background-color: var(--base-variant);
+  background-color: var(--theme-button-bg);
   display: flex;
   justify-content: center;
   align-items: center;
   position: fixed;
   top: 20px;
   right: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 #theme-switch svg{

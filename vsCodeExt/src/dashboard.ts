@@ -41,7 +41,6 @@ export class CarbonDashboardPanel {
                 }
             });
         }, 500);
-        this._panel.webview.html = this._getWebviewContent(this._panel.webview);
 
         this._panel.webview.onDidReceiveMessage(
             message => {
@@ -123,6 +122,8 @@ export class CarbonDashboardPanel {
         const scriptPath = path.join(this._extensionUri.fsPath, 'src', 'webview', 'dashboard.js');
         const graphPath = vscode.Uri.file(this._extensionUri.fsPath + '/src/webview/graph.js');
         const graphUri = this._panel.webview.asWebviewUri(graphPath);
+        const darkModePath = path.join(this._extensionUri.fsPath, 'src', 'webview', 'darkmode.js');
+        const darkModeUri = webview.asWebviewUri(vscode.Uri.file(darkModePath));
 
 
         const styleUri = webview.asWebviewUri(vscode.Uri.file(stylePath));
@@ -151,31 +152,32 @@ export class CarbonDashboardPanel {
   </button>
   <header id="header">
   <h1>Dash Board</h1>
-    
-   
-    
-    <div class="chartCard">
-        <div class="chartBox">
-            <canvas id="myChart"></canvas>
-            <button id="testBtn">Test</button>
-        </div>
-    </div>
-        </header>
+  <p> Carbon impact based on each file will be depicted below: </p>
+  </header>
 
-        <section id="main-view" class="dashboard-grid"> 
-         <div class="section-description">
-        <p>This section shows carbon cost distribution across files.</p>
-    </div>
-            <div id="branchGraph" style="width:100%; height:350px;"></div>
+        <div id="branchGraph" style="width:100%; height:350px;"></div>
+
+        <div class="dashboard-grid">
+    
             <div class="chart-wrapper">
                 <h2>File by Size in Repo</h2>
                 <div class="chart-container">
                     <canvas id="emissionChart"></canvas>
-            <h1>Carbon Analysis</h1>
-        
-        </header>
+                </div>
+            </div>
 
-        <section id="main-view" class="dashboard-grid"> 
+            <div class="chart-wrapper">
+                <h2>Emissions by model</h2>
+                <div class="chart-container">
+                    <canvas id="modelEmissionsChart"></canvas>
+                </div>
+                <p id="model-empty-msg" style="text-align:center; margin-top:12px;">No calls recorded yet.</p>
+            </div>
+            
+            </div>
+    
+
+        <section id="main-view"> 
             <div class="budget-tracker-container">
                 <div class="budget-header">
                     <h2>Session Budget</h2>
@@ -192,13 +194,16 @@ export class CarbonDashboardPanel {
                     <button id="reset-btn" style="padding: 5px 10px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Reset</button>
             </div>
     </div>
-            <div class="chart-wrapper">
-                <h2>Emissions by Model</h2>
-                <div class="chart-container">
-                    <canvas id="modelEmissionsChart"></canvas>
-                </div>
-                <p id="model-empty-msg" style="text-align:center; margin-top:12px;">No calls recorded yet.</p>
-            </div>
+
+
+    <div style = "margin-top:60px;">
+        <h2 style = "text-align:center;">Heat Map</h2>
+        <div style = "max-width:900px; margin:0 auto;">
+        <div class = "chart-container" style="height:220px;">
+        <canvas id="myChart"></canvas>
+        </div>
+        </div>
+        </div>
             
         </section>
 
@@ -206,6 +211,7 @@ export class CarbonDashboardPanel {
 
         <script src="${scriptUri}"></script>
         <script src="${graphUri}"></script>
+        <script src="${darkModeUri}"></script>
     
     
     </body>
