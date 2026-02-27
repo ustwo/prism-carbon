@@ -94,13 +94,15 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	const reset = vscode.commands.registerCommand('ecode.clearStore', () => {
-		budg.resetBudget();
-		treeDataProvider.clearTree();
-		barManager.updateLimit(0);
-		vscode.window.showInformationMessage('Past calls cleared.');
-		// state.runningInterceptor = true;
-
-	});
+        budg.resetBudget();
+        treeDataProvider.clearTree();
+        barManager.updateLimit(0);
+        vscode.window.showInformationMessage('Past calls cleared.');
+        // state.runningInterceptor = true;
+ 
+        CarbonDashboardPanel.sendData();
+ 
+    });
 	// }));
 
 	// Dashboard command 
@@ -419,9 +421,15 @@ function restoreCallHistory(tree: MyTreeDataProvider, budg: budget.budget) { //r
 }
 
 export function updateTree(call: budget.Call) {
-	budg.storeCall(call);
-	var cLimit = budg.updateLimit();
-	console.log("limit: " + cLimit);
-	bar.updateBar(call.Emissions, cLimit);
-	tree.addMessage("Emissions: " + call.Emissions + " - Model: " + call.Model + " - Date: " + call.DateTime);
+    budg.storeCall(call);
+    var cLimit = budg.updateLimit();
+    console.log("limit: " + cLimit);
+    bar.updateBar(call.Emissions, cLimit);
+    tree.addMessage("Emissions: " + call.Emissions + " - Model: " + call.Model + " - Date: " + call.DateTime);
+ 
+    CarbonDashboardPanel.sendData();
+}
+
+export function wrappedGetCall() {
+    return budg.getCalls();
 }

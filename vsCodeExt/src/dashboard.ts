@@ -77,7 +77,7 @@ export class CarbonDashboardPanel {
 
     private _sendData() {
         // Aggregate emissions by model from stored calls
-        const calls = extension.wrappedGetCall(); 
+        const calls = require('./extension').wrappedGetCall();
         const modelMap: Record<string, number> = {};
         for (const call of calls) {
             const model = call.Model || 'Unknown';
@@ -154,6 +154,7 @@ export class CarbonDashboardPanel {
          <div class="section-description">
         <p>This section shows carbon cost distribution across files.</p>
     </div>
+            <div id="branchGraph" style="width:100%; height:350px;"></div>
             <div class="chart-wrapper">
                 <h2>File by Size in Repo</h2>
                 <div class="chart-container">
@@ -187,6 +188,7 @@ export class CarbonDashboardPanel {
         </section>
 
         <script src="${scriptUri}"></script>
+        <script src="${graphUri}"></script>
     
        
     </body>
