@@ -17,7 +17,7 @@ const testPattern = /a/g;
 
 //regex to capture Claude model tokens with datetime
 const dateRegex = /\d*-\d*-\d* \d*:\d*:\d*.\d*/g;
-const inlineClaudePattern = /\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)"stop_reason":"end_turn")|(?<="stop_reason":null(.*):{"cache_creation_input_tokens":)(\d+)|(?<=stop_reason":null(.*)"cache_read_input_tokens":)(\d+)|(?<=stop_reason":null(.*)"input_tokens":)(\d+)|(?<=stop_reason":"end_turn"(.*)"output_tokens":)(\d+)|(?<=stop_reason":"end_turn",(.*))}}/g;
+const inlineClaudePattern = /\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)"stop_reason":"end_turn")|(?<=stop_reason":null(.*)"cache_creation_input_tokens":)(\d+)|(?<=stop_reason":null(.*)"cache_read_input_tokens":)(\d+)|(?<=stop_reason":null(.*)"input_tokens":)(\d+)|(?<=stop_reason":"end_turn"(.*)"output_tokens":)(\d+)|(?<=stop_reason":"end_turn",(.*))}}/g;
 const chatClaudePattern = /\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)"stop_reason":"end_turn")|(?<="stop_reason":"end_turn"(.*):{"cache_creation_input_tokens":)(\d+)|(?<=stop_reason":"end_turn"(.*)"cache_read_input_tokens":)(\d+)|(?<=stop_reason":"end_turn"(.*)"input_tokens":)(\d+)|(?<=stop_reason":"end_turn"(.*)"output_tokens":)(\d+)/g;
 
 export function getLogFilePath(context: vscode.ExtensionContext) {
@@ -135,7 +135,7 @@ function findClaude(log: string): [number[], number[]] {
                 console.log("not }}");
                 if (match[i].match(dateRegex) !== null){
                     timestamp.push(new Date(match[i]).getTime());
-                    if (match[timeIndex] === '0') {timestamp .push(new Date().getTime());}
+                    if (match[timeIndex] === '0') {timestamp.push(new Date().getTime());}
                     console.log("Timestamp: ", timestamp);
                 } 
                 else{  
@@ -154,9 +154,7 @@ function findClaude(log: string): [number[], number[]] {
 
         }
         console.log("C L A U D E T O K E N S !!");
-
         console.log(result);
-
         return [timestamp, result];
     }
 

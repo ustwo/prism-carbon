@@ -339,24 +339,26 @@ export async function getLogs(context: vscode.ExtensionContext) {
         const content = fs.readFileSync(logUri, 'utf-8');
         const lDate = new Date(lastAccess);
 
-        const regex : RegExp = new RegExp(lDate.toString());
+        const regex : RegExp = new RegExp(lDate.toLocaleString());
         const splitting = content.split(regex);
-        var input:string;
-        if (splitting.length !== 2){
-            input = content;
-        }
-        else{
-            input = splitting[1];
-        }
+        var input:string = content;
+        // if (splitting.length !== 2){
+           
+        //     input = content;
+        // }
+        // else{
+        //     input = splitting[1];
+        // }
         const models: budget.Call[] = await logCap.identifyModel(input);
         console.log("CALLS: ", models);
         for (let index = 0; index < models.length; index++) {
-
+ 
             if (models[index].DateTime > lastAccess){
                 updateTree(models[index]);
-                lastAccess = models[index].DateTime;
             }
         }
+        lastAccess = new Date().getTime();
+ 
         vscode.window.showInformationMessage("Copilot log files refreshed.");
          }
         catch (error) {
