@@ -41,6 +41,20 @@ export class CarbonDashboardPanel {
                 }
             });
         }, 500);
+        this._panel.webview.html = this._getWebviewContent(this._panel.webview);
+
+        this._panel.webview.onDidReceiveMessage(
+            message => {
+                switch (message.command) {
+                    case 'triggerReset':
+                        // When the button is clicked, run your clear command!
+                        vscode.commands.executeCommand('ecode.clearStore');
+                        return;
+                }
+            },
+            null,
+            this._disposables
+        );
     }
 
     public static createOrShow(extensionUri: vscode.Uri) {
@@ -101,9 +115,6 @@ export class CarbonDashboardPanel {
             if (x) { x.dispose(); }
         }
     }
-    // generates the HTML content for the webview
-    // importing chart.js for that charts can be drawn and its libraries will handle the math and drawing    
-
 // generates the HTML content for the webview
 // importing chart.js for that charts can be drawn and its libraries will handle the math and drawing
     private _getWebviewContent(webview: vscode.Webview = this._panel.webview): string {
@@ -159,14 +170,27 @@ export class CarbonDashboardPanel {
                 <h2>File by Size in Repo</h2>
                 <div class="chart-container">
                     <canvas id="emissionChart"></canvas>
+            <h1>Carbon Analysis</h1>
+        
+        </header>
+
+        <section id="main-view" class="dashboard-grid"> 
+            <div class="budget-tracker-container">
+                <div class="budget-header">
+                    <h2>Session Budget</h2>
                 </div>
-            </div>
-            <div class="chart-wrapper">
-                <h2>Carbon Cost in Repo by File</h2>
-                <div class="chart-container">
-                    <canvas id="carbonCostChart"></canvas>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="session-progress-fill"></div>
                 </div>
+                <div class="budget-footer">
+                    <span id="session-percent-used" class="budget-percent">0% used</span>
+                    <span id="session-text-right" class="budget-detail">0g / 0g</span>
+                </div>
+                <div class="budget-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    
+                    <button id="reset-btn" style="padding: 5px 10px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Reset</button>
             </div>
+    </div>
             <div class="chart-wrapper">
                 <h2>Emissions by Model</h2>
                 <div class="chart-container">
@@ -174,18 +198,10 @@ export class CarbonDashboardPanel {
                 </div>
                 <p id="model-empty-msg" style="text-align:center; margin-top:12px;">No calls recorded yet.</p>
             </div>
-
-           
-</div>
+            
         </section>
 
-        <section id="drilldown-view">
-            <button class="back-btn" id="back-btn">← Back to Overview</button>
-            <h2 id="drilldown-title">File vs Budget</h2>
-            <div class="chart-container" style="max-width: 500px; margin: 0 auto;">
-                <canvas id="budgetChart"></canvas>
-            </div>
-        </section>
+       
 
         <script src="${scriptUri}"></script>
         <script src="${graphUri}"></script>
@@ -195,5 +211,3 @@ export class CarbonDashboardPanel {
     </html>`;
     }
 }
-
-

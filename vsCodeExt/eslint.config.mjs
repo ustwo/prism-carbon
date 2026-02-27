@@ -1,12 +1,21 @@
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> ConnectDashBoardFiles
 export default [
     {
         ignores: ["dist/", "out/", "node_modules/", "**/*.js", "**/*.map"]
     },
+<<<<<<< HEAD
    
    
+=======
+    
+    
+>>>>>>> ConnectDashBoardFiles
     {
     files: ["**/*.ts"],
 }, {
@@ -31,5 +40,9 @@ export default [
         "no-throw-literal": "warn",
         semi: "warn",
     },
+<<<<<<< HEAD
    
+=======
+    
+>>>>>>> ConnectDashBoardFiles
 }];

@@ -1,5 +1,17 @@
 (function(){
 
+
+// initialising vscode api so that back end can be connected
+    const vscode = acquireVsCodeApi();
+
+    // click listener so reset button can be used
+    const resetBtn = document.getElementById('reset-btn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            // sending a message to extension.ts
+            vscode.postMessage({ command: 'triggerReset' });
+        });}
+
  const btn = document.getElementById('theme-switch');
             btn.addEventListener('click', () => { document.body.classList.toggle('darkmode'); });
 
@@ -199,39 +211,8 @@ if (ctxTutorial) {
                 plugins: { legend: { position: 'bottom', labels: { color: '#888' } } }
             };
 
-            // the file size pie chart.
             
-            const sizeChart = new Chart(document.getElementById('emissionChart'), {
-                type: 'pie',
-                data: {
-                    labels: ['Main.js', 'test.js', 'worker1.js', 'Helper.js', 'Other'],
-                    datasets: [{ data: [300, 150, 80, 60, 25], backgroundColor: generateColors(5) }]
-                },
-                options: commonOptions
-            });
-
-            // the carbon cost pie chart
-            const ctxCarbon = document.getElementById('carbonCostChart');
-            const carbonChart = new Chart(ctxCarbon, {
-                type: 'pie',
-                data: {
-                    labels: ['Main.js', 'test.js', 'worker1.js', 'Helper.js', 'Other'],
-                    datasets: [{ data: [400, 200, 50, 30, 100], backgroundColor: generateColors(5) }]
-                },
-                options: commonOptions
-            });
-
-            // the drill down budget chart
-            const budgetChart = new Chart(document.getElementById('budgetChart'), {
-                type: 'pie',
-                data: {
-                    labels: ['Used by File', 'Remaining Budget'],
-                    datasets: [{ data: [0, 100], backgroundColor: ['#e74c3c', '#2ecc71'] }]
-                },
-                options: commonOptions
-            });
-
-            // --- Emissions by Model chart (live data from backend) ---
+            // emissions by Model chart live data from backend
             const modelEmissionsChart = new Chart(document.getElementById('modelEmissionsChart'), {
                 type: 'pie',
                 data: {
@@ -258,52 +239,56 @@ if (ctxTutorial) {
                 }
             });
 
-            // this is the logic for the drill down, when a section of the carbon cost chart is clicked, it will update the budget chart to show how much of the budget that file is using and how much is remaining
-            ctxCarbon.onclick = function(evt) {
-                const points = carbonChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
-                if (points.length) {
-                    const index = points[0].index;
-                    const label = carbonChart.data.labels[index];
-                    const value = carbonChart.data.datasets[0].data[index];
-                    
-                    const totalBudget = 600; // Example total budget
-                    const remaining = Math.max(0, totalBudget - value);
-
-                    document.getElementById('drilldown-title').innerText = label + " vs Total Budget";
-                    budgetChart.data.datasets[0].data = [value, remaining];
-                    budgetChart.update();
-
-                    document.getElementById('drilldown-view').scrollIntoView({ behavior: 'smooth' });
-                    document.getElementById('drilldown-view').style.display = 'block';
-                }
-            };
-
-            document.getElementById('back-btn').onclick = function() {
-                document.getElementById('main-view').style.display = 'flex';
-                document.getElementById('header').style.display = 'block';
-                document.getElementById('drilldown-view').style.display = 'none';
-            };
+            
 
             window.addEventListener('message', event => {
-                const message = event.data;
-                if (message.command === 'updateData') {
-                    // existing file size / carbon cost charts
-                    if(message.fileSizes) sizeChart.data.datasets[0].data = message.fileSizes;
-                    if(message.carbonData) carbonChart.data.datasets[0].data = message.carbonData;
-                    sizeChart.update();
-                    carbonChart.update();
+    const message = event.data;
+    if (message.command === 'updateData') {
+        
+        // live emission by model data from backend
+        if (message.modelLabels && message.modelEmissions) {
+            const hasData = message.modelLabels.length > 0;
+            const emptyMsg = document.getElementById('model-empty-msg');
+            if (emptyMsg) { emptyMsg.style.display = hasData ? 'none' : 'block'; }
 
-                    // live Emissions by Model chart
-                    if (message.modelLabels && message.modelEmissions) {
-                        const hasData = message.modelLabels.length > 0;
-                        const emptyMsg = document.getElementById('model-empty-msg');
-                        if (emptyMsg) { emptyMsg.style.display = hasData ? 'none' : 'block'; }
+            modelEmissionsChart.data.labels = message.modelLabels;
+            modelEmissionsChart.data.datasets[0].data = message.modelEmissions;
+            modelEmissionsChart.data.datasets[0].backgroundColor = generateColors(message.modelLabels.length);
+            modelEmissionsChart.update();
+            
+            //budget prgess bar update logic
+            // calculate total session emissions by summing the array
+            const totalEmissions = message.modelEmissions.reduce((sum, current) => sum + current, 0);
+            
+            // Hardcoding a budget limit for testing  
+            
+            const SESSION_BUDGET = 5; 
+            
+            // calculate percentage 
+            let percentUsed = 0;
+            if (SESSION_BUDGET > 0) {
+                percentUsed = (totalEmissions / SESSION_BUDGET) * 100;
+            }
+            
+            // capping visual width at 100% for display purposes
+            const visualWidth = Math.min(percentUsed, 100);
 
-                        modelEmissionsChart.data.labels = message.modelLabels;
-                        modelEmissionsChart.data.datasets[0].data = message.modelEmissions;
-                        modelEmissionsChart.data.datasets[0].backgroundColor = generateColors(message.modelLabels.length);
-                        modelEmissionsChart.update();
-                    }
-                }
-            });
+            // update the progress bar and text elements
+            const fillEl = document.getElementById('session-progress-fill');
+            const pctEl = document.getElementById('session-percent-used');
+            const rightEl = document.getElementById('session-text-right');
+            
+            fillEl.style.width = visualWidth + '%';
+            pctEl.innerText = percentUsed.toFixed(1) + '% used';
+            rightEl.innerText = totalEmissions.toFixed(5) + 'g / ' + SESSION_BUDGET + 'g CO₂e';
+            
+            // change colour to red if over 90% of budget is used
+            if (percentUsed >= 90) {
+                fillEl.classList.add('danger');
+            } else {
+                fillEl.classList.remove('danger');
+            }
+        }
+    }
+});
     })();
