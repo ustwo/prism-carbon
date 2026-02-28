@@ -159,12 +159,7 @@ export class CarbonDashboardPanel {
 
         <div class="dashboard-grid">
     
-            <div class="chart-wrapper">
-                <h2>File by Size in Repo</h2>
-                <div class="chart-container">
-                    <canvas id="emissionChart"></canvas>
-                </div>
-            </div>
+            
 
             <div class="chart-wrapper">
                 <h2>Emissions by model</h2>
