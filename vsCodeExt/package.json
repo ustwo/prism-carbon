@@ -2,16 +2,19 @@
   "name": "ecode",
   "displayName": "EstimatingCarbon",
   "publisher": "development",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spe-uob/2025-EstimatingCarbon.git"
+  },
   "description": "",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.104.0"
+    "vscode": "^1.108.1"
   },
   "categories": [
     "Other"
   ],
   "activationEvents": [
-    "onCommand:ecode.helloWorld",
     "onCommand:ecode.resetStore",
     "onCommand:ecode.inputdisplay",
     "onCommand:ecode.setApiKey",
@@ -37,7 +40,8 @@
       "my-view-container": [
         {
           "id": "myPrimaryView",
-          "name": "Carbon Estimates"
+          "name": "Carbon Estimates",
+          "icon": "$(eye)"
         }
       ]
     },
@@ -47,6 +51,10 @@
         "title": "Open Carbon Dashboard"
       },
       {
+        "command": "ecode.testInput",
+        "title": "test input"
+      },
+      {
         "command": "ecode.clearStore",
         "title": "Clear stored calls"
       },
@@ -54,7 +62,6 @@
         "command": "ecode.inputdisplay",
         "title": "Input Display"
       },
-
       {
         "command": "ecode.setApiKey",
         "title": "Set Api Key"
@@ -78,6 +85,11 @@
         "command": "ecode.interceptorOpenTerminal",
         "title": "Open Runtime Terminal",
         "category": "Interceptor"
+      },
+      {
+        "command": "ecode.runtimeAnalysis",
+        "title": "Ecode: Analyse Runtime",
+        "category": "Interceptor"
       }
     ]
   },
@@ -93,28 +105,31 @@
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "check-types": "tsc --noEmit",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "release": "vsce package"
   },
   "devDependencies": {
-    "@types/http-proxy": "^1.17.16",
+    "@types/http-proxy": "^1.17.17",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^22.18.11",
+    "@types/node": "^25.2.3",
     "@types/sinon": "^21.0.0",
-    "@types/vscode": "^1.108.1",
-    "@typescript-eslint/eslint-plugin": "^8.45.0",
-    "@typescript-eslint/parser": "^8.45.0",
-    "@vscode/test-cli": "^0.0.11",
+    "@types/vscode": "^1.109.0",
+    "@typescript-eslint/eslint-plugin": "^8.56.0",
+    "@typescript-eslint/parser": "^8.56.0",
+    "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
-    "esbuild": "^0.25.10",
-    "eslint": "^9.36.0",
+    "esbuild": "^0.27.3",
+    "eslint": "^10.0.0",
     "npm-run-all": "^4.1.5",
     "sinon": "^21.0.1",
     "typescript": "^5.9.3",
-    "vscode": "^1.1.34"
+    "vscode": "^1.1.37"
   },
   "dependencies": {
-    "axios": "^1.13.2",
+    "@vscode/codicons": "^0.0.44",
+    "axios": "^1.13.5",
     "http-proxy": "^1.18.1",
+    "mocha": "^11.7.5",
     "mockttp": "^4.2.1",
     "tiktoken": "^1.0.22"
   }

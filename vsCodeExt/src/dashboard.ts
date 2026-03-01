@@ -45,11 +45,11 @@ export class CarbonDashboardPanel {
             if (x) { x.dispose(); }
         }
     }
-// generates the HTML content for the webview
-// importing chart.js for that charts can be drawn and its libraries will handle the math and drawing
+    // generates the HTML content for the webview
+    // importing chart.js for that charts can be drawn and its libraries will handle the math and drawing
     private _getWebviewContent() {
 
-            return `<!DOCTYPE html>
+        return `<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -83,7 +83,7 @@ body.darkmode{
 * { margin:0; padding:0; box-sizing:border-box; }
 html{ font-family: sans-serif; }
 
-/* main pag style, paddings  */
+/* main page style, paddings  */
 
 body{ min-height:100vh; background-color:var(--base-color); color:var(--text-color); transition: all 0.3s ease; }
 header, section{ padding:70px min(50px,7%); }
@@ -115,12 +115,24 @@ body.darkmode #theme-switch svg:first-child{ display: none; }
 body.darkmode #theme-switch svg:last-child{ display: block; }
             .chart-container {
                 position: relative;
-                height: 400px;
+                height: 300px;
                 width: 100%;
                 max-width: 800px;
                 margin: 0 auto;
             }
-                h2 { text-align: center; font-weight: normal; margin-bottom; 10px;}
+            .chart-wrapper{
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            }
+            .dashboard-grid{
+            display: flex;
+            flex-wrap:wrap;
+            justify-content: space-around;
+            gap: 20px;
+            padding: 20px;
+            }
+                h2 { text-align: center; font-weight: normal; margin-bottom: 10px;}
         </style>
 
         
@@ -136,15 +148,27 @@ body.darkmode #theme-switch svg:last-child{ display: block; }
   <header>
 
 
-  <h1>chart 1</h1>
-  <p> something here</p>
+  <h1>Carbon Analysis</h1>
+  <p> Carbon impact based on each file will be depicted below via pie charts</p>
 </header>
-       <section> 
+       <section class = "dashboard-grid"> 
+       <div class="chart-wrapper">
         <h2>File by Size in Repo</h2>
         <div class="chart-container">
-        <canvas id="emissionChart"></canvas>
+            <canvas id="emissionChart"></canvas>
+        </div>
+
+    </div>
+    <div class="chart-wrapper">
+        <h2>Carbon Cost in Repo by File</h2>
+        <div class="chart-container">
+            <canvas id="carbonCostChart"></canvas>
+        </div>
     </div>
     </section>
+
+    <script src="https://code.jscharting.com/latest/jscharting.js"></script>
+
     <script>
 
 // listens for clicking and change color for it
@@ -153,6 +177,61 @@ body.darkmode #theme-switch svg:last-child{ display: block; }
   btn.addEventListener('click', () => {
     document.body.classList.toggle('darkmode');
   });
+
+  /* ---------- heatmap ---------- */
+var palette = [
+  '#3c506b',
+  '#577399',
+  '#BDD5EA',
+  '#F7F7FF'
+].reverse();
+
+var data = [
+  { x: 'Jan', y: 'file 1', z: 90 },
+  { x: 'Feb', y: 'file 1', z: 177 },
+  { x: 'Mar', y: 'file 1', z: 147 },
+  { x: 'Apr', y: 'file 1', z: 193 },
+  { x: 'May', y: 'file 1', z: 120 },
+  { x: 'Jun', y: 'file 1', z: 116 },
+  { x: 'Jul', y: 'file 1', z: 176 },
+  { x: 'Aug', y: 'file 1', z: 198 },
+  { x: 'Sep', y: 'file 1', z: 98 },
+  { x: 'Oct', y: 'file 1', z: 124 },
+  { x: 'Nov', y: 'file 1', z: 109 },
+  { x: 'Dec', y: 'file 1', z: 136 },
+
+  { x: 'Jan', y: 'file 2', z: 185 },
+  { x: 'Feb', y: 'file 2', z: 103 },
+  { x: 'Mar', y: 'file 2', z: 199 },
+  { x: 'Apr', y: 'file 2', z: 190 },
+  { x: 'May', y: 'file 2', z: 174 },
+  { x: 'Jun', y: 'file 2', z: 189 },
+  { x: 'Jul', y: 'file 2', z: 132 },
+  { x: 'Aug', y: 'file 2', z: 200 },
+  { x: 'Sep', y: 'file 2', z: 176 },
+  { x: 'Oct', y: 'file 2', z: 97 },
+  { x: 'Nov', y: 'file 2', z: 171 },
+  { x: 'Dec', y: 'file 2', z: 120 }
+];
+
+// wait until DOM exists
+window.addEventListener('load', () => {
+  JSC.chart('chartDiv1', {
+    type: 'heatmap solid',
+    margin: [-4, -4],
+    box_fill: 'none',
+    palette: {
+      pointValue: p => p.options('z'),
+      colors: palette
+    },
+    legend_visible: false,
+    defaultPoint: {
+      outline_width: 0,
+      tooltip: '%yValue - %xValue<br><b>%zValue kg CO2</b>'
+    },
+    series: [{ points: data }]
+  });
+});
 
        
         const fileSizes = [300, 150, 80, 60,25];  // dummy data representing file sizes 
@@ -204,17 +283,45 @@ body.darkmode #theme-switch svg:last-child{ display: block; }
             const message = event.data;
             if (message.command === 'updateData') {
                 // This will be used when real data is available, the dummy data used above will be ignored
-                myChart.data.datasets[0].data = message.data;
-                myChart.data.datasets[0].backgroundColor = generateColors(message.data.length);
+                carbonChart.data.datasets[0].data = message.carbonData;
+                carbonChart.update();
+                myChart.data.datasets[0].data = message.fileSizes;
+                myChart.data.datasets[0].backgroundColor = generateColors(message.fileSizes.length);
                 myChart.update();
             }
         });
 
+       const carbonData = [400, 200, 50, 30, 100]; // dummy data
+       
+       const ctxCarbon = document.getElementById('carbonCostChart');
+       const carbonChart = new Chart(ctxCarbon, {
+              type: 'pie',
+                data: {
+                    labels: ['Main.js', 'test.js', 'worker1.js', 'Helperfunction.js', 'Other Files'],
+                    datasets: [{
+                        data: carbonData,
+                        backgroundColor: generateColors(carbonData.length),
+                        borderColor: '#1e1e1e',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#ccc' }   
+                        }
+                    }
+                }
+       });
         
+         
     </script>
     </body>
     </html>`;
-        }
+    }
 }
 
 

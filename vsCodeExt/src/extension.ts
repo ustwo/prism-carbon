@@ -22,17 +22,19 @@ export let bar: statusBarManager;
 export let lastAccess: number;
 
 export function setDisplay(t: MyTreeDataProvider, b: statusBarManager) {
-    tree = t;
-    bar = b;
+	tree = t;
+	bar = b;
 }
 
 
 let proxyServer: InterceptorProxy;
 const PROXY_PORT = 3024;
+var budg: budget.budget;
 
 export function activate(context: vscode.ExtensionContext) {
+	budg = new budget.budget(context.workspaceState);
 
-    // state.runningInterceptor = true;
+	// state.runningInterceptor = true;
 
     var barManager = new statusBarManager();
     const treeDataProvider = new MyTreeDataProvider();
@@ -45,22 +47,23 @@ export function activate(context: vscode.ExtensionContext) {
 
     devTok.getTextAroundCursor();
 
-    //let lastInlineState = false;
-    const disposables: vscode.Disposable[] = [];
+	//let lastInlineState = false;
+	const disposables: vscode.Disposable[] = [];
 
 
-    setDisplay(treeDataProvider, barManager);
+	setDisplay(treeDataProvider, barManager);
 
-    vscode.window.registerTreeDataProvider(
-        'myPrimaryView',
-        treeDataProvider
-    );
+	vscode.window.registerTreeDataProvider(
+		'myPrimaryView',
+		treeDataProvider
+	);
 
 
-    budget.initStorage(context.workspaceState);
-    restoreCallHistory(treeDataProvider);
-    barManager.updateLimit(budget.updateLimit());
-    const BarManager = vscode.window.createStatusBarItem();
+	// budget.initStorage(context.workspaceState);
+	restoreCallHistory(treeDataProvider, budg);
+	barManager.updateLimit(budg.updateLimit());
+	const BarManager = vscode.window.createStatusBarItem();
+
 
 
     disposables.push(vscode.workspace.onDidSaveTextDocument(async evt => {
@@ -69,15 +72,15 @@ export function activate(context: vscode.ExtensionContext) {
     }));
 
 
-    const reset = vscode.commands.registerCommand('ecode.clearStore', () => {
+	const reset = vscode.commands.registerCommand('ecode.clearStore', () => {
+		budg.resetBudget();
+		treeDataProvider.clearTree();
+		barManager.updateLimit(0);
+		vscode.window.showInformationMessage('Past calls cleared.');
+		// state.runningInterceptor = true;
 
-        budget.resetBudget();
-        treeDataProvider.clearTree();
-        barManager.updateLimit(0);
-        vscode.window.showInformationMessage('Past calls cleared.');
-        // state.runningInterceptor = true;
-
-    });
+	});
+	// }));
 
     // Dashboard command 
     const dashboardCommand = vscode.commands.registerCommand('ecode.openDashboard', () => {
@@ -88,7 +91,6 @@ export function activate(context: vscode.ExtensionContext) {
     const refresh = vscode.commands.registerCommand('ecode.refreshLogs', async () => {
         getLogs(context);
     });
-
 
 
     const input = vscode.commands.registerCommand('ecode.inputdisplay', async () => {
@@ -108,220 +110,280 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showInformationMessage('Error: NaN inputted.');
         }
 
+	});
+	context.subscriptions.push(input);
+	context.subscriptions.push(dashboardCommand);
+
+	console.log('Interceptor Proxy Server is active');
+
+	let startDisposable = vscode.commands.registerCommand('ecode.interceptorStart', async () => {
+		try {
+			// start local server
+			proxyServer = new InterceptorProxy(PROXY_PORT);
+			await proxyServer.start(context.globalStorageUri.fsPath);
+
+			// set VSCode to use local proxy
+			// const config = vscode.workspace.getConfiguration('http');
+			// await config.update('proxy', `http://localhost:${PROXY_PORT}`, vscode.ConfigurationTarget.Global);
+
+			// //QUICK FIX TO NOT NEED SSL CERTS FOR NOW
+			// // NEED TO CHANGE FOR BETA
+			// await config.update('proxyStrictSSL', false, vscode.ConfigurationTarget.Global);
 
 
-    });
-    context.subscriptions.push(input);
-    //context.subscriptions.push(devTok.inline);
-    context.subscriptions.push(dashboardCommand);
+			// const disposableAPIKEY = vscode.commands.registerCommand('ecode.setApiKey', async () => {
+			//  const apiKey = await vscode.window.showInputBox({
+			//      prompt: 'Enter your API Key',
+			//      placeHolder: 'e.g.   sk - xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+			//      ignoreFocusOut: true // keep input box open even if focus moves away from window
 
-    console.log('Interceptor Proxy Server is active');
+			//  });
+			//  if (apiKey) {
+			//      await context.secrets.store('myApiKey', apiKey); // securely stores apikey using key 'myApiKey'
 
-    let startDisposable = vscode.commands.registerCommand('ecode.interceptorStart', async () => {
-        try {
-            // start local server
-            proxyServer = new InterceptorProxy(PROXY_PORT);
-            await proxyServer.start(context.globalStorageUri.fsPath);
+			//      // to retrieve key from secret store, use:   const apiKey = await context.secrets.get('myApiKey');
+			state.runningInterceptor = true;
+			// vscode.window.showInformationMessage('Interceptor Proxy started on port ' + "->" + PROXY_PORT + state.runningInterceptor + "DONE");
+			// vscode.window.showInformationMessage("Status: " + state.runningInterceptor);
+		} catch (error) {
+			vscode.window.showErrorMessage('Failed to start Interceptor Proxy: ' + error);
+		}
+	});
 
-            // set VSCode to use local proxy
-            const config = vscode.workspace.getConfiguration('http');
-            await config.update('proxy', `http://localhost:${PROXY_PORT}`, vscode.ConfigurationTarget.Global);
+	let terminal: vscode.Terminal;
 
-            //QUICK FIX TO NOT NEED SSL CERTS FOR NOW
-            // NEED TO CHANGE FOR BETA
-            await config.update('proxyStrictSSL', false, vscode.ConfigurationTarget.Global);
+	let terminalDisposable = vscode.commands.registerCommand('ecode.interceptorOpenTerminal', async () => {
+		if (!proxyServer) {
+			vscode.window.showErrorMessage("There is no Interceptor Proxy Running. Please initiate `ecode.InterceptorStart`");
+			return;
+		}
+
+		const proxyUrl = `http://127.0.0.1:${PROXY_PORT}`;
+
+		//create a new terminal with specific Environment Vars
+
+		terminal = vscode.window.createTerminal({
+			name: "Ecode RunTime Analysis Terminal",
+			env: {
+				// proxy environment variables
+				"HTTP_PROXY": proxyUrl,
+				"HTTPS_PROXY": proxyUrl,
+				"http_proxy": proxyUrl,
+				"https_proxy": proxyUrl,
+
+				// python specific
+				"REQUESTS_CA_BUNDLE": proxyServer.certPath,
+
+				"SSL_CERT_FILE": proxyServer.certPath,
+
+				// nodejs specific
+				"NODE_EXTRA_CA_CERTS": proxyServer.certPath,
+				"NODE_OPTIONS": "--use-env-proxy"
+
+			}
+		});
+
+		terminal.show();
+		vscode.window.showInformationMessage("Opened Terminal with Proxy Environment Vars");
+	});
+
+	let stopDisposable = vscode.commands.registerCommand('ecode.interceptorStop', async () => {
+		// stop local server
+		if (proxyServer) {
+			proxyServer.stop();
+		}
+
+		if (terminal) {
+			terminal.dispose();
+		}
+
+		// clear VSCode proxy settings
+		// const config = vscode.workspace.getConfiguration('http');
+		// await config.update('proxy', undefined, vscode.ConfigurationTarget.Global);
+		// await config.update('proxyStrictSSL', undefined, vscode.ConfigurationTarget.Global);
+
+		vscode.window.showInformationMessage('Interceptor Proxy stopped. ');//Proxy settings cleared.');
+	});
+
+	let runtimeDisposable = vscode.commands.registerCommand("ecode.runtimeAnalysis", async () => {
+		try {
+			await vscode.commands.executeCommand("ecode.interceptorStart");
+			await vscode.commands.executeCommand("ecode.interceptorOpenTerminal");
+		} catch (error) {
+			vscode.window.showErrorMessage("Failed to launch runtime analysis service");
+		}
+	});
+
+	let ecodeMenu = vscode.commands.registerCommand("ecode.menu", async () => {
+		const ecodeCommands = [
+			{
+				label: `$(play) Start Runtime Analysis`,
+				description: "Opens Ecode Terminal where files to be analysed are run",
+				command: "ecode.runtimeAnalysis"
+			},
+			{
+				label: `$(play) Stop Runtime Proxy`,
+				description: "Stops the recording of carbon emissions",
+				command: "ecode.interceptorStop"
+				// TODO need to have a way to keep the environment variables (gemini api key) so that it doesn't need to be input every time
+			},
+			{
+				label: `$(play) Reset Stored Session`,
+				description: "Resets the current record of carbon emissions",
+				command: "ecode.clearStore"
+			}
+		];
+
+		const selection = await vscode.window.showQuickPick(ecodeCommands, {
+			placeHolder: "Select an Ecode function",
+		});
+
+		if (selection) {
+			vscode.commands.executeCommand(selection.command);
+		}
+	});
+
+	const runtimeLaunchButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
+	// runtimeLaunchButton.text = `$(play) Start Ecode Runtime Analysis`;
+	// runtimeLaunchButton.tooltip = "Click to open terminal to run file to be analysed";
+	// runtimeLaunchButton.command = "ecode.runtimeAnalysis";
+	// runtimeLaunchButton.show();
+	runtimeLaunchButton.text = `$(list-unordered) Ecode`;
+	runtimeLaunchButton.tooltip = "Click to see AI Analysis Options";
+	runtimeLaunchButton.command = "ecode.menu";
+	runtimeLaunchButton.show();
+
+	// TODO need to make sure that multiple interceptors can't be started at once. 
+	// This isn't handled very gracefully at the moment.
 
 
-            // const disposableAPIKEY = vscode.commands.registerCommand('ecode.setApiKey', async () => {
-            //  const apiKey = await vscode.window.showInputBox({
-            //      prompt: 'Enter your API Key',
-            //      placeHolder: 'e.g.   sk - xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-            //      ignoreFocusOut: true // keep input box open even if focus moves away from window
 
-            //  });
-            //  if (apiKey) {
-            //      await context.secrets.store('myApiKey', apiKey); // securely stores apikey using key 'myApiKey'
-
-            //      // to retrieve key from secret store, use:   const apiKey = await context.secrets.get('myApiKey');
-            state.runningInterceptor = true;
-            // vscode.window.showInformationMessage('Interceptor Proxy started on port ' + "->" + PROXY_PORT + state.runningInterceptor + "DONE");
-            vscode.window.showInformationMessage("Status: " + state.runningInterceptor);
-        } catch (error) {
-            vscode.window.showErrorMessage('Failed to start Interceptor Proxy: ' + error);
-        }
-    });
-
-    let stopDisposable = vscode.commands.registerCommand('ecode.interceptorStop', async () => {
-        // stop local server
-        if (proxyServer) {
-            proxyServer.stop();
-        }
-
-        // clear VSCode proxy settings
-        const config = vscode.workspace.getConfiguration('http');
-        await config.update('proxy', undefined, vscode.ConfigurationTarget.Global);
-        await config.update('proxyStrictSSL', undefined, vscode.ConfigurationTarget.Global);
-
-        vscode.window.showInformationMessage('Interceptor Proxy stopped. Proxy settings cleared.');
-    });
-
-    let terminalDisposable = vscode.commands.registerCommand('ecode.interceptorOpenTerminal', async () => {
-        if (!proxyServer) {
-            vscode.window.showErrorMessage("There is no Interceptor Proxy Running. Please initiate `ecode.InterceptorStart`");
-            return;
-        }
-
-        const proxyUrl = `http://127.0.0.1:${PROXY_PORT}`;
-
-        //create a new terminal with specific Environment Vars
-
-        const terminal = vscode.window.createTerminal({
-            name: "Estimating Carbon Terminal",
-            env: {
-                // proxy environment variables
-                "HTTP_PROXY": proxyUrl,
-                "HTTPS_PROXY": proxyUrl,
-                "http_proxy": proxyUrl,
-                "https_proxy": proxyUrl,
-
-                // python specific
-                "REQUESTS_CA_BUNDLE": proxyServer.certPath,
-
-                // nodejs specific
-                "NODE_EXTRA_CA_CERTS": proxyServer.certPath
-            }
-        });
-
-        terminal.show();
-        vscode.window.showInformationMessage("Opened Terminal with Proxy Environment Vars");
-    });
-
-    context.subscriptions.push(terminalDisposable);
-    context.subscriptions.push(startDisposable);
-    context.subscriptions.push(stopDisposable);
-    return {
-        isInterceptorRunning: () => state.runningInterceptor
-    };
+	context.subscriptions.push(terminalDisposable);
+	context.subscriptions.push(startDisposable);
+	context.subscriptions.push(stopDisposable);
+	context.subscriptions.push(runtimeDisposable);
+	context.subscriptions.push(runtimeLaunchButton);
+	context.subscriptions.push(ecodeMenu);
+	return {
+		budg,
+		isInterceptorRunning: () => state.runningInterceptor
+	};
 }
-
 export async function deactivate() {
-    // make sure that the vscode isn't always vulnerable, disable configurations
-    if (proxyServer) {
-        await proxyServer.stop();
-    }
-    const config = vscode.workspace.getConfiguration('http');
-    await config.update('proxy', undefined, vscode.ConfigurationTarget.Global);
-    await config.update('proxyStrictSSL', undefined, vscode.ConfigurationTarget.Global);
+	// make sure that the vscode isn't always vulnerable, disable configurations
+	if (proxyServer) {
+		await proxyServer.stop();
+	}
+	// const config = vscode.workspace.getConfiguration('http');
+	// await config.update('proxy', undefined, vscode.ConfigurationTarget.Global);
+	// await config.update('proxyStrictSSL', undefined, vscode.ConfigurationTarget.Global);
 }
 
 
 
 class MyTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
-    private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null> = new vscode.EventEmitter<vscode.TreeItem | undefined | null>();
-    readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null> = this._onDidChangeTreeData.event;
-    private items: vscode.TreeItem[] = []; //creates a list of tree items starts empty obviously
+	private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null> = new vscode.EventEmitter<vscode.TreeItem | undefined | null>();
+	readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null> = this._onDidChangeTreeData.event;
+	private items: vscode.TreeItem[] = []; //creates a list of tree items starts empty obviously
 
-    constructor() {
-        this.items.push(new vscode.TreeItem(
-            "Latest calls:",
-            vscode.TreeItemCollapsibleState.None)); //initialises the messages with one title message     
-    }
+	constructor() {
+		this.items.push(new vscode.TreeItem(
+			"Latest calls:",
+			vscode.TreeItemCollapsibleState.None)); //initialises the messages with one title message     
+	}
 
-    getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
-        return element;
-    }
-    getChildren(element?: vscode.TreeItem): Thenable<vscode.TreeItem[]> {
-        //If an element is passed it means we are getting children of a sub-item --> no nested items here so empty array returned
-        if (element) {
-            return Promise.resolve([]);
-        } else {
-            //Here a top-level item will be created which will be where the message will be displayed           
-            return Promise.resolve(this.items);
-        }
-    }
-    addMessage(message: string) { //method which allows messaged to be added
-        this.items.push(new vscode.TreeItem( //adds a new item to the side bar
-            message,
-            vscode.TreeItemCollapsibleState.None
-        ));
-        this._onDidChangeTreeData.fire(); //refreshes the sidebar
+	getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
+		return element;
+	}
+	getChildren(element?: vscode.TreeItem): Thenable<vscode.TreeItem[]> {
+		//If an element is passed it means we are getting children of a sub-item --> no nested items here so empty array returned
+		if (element) {
+			return Promise.resolve([]);
+		} else {
+			//Here a top-level item will be created which will be where the message will be displayed           
+			return Promise.resolve(this.items);
+		}
+	}
+	addMessage(message: string) { //method which allows messaged to be added
+		this.items.push(new vscode.TreeItem( //adds a new item to the side bar
+			message,
+			vscode.TreeItemCollapsibleState.None
+		));
+		this._onDidChangeTreeData.fire(); //refreshes the sidebar
 
-    }
-    clearTree() {
-        this.items = [];
-        this._onDidChangeTreeData.fire();
-    }
+	}
+	clearTree() {
+		this.items = [];
+		this._onDidChangeTreeData.fire();
+	}
+
+	// UstwoBristolEstimatingCarbon
 
 }
 class statusBarManager {
-    mainItem = vscode.window.createStatusBarItem(); //creates a status bar item for limit word
-    loading: vscode.StatusBarItem[] = []; //creates a list of statusbar items for the loading bar items
-    defaultColour: string = "statusBarItem.activeBackground";
-    newColour: string;
+	mainItem = vscode.window.createStatusBarItem(); //creates a status bar item for limit word
+	loading: vscode.StatusBarItem[] = []; //creates a list of statusbar items for the loading bar items
+	defaultColour: string = "statusBarItem.activeBackground";
+	newColour: string;
 
-    constructor() {
-        this.newColour = this.defaultColour;
-        this.mainItem.text = 'Average carbon cost: g CO₂e';
-        this.mainItem.show();//displays the limit item
+	constructor() {
+		this.newColour = this.defaultColour;
+		this.mainItem.text = 'Average carbon cost: g CO₂e';
+		this.mainItem.show();//displays the limit item
 
-        // for (var i:number = 0;i<10;i++){
-        //  this.loading.push(vscode.window.createStatusBarItem());
-        //  this.loading[i].text = "-"; //fills the loading array with some items
-        //  this.loading[i].show(); //displays them
-        // }
 
-    }
+	}
 
-    updateLimit(input: number) {
-        this.mainItem.text = 'Average carbon cost: ' + input + ' g CO₂e';
-        this.newColour = "statusBarItem.activeBackground";
-    }
+	updateLimit(input: number) {
+		this.mainItem.text = 'Average carbon cost: ' + input + ' g CO₂e';
+		this.newColour = "statusBarItem.activeBackground";
+	}
 
-    updateBar(input: number, limit: number) {
+	updateBar(input: number, limit: number) {
 
-        if (input) {
-            this.mainItem.text = 'Average carbon cost: ' + limit + ' g CO₂e';
-            if (input >= 3 * limit) { //currently 8 represents the limit 
-                this.newColour = "statusBarItem.errorBackground"; //if well beyond the limit the loading bar goes red
-                vscode.window.showInformationMessage('VERY high carbon AI call made (check pane for details)');
-            }
-            else if (input >= 1.5 * limit) {
-                this.newColour = "statusBarItem.warningBackground"; //if beyond the limit the loading bar goes yellow
-                vscode.window.showInformationMessage('High carbon AI call made (check pane for details)');
-            }
-            else {
-                this.newColour = "statusBarItem.activeBackground"; //if not beyond the limit loading bar is clear
-                //vscode.window.showInformationMessage('below limit');  
-            }
-            var i: number = 0;
-        }
-        else {
-            this.newColour = "statusBarItem.activeBackground";
-            input = 0;
-            vscode.window.showInformationMessage('not satisfied!');
-        }
-        // for(i = 0;i<Math.max(input);i++){ //populates the loading bar
-        //  this.loading[i].backgroundColor = new vscode.ThemeColor(this.newColour);
-        //  }
-        // for(i;i<this.loading.length;i++){
-        //  this.loading[i].backgroundColor = new vscode.ThemeColor("statusBarItem.activeBackground");
-        //  }
+		if (input) {
+			this.mainItem.text = 'Average carbon cost: ' + limit + ' g CO₂e';
+			if (input >= 3 * limit) { //currently 8 represents the limit 
+				this.newColour = "statusBarItem.errorBackground"; //if well beyond the limit the loading bar goes red
+				vscode.window.showInformationMessage('VERY high carbon AI call made (check pane for details)');
+			}
+			else if (input >= 1.5 * limit) {
+				this.newColour = "statusBarItem.warningBackground"; //if beyond the limit the loading bar goes yellow
+				vscode.window.showInformationMessage('High carbon AI call made (check pane for details)');
+			}
+			else {
+				this.newColour = "statusBarItem.activeBackground"; //if not beyond the limit loading bar is clear
+				//vscode.window.showInformationMessage('below limit');  
+			}
+			var i: number = 0;
+		}
+		else {
+			this.newColour = "statusBarItem.activeBackground";
+			input = 0;
+			vscode.window.showInformationMessage('not satisfied!');
+		}
+		// for(i = 0;i<Math.max(input);i++){ //populates the loading bar
+		//  this.loading[i].backgroundColor = new vscode.ThemeColor(this.newColour);
+		//  }
+		// for(i;i<this.loading.length;i++){
+		//  this.loading[i].backgroundColor = new vscode.ThemeColor("statusBarItem.activeBackground");
+		//  }
 
-        this.mainItem.backgroundColor = new vscode.ThemeColor(this.newColour); //colours the word "loading"
-    }
+		this.mainItem.backgroundColor = new vscode.ThemeColor(this.newColour); //colours the word "loading"
+	}
 }
 
-function restoreCallHistory(tree: MyTreeDataProvider) { //restores past calls to sidebar
-    var pCalls = budget.getCalls();
-    console.log("CALLS:", pCalls);
-    for (let i = 0; i < pCalls.length; i++) {
-        tree.addMessage("Emissions: " + pCalls[i].Emissions + " - Model: " + pCalls[i].Model + " - Date: " + new Date(pCalls[i].DateTime).toLocaleString());
-    }
+function restoreCallHistory(tree: MyTreeDataProvider, budg: budget.budget) { //restores past calls to sidebar
+	var pCalls = budg.getCalls();
+	console.log("CALLS:", pCalls);
+	for (let i = 0; i < pCalls.length; i++) {
+		tree.addMessage("Emissions: " + pCalls[i].Emissions + " - Model: " + pCalls[i].Model + " - Date: " + new Date(pCalls[i].DateTime).toLocaleString());
+	}
 }
 
 export function updateTree(call: budget.Call) {
-    budget.storeCall(call);
-    var cLimit = budget.updateLimit();
+    budg.storeCall(call);
+    var cLimit = budg.updateLimit();
     console.log("limit: " + cLimit);
     bar.updateBar(call.Emissions, cLimit);
     tree.addMessage("Emissions: " + call.Emissions + "g CO₂e - Model: " + call.Model + " - Date: " + new Date(call.DateTime).toLocaleString());
@@ -358,4 +420,9 @@ export async function getLogs(context: vscode.ExtensionContext) {
         catch (error) {
             vscode.window.showErrorMessage("Error: Copilot log files not found.");
         }
+}
+
+
+export function wrappedGetCall() {
+	return budg.getCalls();
 }

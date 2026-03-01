@@ -28,11 +28,37 @@ async function startServer(port: number, storagePath: string) {
         if (!fs.existsSync(storagePath)) { fs.mkdirSync(storagePath, { recursive: true }); };
 
         // generate certificate of authorisation
-        const https = await mockttp.generateCACertificate();
-        const certPath = path.join(storagePath, 'mockttp-ca.pem');
-        fs.writeFileSync(certPath, https.cert);
+        // const https = await mockttp.generateCACertificate();
+        const certPath = path.join(storagePath, "local-ca.pem");
+        const keyPath = path.join(storagePath, "local-ca.key");
 
-        server = mockttp.getLocal({ https, debug: true });
+        let httpsConfig;
+
+        if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
+            httpsConfig = {
+                key: fs.readFileSync(keyPath, "utf-8"),
+                cert: fs.readFileSync(certPath, "utf-8"),
+            };
+        } else {
+            // generate new certificates and keys
+            const generated = await mockttp.generateCACertificate({
+                subject: {
+                    commonName: "Ecode Proxy CA"
+                },
+                bits: 2048,
+            });
+
+            fs.writeFileSync(keyPath, generated.key);
+            fs.writeFileSync(certPath, generated.cert);
+
+            httpsConfig = {
+                key: generated.key,
+                cert: generated.cert,
+            };
+        }
+        // fs.writeFileSync(certPath, https.cert);
+
+        server = mockttp.getLocal({ https: httpsConfig, debug: true });
         await server.enableDebug();
 
         await server.forAnyRequest().thenPassThrough({
@@ -116,24 +142,38 @@ function scanJsonForTokens(obj: any) {
 
 function getJsonTokenCount(body: string) {
     const jsonBody = JSON.parse(body);
+    let totalTokens = 0;
+    let modelName = "Unknown Model";
 
     // OpenAI uses this format in response
     if (jsonBody.usage && jsonBody.model) {
-        const totalTokens = jsonBody.usage.total_tokens;
-        const modelName = jsonBody.model;
-        // const emission = calculateEmission(modelName, totalTokens);
-        const emission = convert.calculateEmission(modelName, totalTokens);
-
-        let dateTime = new Date();
-        // sendLog(`{ID: ${dateTime}, Model: ${modelName}, Emissions: ${emission.toFixed(8)} gCO2e}🔥`)
-        sendLog(`   >> DateTime: ${dateTime.toLocaleString()}`);
-        sendLog(`   >> Model: ${modelName}`);
-        sendLog(`   >> Tokens: ${totalTokens}`);
-        sendLog(`   >> Emissions: ${emission.toFixed(8)}`);
-        return { "Tokens": totalTokens, "Model": modelName };
+        totalTokens = jsonBody.usage.total_tokens;
+        modelName = jsonBody.model;
     }
+    // Gemini uses this format in response
+    else if (jsonBody.usageMetadata) {
+        totalTokens = jsonBody.usageMetadata.totalTokenCount;
+        // gemini gives model version directly
+        if (jsonBody.modelVersion) {
+            modelName = jsonBody.modelVersion;
+        } else {
+            modelName = "Unknown Gemini Model";
+        }
+    } else {
+        return "UNKNOWN AI USED";
+    }
+    // const emission = calculateEmission(modelName, totalTokens);
+    const emission = convert.calculateEmission(modelName, totalTokens);
 
+    let dateTime = new Date();
+    // sendLog(`{ID: ${dateTime}, Model: ${modelName}, Emissions: ${emission.toFixed(8)} gCO2e}🔥`)
+    sendLog(`   >> DateTime: ${dateTime.toLocaleString()}`);
+    sendLog(`   >> Model: ${modelName}`);
+    sendLog(`   >> Tokens: ${totalTokens}`);
+    sendLog(`   >> Emissions: ${emission.toFixed(8)}`);
+    return { "Tokens": totalTokens, "Model": modelName };
 }
+
 
 // convert tokens to carbon
 // function calculateEmission(model: string, token: number) {
