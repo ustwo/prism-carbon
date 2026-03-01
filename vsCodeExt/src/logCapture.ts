@@ -29,19 +29,7 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
     console.log("FIRST FIRST MATCHES:\n", matches);
     var claudeFlag: boolean = false;
     var activeCall: budget.Call = { Emissions: 0, Model: "TEST", DateTime: 0 };
-    //var models = rawLog.match(modelPattern);
-    //console.log(rawLog+"\n\n\n\n");
 
-    //replace with the entire log file since last use
-    //but make sure calls are separated maybe with timestamp?
-    //also just use the inline chat regex
-
-    // const chunks:string[] = rawLog.split(modelPattern);
-    // if (chunks===null){
-    //     console.log("No chunks have been made");
-    // }
-    //console.log(chunks[1]+"\n\n\n\n------------");
-// for (var i = 0; i<chunks.length; i++){
     var models = rawLog.match(modelPattern2);
     if (models!==null){
         for(var i = 0;i< models.length;i++){
@@ -101,24 +89,7 @@ function findClaude(log: string): [number[], number[]] {
     const purpose = log.match(modelPattern3);
     var match = log.match(inlineClaudePattern); 
     var timeIndex:number = 0; 
-    // if (purpose !== null) {
-    //     if (purpose[0] === ' [inline/generate'){ //this doesn't 
-    //         console.log("CALL MADEEEEEEEE");
-    //         timeIndex = 1;
-    //         var chunk = line;
-    //         for (let i = priorChunks.length-1; i>=0; --i){
-    //             var matches = priorChunks[i].match(inlineClaudePattern);
-    //             if (matches!==null){
-    //                 if (matches.length === 1){
-    //                     // console.log("added orther section -----------------------------------------------------");
-    //                     // console.log(matches);
-    //                     chunk.concat(priorChunks[i]);
-    //                     break;
-    //                 }
-    //             }
-    //         }
-    //         match = chunk.match(inlineClaudePattern);
-    //     }
+ 
     if (match!==null){
         var result:number[] = [];
         var timestamp:number[] = [];

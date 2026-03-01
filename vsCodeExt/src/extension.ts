@@ -342,13 +342,7 @@ export async function getLogs(context: vscode.ExtensionContext) {
         const regex : RegExp = new RegExp(lDate.toLocaleString());
         const splitting = content.split(regex);
         var input:string = content;
-        // if (splitting.length !== 2){
-           
-        //     input = content;
-        // }
-        // else{
-        //     input = splitting[1];
-        // }
+
         const models: budget.Call[] = await logCap.identifyModel(input);
         console.log("CALLS: ", models);
         for (let index = 0; index < models.length; index++) {
