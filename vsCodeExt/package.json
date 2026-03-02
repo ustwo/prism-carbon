@@ -48,7 +48,7 @@
     "commands": [
       {
         "command": "ecode.openDashboard",
-        "title": "Open Carbon Dashboard"
+        "title": "Ecode: Open Carbon Dashboard"
       },
       {
         "command": "ecode.testInput",
@@ -56,34 +56,30 @@
       },
       {
         "command": "ecode.clearStore",
-        "title": "Clear stored calls"
+        "title": "Ecode: Clear stored calls"
       },
       {
         "command": "ecode.inputdisplay",
-        "title": "Input Display"
-      },
-      {
-        "command": "ecode.setApiKey",
-        "title": "Set Api Key"
+        "title": "Ecode: Input Display"
       },
       {
         "command": "ecode.refreshLogs",
-        "title": "Refresh carbon data",
+        "title": "Ecode: Refresh carbon data",
         "category": "Logging"
       },
       {
         "command": "ecode.interceptorStart",
-        "title": "Start Proxy Interceptor",
+        "title": "Ecode: Start Proxy Interceptor",
         "category": "Interceptor"
       },
       {
         "command": "ecode.interceptorStop",
-        "title": "Stop Proxy Interceptor",
+        "title": "Ecode: Stop Proxy Interceptor",
         "category": "Interceptor"
       },
       {
         "command": "ecode.interceptorOpenTerminal",
-        "title": "Open Runtime Terminal",
+        "title": "Ecode: Open Runtime Terminal",
         "category": "Interceptor"
       },
       {
