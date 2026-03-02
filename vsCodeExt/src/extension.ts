@@ -250,6 +250,11 @@ export async function activate(context: vscode.ExtensionContext) {
                 label: `$(play) Reset Stored Session`,
                 description: "Resets the current record of carbon emissions",
                 command: "ecode.clearStore"
+            },
+            {
+                label: `$(play) Open Dashboard`,
+                description: "Displays information on Carbon emissions and usage",
+                command: "ecode.openDashboard"
             }
         ];
 
@@ -391,11 +396,11 @@ class statusBarManager {
 }
 
 function restoreCallHistory(tree: MyTreeDataProvider, budg: budget.budget) { //restores past calls to sidebar
-	var pCalls = budg.getCalls();
-	console.log("CALLS:", pCalls);
-	for (let i = 0; i < pCalls.length; i++) {
-		tree.addMessage("Emissions: " + pCalls[i].Emissions + "g CO₂e - Model: " + pCalls[i].Model + " - Date: " + new Date(pCalls[i].DateTime).toLocaleString());
-	}
+    var pCalls = budg.getCalls();
+    console.log("CALLS:", pCalls);
+    for (let i = 0; i < pCalls.length; i++) {
+        tree.addMessage("Emissions: " + pCalls[i].Emissions + "g CO₂e - Model: " + pCalls[i].Model + " - Date: " + new Date(pCalls[i].DateTime).toLocaleString());
+    }
 }
 
 export function updateTree(call: budget.Call) {
