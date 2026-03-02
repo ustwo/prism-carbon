@@ -32,27 +32,23 @@ let proxyServer: InterceptorProxy;
 const PROXY_PORT = 3024;
 var budg: budget.budget;
 
-export function activate(context: vscode.ExtensionContext) {
-    const logConfig = vscode.workspace.getConfiguration("system");
-    // get current log level settings
-    const currentOverrides = logConfig.get<Record<string, string>>('overrideLogLevel', {});
-    const newOverrides = {
-        ...currentOverrides,
-        'GitHub.copilot-chat': 'trace'
-    };
-    try {
-        // 4. Update the setting. 
-        // Using vscode.ConfigurationTarget.Global applies this to the User's settings.json
-        logConfig.update(
-            'overrideLogLevel',
-            newOverrides,
-            vscode.ConfigurationTarget.Global
-        );
+export async function activate(context: vscode.ExtensionContext) {
 
-        vscode.window.showInformationMessage('Copilot Chat log level is now set to Trace.');
-    } catch (error) {
-        vscode.window.showErrorMessage(`Failed to update log level: ${error}`);
+    const copilotChat = vscode.extensions.getExtension('github.copilot-chat');
+    if (!copilotChat) {
+        vscode.window.showWarningMessage('GitHub Copilot Chat is not installed. Carbon emissions will not be tracked during development time!');
+        return;
     }
+    else {
+        if (!copilotChat.isActive) {
+            await copilotChat.activate();
+        }
+        vscode.commands.executeCommand('workbench.action.setLogLevel');
+        // get current log level settings
+        vscode.window.showInformationMessage('Please Select "Github Copilot Chat" then "Trace" in the above command window');
+
+    }
+
 
     budg = new budget.budget(context.workspaceState);
 
@@ -299,28 +295,6 @@ export async function deactivate() {
         await vscode.commands.executeCommand('ecode.interceptorStop');
     }
 
-    const logConfig = vscode.workspace.getConfiguration("system");
-    // get current log level settings
-    const currentOverrides = logConfig.get<Record<string, string>>('overrideLogLevel', {});
-
-    delete currentOverrides['GitHub.copilot-chat'];
-
-    try {
-        // 4. Update the setting. 
-        // Using vscode.ConfigurationTarget.Global applies this to the User's settings.json
-        logConfig.update(
-            'overrideLogLevel',
-            currentOverrides,
-            vscode.ConfigurationTarget.Global
-        );
-
-        vscode.window.showInformationMessage('Copilot Chat log level is now reset.');
-    } catch (error) {
-        vscode.window.showErrorMessage(`Failed to reset log levels: ${error}`);
-    }
-    // const config = vscode.workspace.getConfiguration('http');
-    // await config.update('proxy', undefined, vscode.ConfigurationTarget.Global);
-    // await config.update('proxyStrictSSL', undefined, vscode.ConfigurationTarget.Global);
 }
 
 
