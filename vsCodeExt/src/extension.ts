@@ -124,7 +124,7 @@ export async function activate(context: vscode.ExtensionContext) {
         var num = Number(limit);
         if (!Number.isNaN(num)) {
             let date = new Date();
-            var newCall: budget.Call = { Emissions: num, Model: "TEST", DateTime: date.toLocaleString() };
+            var newCall: budget.Call = { Emissions: num, Model: "TEST", DateTime: Number(date.toLocaleDateString()) };
             updateTree(newCall);
         }
         else {

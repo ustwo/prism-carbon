@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { RawBodyIncludesMatcher } from 'mockttp/dist/rules/matchers';
 import * as convert from './convert';
+import { isModuleBlock } from 'typescript';
 
 // Clean Environment: Ensure this process ignores the VS Code proxy settings
 // process.env.HTTP_PROXY = '';
@@ -71,6 +72,13 @@ async function startServer(port: number, storagePath: string) {
 
                 // check tokens
                 detectTokens(req.headers, body);
+
+
+                // checking prompts to see if image is being asked to be generated
+                // if (body.includes('"quality":') && body.includes('"size":') && body.includes('"n":') && body.includes('"model":')) {
+
+                //     sendLog(`parsed data:   ${JSON.parse(body)}`)
+                // }
 
                 if (body) { sendLog(`Body: ${body.substring(0, 200)}...`); };
                 sendLog('------------------------------------------------');
@@ -153,18 +161,38 @@ function getJsonTokenCount(body: string) {
     let outputTokens = 0;
     let totalTokens = 0;
     let modelName = "Unknown Model";
+    let imageSize = "No size";
+    let imageNumber = 0;
+    let imageQuality = "No Quality";
+    let imageCost = 0
 
     // OpenAI uses this format in response
     if (
-        (jsonBody.usage && jsonBody.model) || // basic text
-        (jsonBody.usage && jsonBody.quality && jsonBody.size && jsonBody.output_format) // image models
+        (jsonBody.usage && jsonBody.model) //|| // basic text
+        // (jsonBody.usage && jsonBody.quality && jsonBody.size && jsonBody.output_format) // image models
     ) {
         inputTokens = jsonBody.usage.input_tokens;
         outputTokens = jsonBody.usage.output_tokens;
         totalTokens = jsonBody.usage.total_tokens;
         modelName = jsonBody.model;
+        console.log(`model name: ${modelName}`);
     }
     // Gemini uses this format in response
+    else if (jsonBody.quality && jsonBody.size) {
+        modelName = jsonBody.model;
+        imageSize = jsonBody.size;
+        imageNumber = jsonBody.n;
+        imageQuality = jsonBody.quality;
+        totalTokens = jsonBody.usage.total_tokens;
+        if (imageSize != "No size" && totalTokens == 0 && modelName != "Unknown Model" && imageQuality != "No Quality" && imageNumber != 0) {
+            sendLog("Image detected!");
+            sendLog(`Model: ${modelName}`);
+            sendLog(`Size: ${imageSize}`);
+            sendLog(`Quality: ${imageQuality}`);
+            sendLog(`Quantity: ${imageNumber}`);
+        }
+
+    }
     else if (jsonBody.usageMetadata) {
         totalTokens = jsonBody.usageMetadata.totalTokenCount;
         // gemini gives model version directly

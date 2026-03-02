@@ -33,6 +33,9 @@ This extension contributes the following settings:
 
 Gemini runtime carbon conversions uses an average cost regardless of specific model.
 Lack of custom budget setting.
+Images don't produce a carbon cost - image json response doesn't give tokens, since pricing is done
+  by image size, quality, model used for generation, and quality. These fields have all been parsed,
+  but the research and implementation for carbon measuring is in progress.
 
 
 ## Release Notes
