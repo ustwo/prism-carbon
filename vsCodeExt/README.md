@@ -29,6 +29,10 @@ This extension contributes the following settings:
 * `ecode.interceptorOpenTerminal`: Open the runtime analysis terminal 
 * `ecode.refreshLogs`: Fetches the latest calls made during development time
 
+## Menu
+
+The menu on the bottom right is the main access interface for the Ecode extension. On launch, the user is prompted to set their GitHub Copilot Chat debug level to "Trace" to enable development time analysis functionality.
+
 ## Known Issues
 
 Gemini runtime carbon conversions uses an average cost regardless of specific model.
