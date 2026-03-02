@@ -15,7 +15,7 @@
  const btn = document.getElementById('theme-switch');
             btn.addEventListener('click', () => { document.body.classList.toggle('darkmode'); });
 
-            // --- NEW TUTORIAL CHART START ---
+            // --- heat map here ---
 
 function isoDayOfWeek (dt){
     let wd = dt.getDay(); // 0...6 from sunday to saturday
@@ -73,42 +73,34 @@ const data = {
 
 //scales block
 const scales ={
-    y:{
-        type: 'time',
-        offset: true,
-        time: {
-            unit: 'day',
-            round:'day',
-            isoWeek: 1,
-            parser: 'i',
-            displayFormats:{
-                day: 'iii'
-            }
-
+    y: {
+    type: 'linear',
+    position: 'right',
+    reverse: true,
+    min: 1,
+    max: 7,
+    ticks: {
+        stepSize: 1,
+        callback: function(value) {
+            const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+            return days[value - 1];
         },
-        reverse: true,
-        position: 'right',
-        ticks:{
-            maxRotation: 0,
-            autoSkip: true,
-            padding: 1,
-            font: {
-                size:9
-            }
-        },
-        grid:{
-            display: false,
-            drawBorder: false,
-            tickLength: 0
+        font: {
+            size: 9
         }
     },
+    grid: {
+        display: false,
+        drawBorder: false,
+        tickLength: 0
+    }
+},
     x:{
         type:'time',
         position: 'bottom',
         offset:true,
         time: {
             unit: 'week',
-            round:'week',
             isoWeekDay: 1 ,
             displayFormats:{
                 week: 'MMM dd'
@@ -136,7 +128,16 @@ const config = {
     options:{
         maintainAspectRatio: false,
         scales: scales,
-        pluggins: {
+        
+            plugins: {
+    tooltip: {
+        callbacks: {
+            title: function(context) {
+                return context[0].raw.d;
+            }
+        
+    }
+}
 
         }
     }
