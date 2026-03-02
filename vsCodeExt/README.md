@@ -27,28 +27,22 @@ This extension contributes the following settings:
 * `ecode.interceptorStart`: Start the runtime listener
 * `ecode.interceptorStop`: Stop the runtime listener
 * `ecode.interceptorOpenTerminal`: Open the runtime analysis terminal 
+* `ecode.refreshLogs`: Fetches the latest calls made during development time
 
 ## Known Issues
 
 Gemini runtime carbon conversions uses an average cost regardless of specific model.
+Lack of custom budget setting.
+
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
 
 ### 1.0.0
 
-Initial release of ...
+Initial release of ecode, supports all Claude models.
 
-### 1.0.1
 
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
 
 <!-- ## Following extension guidelines
 
