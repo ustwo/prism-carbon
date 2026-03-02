@@ -37,7 +37,6 @@ export async function activate(context: vscode.ExtensionContext) {
     const copilotChat = vscode.extensions.getExtension('github.copilot-chat');
     if (!copilotChat) {
         vscode.window.showWarningMessage('GitHub Copilot Chat is not installed. Carbon emissions will not be tracked during development time!');
-        return;
     }
     else {
         if (!copilotChat.isActive) {
