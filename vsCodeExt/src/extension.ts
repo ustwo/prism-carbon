@@ -444,7 +444,7 @@ export function updateTree(call: budget.Call) {
 
     CarbonDashboardPanel.sendData();
 
-
+}
 
 export async function getLogs(context: vscode.ExtensionContext) {
     try {
