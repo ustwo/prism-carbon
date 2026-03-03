@@ -71,7 +71,7 @@ I don't use AI to review my code, I have only used it for small excerpts, protot
 <h2>Hao Ni</h2>
 <p> I, Hao Ni declare that this document is accurate to my AI usage throughout the course of SEP</p>
 
-<p>All models used have been  ChatGPT</p> <br>
+<p>All models used have been  ChatGPT and Gemini</p> <br>
 <h3>Development</h3>
 reseach into which papers to look into for carbon to emission formula
 
@@ -81,8 +81,10 @@ I was having problem finding relevent papers online, because most of the materia
 <h3>Debugging</h3>
 I use AI when my code can't run but I can't spot where's the problem
 
-> Prompt used - " I am suppose to the Dash board's color change to black now, why is it not working"
+> Prompt used - " I am suppose to make the Dash board's color change to black now, why is it not working"
 The problem occur when I finish the implementation of the mode toggle but the switch isn't working and I was having problem finding the bug. The reason is I can't put the .js file and the .css file outside Dashboard.ts and should keep all the js and css part inside getwebview.
+> "Why there's always a Sunday block on the Heat Map even if it's not Sunday?"
+The problem occur because I added a round:week in my code, it can helps round the data to the week, but I set the start of the week as Sunday so it will always show Sunday first.
 
 <h3>Review</h3>
 
