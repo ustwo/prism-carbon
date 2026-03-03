@@ -1,9 +1,14 @@
 :root{
-    --base-color: rgb(22, 87, 237);
-    --base-variant:#f29108;
-    --text-color:#ed1414;
-    --secondary-text: #1137dd;
-    --primary-color: #0af33d;
+    --base-color: #ffffff;
+    --base-variant: #ffffff;
+    --text-color:#000000;
+    --secondary-text: #000000;
+    --primary-color: #ffffff;
+    --low-carbon: #2e7d32;
+    --avg-carbon: #ef6c00;
+    --high-carbon: #c62828;
+    --theme-button-bg: #000000;
+    --theme-button-icon: #ffffff;
 }
 
 .darkmode{
@@ -12,6 +17,17 @@
     --text-color:#ffffff;
     --secondary-text: #a4a5b8;
     --primary-color: #3a435d;
+    --low-carbon: #66bb6a;
+    --avg-carbon: #ffca28;
+    --high-carbon: #ef5350;
+    --theme-button-bg: #ffffff;
+    --theme-button-icon: #000000;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 * {
@@ -25,7 +41,7 @@ html{
 
 body{
   min-height: 100vh;
-  background-color: var(--base-color);
+  background-color: var(--base-variant);
   color: var(--text-color);
 }
 
@@ -45,13 +61,15 @@ p{
   width: 50px;
   padding: 0;
   border-radius: 50%;
-  background-color: var(--base-variant);
+  background-color: var(--theme-button-bg);
   display: flex;
   justify-content: center;
   align-items: center;
   position: fixed;
   top: 20px;
   right: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 #theme-switch svg{
@@ -65,4 +83,134 @@ p{
 }
 .darkmode #theme-switch svg:last-child{
   display: block;
+}
+.chart-container {
+                position: relative;
+                height: 300px;
+                width: 100%;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            .chart-wrapper{
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            }
+            .dashboard-grid{
+            display: flex;
+            flex-wrap:wrap;
+            justify-content: space-around;
+            gap: 20px;
+            padding: 20px;
+            }
+h2 { text-align: center; font-weight: normal; margin-bottom: 15px; }
+            .chart-container p, #drilldown-view p { color: var(--secondary-text); margin-bottom: 20px; }
+
+            #drilldown-view {
+                display: none;
+                text-align: center;
+                background-color: var(--base-variant);
+                min-height: 500px;
+            }
+
+            .back-btn {
+                padding: 10px 20px;
+                margin-bottom: 20px;
+                background-color: var(--primary-color);
+                color: rgb(0, 0, 0);
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+
+            /* --- Tutorial Specific Styles (Only inside Header) --- */
+
+header .chartMenu {
+     width: 100vw;
+        height: 40px;
+        background: #1A1A1A;
+        color: rgba(54, 162, 235, 1);
+}
+
+header .chartMenu p {
+    padding: 10px;
+    font-size: 20px;
+}
+
+header .chartCard {
+   width: 100vw;
+        height: calc(100vh - 40px);
+        background: rgba(54, 162, 235, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+}
+
+header .chartBox {
+    width: 700px;
+    height: 100px;
+        padding: 20px;
+        border-radius: 20px;
+        border: solid 3px rgba(54, 162, 235, 1);
+        background: white;
+
+}
+
+.budget-tracker-container {
+    flex: 1;
+    min-width: 300px;
+    max-width: 500px;
+    background-color: var(--base-color);  
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.budget-header h2 {
+    text-align: left;
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 10px;
+    background-color: var(--base-variant); /* Dark track */
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: #72aee6;
+    width: 0%;
+    border-radius: 5px;
+    transition: width 0.4s ease-in-out, background-color 0.3s ease;
+}
+
+/* turns red when user gets too close to their budget */
+.progress-bar-fill.danger {
+    background-color: #e74c3c; 
+}
+
+.budget-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.budget-percent {
+    color: var(--text-color);
+}
+
+.budget-detail {
+    color: var(--secondary-text);
 }

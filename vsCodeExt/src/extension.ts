@@ -10,6 +10,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Memento } from 'vscode';
 import { stringify } from 'querystring';
+import * as child_process from 'child_process';
 
 import { CarbonDashboardPanel } from './dashboard';
 import { state } from './state';
@@ -62,7 +63,7 @@ export async function activate(context: vscode.ExtensionContext) {
         treeDataProvider
     );
 
-    devTok.getTextAroundCursor();
+    
     function convert(x: any) {
         //treeDataProvider.addMessage(String(x));
         return x;
@@ -100,6 +101,8 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage('Past calls cleared.');
         // state.runningInterceptor = true;
 
+        CarbonDashboardPanel.sendData();
+
     });
     // }));
 
@@ -135,6 +138,7 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(input);
     context.subscriptions.push(dashboardCommand);
 
+    console.log('Interceptor Proxy Server is active');
 
     let startDisposable = vscode.commands.registerCommand('ecode.interceptorStart', async () => {
         try {
@@ -142,9 +146,29 @@ export async function activate(context: vscode.ExtensionContext) {
             proxyServer = new InterceptorProxy(PROXY_PORT);
             await proxyServer.start(context.globalStorageUri.fsPath);
 
-            state.runningInterceptor = true;
-            console.log('Interceptor Proxy Server is active');
+            // set VSCode to use local proxy
+            // const config = vscode.workspace.getConfiguration('http');
+            // await config.update('proxy', `http://localhost:${PROXY_PORT}`, vscode.ConfigurationTarget.Global);
 
+            // //QUICK FIX TO NOT NEED SSL CERTS FOR NOW
+            // // NEED TO CHANGE FOR BETA
+            // await config.update('proxyStrictSSL', false, vscode.ConfigurationTarget.Global);
+
+
+            // const disposableAPIKEY = vscode.commands.registerCommand('ecode.setApiKey', async () => {
+            //  const apiKey = await vscode.window.showInputBox({
+            //      prompt: 'Enter your API Key',
+            //      placeHolder: 'e.g.   sk - xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+            //      ignoreFocusOut: true // keep input box open even if focus moves away from window
+
+            //  });
+            //  if (apiKey) {
+            //      await context.secrets.store('myApiKey', apiKey); // securely stores apikey using key 'myApiKey'
+
+            //      // to retrieve key from secret store, use:   const apiKey = await context.secrets.get('myApiKey');
+            state.runningInterceptor = true;
+            // vscode.window.showInformationMessage('Interceptor Proxy started on port ' + "->" + PROXY_PORT + state.runningInterceptor + "DONE");
+            // vscode.window.showInformationMessage("Status: " + state.runningInterceptor);
         } catch (error) {
             vscode.window.showErrorMessage('Failed to start Interceptor Proxy: ' + error);
         }
@@ -171,14 +195,21 @@ export async function activate(context: vscode.ExtensionContext) {
                 "http_proxy": proxyUrl,
                 "https_proxy": proxyUrl,
 
-                // python specific
+                // supports Python, Ruby, Go, Rust
                 "REQUESTS_CA_BUNDLE": proxyServer.certPath,
-
                 "SSL_CERT_FILE": proxyServer.certPath,
+
+                // cURL, PHP, and many C/C++ based tools
+                "CURL_CA_BUNDLE": proxyServer.certPath,
+
+                "AWS_CA_BUNDLE": proxyServer.certPath,
 
                 // nodejs specific
                 "NODE_EXTRA_CA_CERTS": proxyServer.certPath,
-                "NODE_OPTIONS": "--use-env-proxy"
+                "NODE_OPTIONS": "--use-env-proxy",
+
+                // java specific
+                "JAVA_TOOL_OPTIONS": `-Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=${PROXY_PORT} -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=${PROXY_PORT}`
 
             }
         });
@@ -197,6 +228,10 @@ export async function activate(context: vscode.ExtensionContext) {
             terminal.dispose();
         }
 
+        // clear VSCode proxy settings
+        // const config = vscode.workspace.getConfiguration('http');
+        // await config.update('proxy', undefined, vscode.ConfigurationTarget.Global);
+        // await config.update('proxyStrictSSL', undefined, vscode.ConfigurationTarget.Global);
 
         vscode.window.showInformationMessage('Interceptor Proxy stopped. ');//Proxy settings cleared.');
     });
@@ -273,7 +308,7 @@ export async function activate(context: vscode.ExtensionContext) {
 export async function deactivate() {
     // make sure that the vscode isn't always vulnerable, disable configurations
     if (proxyServer) {
-        await vscode.commands.executeCommand('ecode.interceptorStop');
+        await proxyServer.stop();
     }
     // const config = vscode.workspace.getConfiguration('http');
     // await config.update('proxy', undefined, vscode.ConfigurationTarget.Global);
@@ -382,14 +417,34 @@ function restoreCallHistory(tree: MyTreeDataProvider, budg: budget.budget) { //r
     }
 }
 
+export function getCurrentBranch(): string {
+    try {
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (!workspaceFolders || workspaceFolders.length === 0) {
+            return "Unknown Branch";
+        }
+        const cwd = workspaceFolders[0].uri.fsPath;
+        const branch = child_process.execSync("git rev-parse --abbrev-ref HEAD", { cwd, encoding: 'utf8' }).trim();
+        return branch || "Unknown Branch"; // defaults to unknown branch
+    } catch (error) {
+        console.error("Error getting git branch:", error);
+        return "Unknown Branch";
+    }
+}
+
 export function updateTree(call: budget.Call) {
+    if (!call.Branch) {
+        call.Branch = getCurrentBranch();
+    }
     budg.storeCall(call);
     var cLimit = budg.updateLimit();
     console.log("limit: " + cLimit);
     bar.updateBar(call.Emissions, cLimit);
     tree.addMessage("Emissions: " + call.Emissions + " - Model: " + call.Model + " - Date: " + call.DateTime);
 
-}
+    CarbonDashboardPanel.sendData();
+
+
 
 export async function getLogs(context: vscode.ExtensionContext) {
     try {
@@ -423,7 +478,14 @@ export async function getLogs(context: vscode.ExtensionContext) {
     }
 }
 
-
 export function wrappedGetCall() {
     return budg.getCalls();
+}
+
+export function wrappedGetBudget(): number {
+    return budg.getBudget();
+}
+
+export function wrappedSetBudget(newBudget: number): void {
+    budg.setBudget(newBudget);
 }

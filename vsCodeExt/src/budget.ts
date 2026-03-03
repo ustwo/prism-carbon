@@ -8,21 +8,31 @@ export interface Call {
     //OutputTokens: number;
     //TotalTokens: number;
     Emissions: number;
+    Branch?: string;
 }
 
 var callStore: Memento;
 let dateTime = new Date();
 
-export class budget{
+export class budget {
     callStore: Memento;
     storeKey: string = "storeKey";
     calls: Call[] = [];
 
-    constructor(memento:Memento){
+
+    constructor(memento: Memento) {
         this.callStore = memento;
     }
-    async resetBudget(): Promise<void>{
+    async resetBudget(): Promise<void> {
         await this.callStore.update(this.storeKey, undefined);
+    }
+
+    getBudget(): number {
+        return this.callStore.get<number>("budget", 5);
+    }
+
+    async setBudget(newBudget: number): Promise<void> {
+        await this.callStore.update("budget", newBudget);
     }
 
     updateLimit(): number { // returns the median average of emissions from calls made thus far
@@ -58,7 +68,7 @@ export class budget{
             ems.push(pCalls[i].Emissions);
         }
         return ems;
-}
+    }
 
 }
 
