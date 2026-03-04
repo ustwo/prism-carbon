@@ -45,7 +45,7 @@ export async function activate(context: vscode.ExtensionContext) {
         }
         vscode.commands.executeCommand('workbench.action.setLogLevel');
         // get current log level settings
-        vscode.window.showInformationMessage('Please Select "Github Copilot Chat" then "Trace" in the above command window');
+        //vscode.window.showInformationMessage('Please Select "Github Copilot Chat" then "Trace" in the above command window');
 
     }
 
@@ -98,7 +98,7 @@ export async function activate(context: vscode.ExtensionContext) {
         budg.resetBudget();
         treeDataProvider.clearTree();
         barManager.updateLimit(0);
-        vscode.window.showInformationMessage('Past calls cleared.');
+        //vscode.window.showInformationMessage('Past calls cleared.');
         // state.runningInterceptor = true;
 
         CarbonDashboardPanel.sendData();
@@ -215,7 +215,7 @@ export async function activate(context: vscode.ExtensionContext) {
         });
 
         terminal.show();
-        vscode.window.showInformationMessage("Opened Terminal with Proxy Environment Vars");
+        // vscode.window.showInformationMessage("Opened Terminal with Proxy Environment Vars");
     });
 
     let stopDisposable = vscode.commands.registerCommand('ecode.interceptorStop', async () => {
@@ -233,7 +233,7 @@ export async function activate(context: vscode.ExtensionContext) {
         // await config.update('proxy', undefined, vscode.ConfigurationTarget.Global);
         // await config.update('proxyStrictSSL', undefined, vscode.ConfigurationTarget.Global);
 
-        vscode.window.showInformationMessage('Interceptor Proxy stopped. ');//Proxy settings cleared.');
+        // vscode.window.showInformationMessage('Interceptor Proxy stopped. ');//Proxy settings cleared.');
     });
 
     let runtimeDisposable = vscode.commands.registerCommand("ecode.runtimeAnalysis", async () => {
@@ -381,11 +381,11 @@ class statusBarManager {
             this.mainItem.text = 'Average carbon cost: ' + limit.toFixed(4) + ' g CO₂e';
             if (input >= 3 * limit) { 
                 this.newColour = "statusBarItem.errorBackground"; //if well beyond the limit the loading bar goes red
-                vscode.window.showInformationMessage('VERY high carbon AI call made (check pane for details)');
+                //vscode.window.showInformationMessage('VERY high carbon AI call made (check pane for details)');
             }
             else if (input >= 1.5 * limit) {
                 this.newColour = "statusBarItem.warningBackground"; //if beyond the limit the loading bar goes yellow
-                vscode.window.showInformationMessage('High carbon AI call made (check pane for details)');
+                //vscode.window.showInformationMessage('High carbon AI call made (check pane for details)');
             }
             else {
                 this.newColour = "statusBarItem.activeBackground"; //if not beyond the limit loading bar is clear
@@ -396,7 +396,7 @@ class statusBarManager {
         else {
             this.newColour = "statusBarItem.activeBackground";
             input = 0;
-            vscode.window.showInformationMessage('not satisfied!');
+            //vscode.window.showInformationMessage('not satisfied!');
         }
         // for(i = 0;i<Math.max(input);i++){ //populates the loading bar
         //  this.loading[i].backgroundColor = new vscode.ThemeColor(this.newColour);
@@ -471,7 +471,7 @@ export async function getLogs(context: vscode.ExtensionContext) {
         }
         lastAccess = new Date().getTime();
 
-        vscode.window.showInformationMessage("Copilot log files refreshed.");
+        //vscode.window.showInformationMessage("Copilot log files refreshed.");
     }
     catch (error) {
         vscode.window.showErrorMessage("Error: Copilot log files not found.");
