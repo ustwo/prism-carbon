@@ -166,14 +166,16 @@ function getJsonTokenCount(body: string) {
     let imageQuality = "No Quality";
     let imageCost = 0
 
-    // OpenAI uses this format in response
+    // OpenAI and claude use this format in response
     if (
         (jsonBody.usage && jsonBody.model) //|| // basic text
         // (jsonBody.usage && jsonBody.quality && jsonBody.size && jsonBody.output_format) // image models
     ) {
         inputTokens = jsonBody.usage.input_tokens;
         outputTokens = jsonBody.usage.output_tokens;
-        totalTokens = jsonBody.usage.total_tokens;
+        // totalTokens = jsonBody.usage.total_tokens;
+        totalTokens = inputTokens + outputTokens;
+        console.log(`input tokens: ${inputTokens}, output tokens: ${outputTokens}, total tokens: ${jsonBody.usage.total_tokens}`);
         modelName = jsonBody.model;
         console.log(`model name: ${modelName}`);
     }
