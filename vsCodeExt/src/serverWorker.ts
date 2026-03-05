@@ -167,7 +167,7 @@ function getJsonTokenCount(body: string) {
     let imageQuality = "No Quality";
     let imageCost = 0
 
-    // OpenAI uses this format in response
+    // OpenAI and claude use this format in response
     if (
         (jsonBody.usage && jsonBody.model) //|| // basic text
         // (jsonBody.usage && jsonBody.quality && jsonBody.size && jsonBody.output_format) // image models
