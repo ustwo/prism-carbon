@@ -2,6 +2,22 @@
 
 This is the README for Ecode - the extension that monitors carbon costs associated with LLM and AI inputs and presents statistics on this data.
 
+## How To Use:
+
+On installation, you will be prompted to set the `Github Copilot Chat` log level to `Trace`. This is show below:
+<video controls src="SetTraceLevel.mp4" title="Set Trace Level"></video>
+
+The main way to use the extension is with the Ecode Menu at the right hand side of the taskbar (yellow circle). Average Carbon Cost for a session is shown at the left hand side of the taskbar (green circle)
+![alt text](<Interface Explanation.png>)
+
+Carbon emissions are tracked during development when using copilot chat, or inline copilot generations (ctrl+i) with claude models. Tab autocompletes are not yet supported. 
+
+To track emissions when running a file, use the menu to start runtime analysis. Within the terminal that opens, run your files as normal. The carbon cost is calculated in real time.
+
+A dashboard that shows information on the emissions produced and models used is openable through the menu and updates in real time.
+
+A history of all carbon calls made within a session can be found using the Estimating Carbon view in the left hand panel. This shows a comprehensive dated log of carbon emissions and models used.
+
 <!-- ## Features
 
 Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
@@ -12,13 +28,15 @@ For example if there is an image subfolder under your extension project workspac
 
 > Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow. -->
 
-## Requirements
+<!-- ## Requirements
 
 Dependencies are specified in the `package.json` file and can easily be installed by running 
 `npm install`
-in the extension root.
+in the extension root. -->
 
 ## Extension Settings
+
+The below settings can be used to manually force behaviours of the extension. They can be run using Ctrl+Shift+P and then typing in one of the below commands
 
 This extension contributes the following settings:
 
@@ -29,9 +47,9 @@ This extension contributes the following settings:
 * `ecode.interceptorOpenTerminal`: Open the runtime analysis terminal 
 * `ecode.refreshLogs`: Fetches the latest calls made during development time
 
-## Menu
+<!-- ## Menu
 
-The menu on the bottom right is the main access interface for the Ecode extension. On launch, the user is prompted to set their GitHub Copilot Chat debug level to "Trace" to enable development time analysis functionality.
+The menu on the bottom right is the main access interface for the Ecode extension. On launch, the user is prompted to set their GitHub Copilot Chat debug level to "Trace" to enable development time analysis functionality. -->
 
 ## Known Issues
 
@@ -42,12 +60,38 @@ Images don't produce a carbon cost - image json response doesn't give tokens, si
   but the research and implementation for carbon measuring is in progress.
 
 
+## Supported Models:
+
+### Open AI
+- GPT4o
+- GPT4o Mini
+- GPT4.5
+- GPT5
+
+### Anthropic
+- Claude Haiku 4.5
+- Claude Sonnet 4.5
+- Claude Opus 4.5
+
+### Gemini
+ - All gemini emissions are currently calculated using a constant rate regardless of model
+
+
+### All other Claude, Gemini, and GPT models
+ - Currently unsupported models are calculated using an average rate to reflect an estimation of emissions.
+
+
 ## Release Notes
 
 
-### 1.0.0
+### 0.0.1
 
 Initial release of ecode, supports all Claude models.
+
+### 0.0.2
+
+Updated support for generic models, and updated release readme.md
+Fixed issue with dashboard not loading correctly
 
 
 

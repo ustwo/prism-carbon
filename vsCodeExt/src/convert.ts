@@ -41,7 +41,7 @@ export const modelRegistry: Record<string, TieredModel> = {
     "claude-haiku-4.5": new TieredModel("ClaudeHaiku4.5", [{ limit: veryLarge, carbonPerToken: 0.000269444444 }]),  //https://impact.esg.ai/
     "claude-sonnet-4.5": new TieredModel("ClaudeSonnet4.5", [{ limit: veryLarge, carbonPerToken: 0.0005388888889 }]),  //https://impact.esg.ai/
     "claude-opus-4.5": new TieredModel("ClaudeOpus4.5", [{ limit: veryLarge, carbonPerToken: 0.0561888888888889 }]),  //https://impact.esg.ai/
-    "claude": new TieredModel("Generic Claude", [{ limit: veryLarge, carbonPerToken: 0.000269444444 }]), // generic claude catcher
+    "claude": new TieredModel("Generic Claude", [{ limit: veryLarge, carbonPerToken: 0.000969444444 }]), // generic claude catcher
     "gemini": new TieredModel("Gemini", [{ limit: veryLarge, carbonPerToken: 0.00036 }]),
     "gpt": new TieredModel("Generic GPT Model", [{ limit: veryLarge, carbonPerToken: 0.00036 }]) // emissions based on 0.09g per median gemini prompt. Assuming this to be 250 tokens (input and output) then 0.09/250
 
