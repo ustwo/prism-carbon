@@ -45,7 +45,7 @@ export async function activate(context: vscode.ExtensionContext) {
         }
         vscode.commands.executeCommand('workbench.action.setLogLevel');
         // get current log level settings
-        //vscode.window.showInformationMessage('Please Select "Github Copilot Chat" then "Trace" in the above command window');
+        vscode.window.showInformationMessage('Please Select "Github Copilot Chat" then "Trace" in the above command window');
 
     }
 
@@ -63,7 +63,7 @@ export async function activate(context: vscode.ExtensionContext) {
         treeDataProvider
     );
 
-    
+
     function convert(x: any) {
         //treeDataProvider.addMessage(String(x));
         return x;
@@ -379,7 +379,7 @@ class statusBarManager {
 
         if (input) {
             this.mainItem.text = 'Average carbon cost: ' + limit.toFixed(4) + ' g CO₂e';
-            if (input >= 3 * limit) { 
+            if (input >= 3 * limit) {
                 this.newColour = "statusBarItem.errorBackground"; //if well beyond the limit the loading bar goes red
                 //vscode.window.showInformationMessage('VERY high carbon AI call made (check pane for details)');
             }

@@ -3,9 +3,8 @@ node_modules/
 package-lock.json
 out/
 dist/
-node_modules/
+.node_modules
 .vscode/
 .vscode-test
-=======
 .vscode-test/
 *.vsix
