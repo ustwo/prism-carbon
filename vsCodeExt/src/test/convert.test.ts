@@ -22,9 +22,9 @@ function oldCalculateEmission(model: string, token: number) {
             carbon = chatgpt4ominilong * token;
         }
     } else if (lowerModel.includes("gpt-4o")) {
-            carbon = gpt4o * token;
-        }
-    } else if (lowerModel.includes("gpt-4.5")) {
+        carbon = gpt4o * token;
+    }
+    else if (lowerModel.includes("gpt-4.5")) {
         carbon = chatgpt4point5 * token;
     }
     return carbon;
