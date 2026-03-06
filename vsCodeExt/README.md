@@ -4,7 +4,7 @@ This is the README for Ecode - the extension that monitors carbon costs associat
 
 ## How To Use:
 
-On installation, you will be prompted to set the `Github Copilot Chat` log level to `Trace`. This is show below:
+On installation, you will be prompted to set the `Github Copilot Chat` log level to `Trace`. This is shown below:
 <video controls src="SetTraceLevel.mp4" title="Set Trace Level"></video>
 
 The main way to use the extension is with the Ecode Menu at the right hand side of the taskbar (yellow circle). Average Carbon Cost for a session is shown at the left hand side of the taskbar (green circle)
