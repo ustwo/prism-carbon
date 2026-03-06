@@ -4,7 +4,6 @@ import * as path from 'path';
 import { RawBodyIncludesMatcher } from 'mockttp/dist/rules/matchers';
 import * as convert from './convert';
 import { isModuleBlock } from 'typescript';
-import { json } from 'stream/consumers';
 
 // Clean Environment: Ensure this process ignores the VS Code proxy settings
 // process.env.HTTP_PROXY = '';
