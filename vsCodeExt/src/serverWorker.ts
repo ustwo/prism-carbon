@@ -3,7 +3,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { RawBodyIncludesMatcher } from 'mockttp/dist/rules/matchers';
 import * as convert from './convert';
-import { isModuleBlock } from 'typescript';
 
 // Clean Environment: Ensure this process ignores the VS Code proxy settings
 // process.env.HTTP_PROXY = '';
