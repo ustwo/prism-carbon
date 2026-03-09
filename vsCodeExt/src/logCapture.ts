@@ -23,7 +23,7 @@ const claudePattern = /\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)"stop_reason":"end_turn
 
 export function getLogFilePath(context: vscode.ExtensionContext) {
     return context.logUri.fsPath;
-}
+} // function to get log file location
 
 export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
     var matches: budget.Call[] = [];
