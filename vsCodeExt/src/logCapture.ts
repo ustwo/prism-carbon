@@ -9,7 +9,7 @@ const splitPattern= /(?<=\[info\].*copilotmd \| success \| .* \| \d+ms \| \[.*)]
 //was used to split the log file at the point of new model
 //this is outdated and not used by may be valuble later
 
-const purposePattern = /\s\S*$/g; //gets the purpose of the call
+const purposePattern = /(?<= \| success \| .* \| \d*ms \| \[)[^\]]*/g; //gets the purpose of the call
 const modelPattern = /(?<= \| success \| )\S*/g; //gets all the models used in the log file
 
 const testPattern = /a/g;
