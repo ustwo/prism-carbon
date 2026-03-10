@@ -73,6 +73,13 @@ export class InterceptorProxy {
                 reject(err);
             });
 
+            this.child.on('exit', (code) => {
+                if (code !== 0) {
+                    reject(new Error(`Worker exited with code ${code}`))
+                    console.log(`Worker exited with code ${code}`);
+                };
+            });
+
             // start server
             this.child.send({ command: 'start', port: this.port, storagePath });
         });

@@ -4,6 +4,8 @@
 <h2>Project AI</h2>
 We used AI throughout the project to test our extension's token tracking ability (copilot and cursor). This consisted of using AI autocomplete in dummy code files to track tokens produced during these generations, and using basic python and java scripts that act as a basic AI interface and make API calls to varying AI models. None of the generations used in this testing were implemented within our codebase, but the metadata results from these tests (output logs and json formats) were used to refine our approach and help our data parsing.
 
+In some cases during the testing day, testers used Copilot Chat to generate files that called openAI endpoints. These AI generated files were then run to test the runtime parsing. Some of these files are stored in the RunTimeTests folder as simple test files that are used to test runtime. They are not incooperated into our releases or functional codebase.
+
 <h2>Jacob Connor</h2>
 <p>I, Jacob Connor declare that this document is accurate to my AI usage throughout the course of SEP.</p>
 <p>All models used have been  ChatGPT</p> <br>
@@ -32,11 +34,13 @@ Research into testing Development time
 Research into creating a dashboard and adding features
 
 > Prompt used - "I will be creating a dashboard for a VsCode extension that will include a pie chart and heatmap what resources could I use to build this"
+
 I found it a bit difficult finding clear ways of implementing this as examples when I was initially conducting research were too simple or complex, by doing so research time was also expedited. 
 
 <h3>Debugging</h3>
 
 > Prompt used - " I am getting this error (Image was inserted of the error) what does it mean"
+
 The error occured when I would run the webview when I was initially creating it for the dashboard. I was having issues finding a way to alleviate this problem using online resources so I used AI which gave me a reason for this and steps to fix the error.
 
 <h3>Review</h3>
@@ -63,7 +67,18 @@ In cases when I have run into errors, and cannot find information regarding the 
 > And this is the error message:
 > "Object literal may only specify known properties, and 'commonName' does not exist in type '{ subject?: { [key: string]: string | undefined; commonName?: string | undefined; organizationName?: string | undefined; countryName?: string | undefined; } | undefined; bits?: number | undefined; nameConstraints?: { ...; } | undefined; }'"
 
-This helped me to fix this error. I only use AI as a last resort when common helpful resources such as geeksforgeeks or StackOverflow have no helpful solutions.
+This helped me to fix this error.
+
+Failed Tests
+Gemini 3.1 Pro was used to help me fix a bug within the testing. Code that had not been touched on our dev branch for 4 days and passed the CI when integrated, suddenly did not pass when run again. I used AI to help me understand the reason for this failure, after pinpointing it to a certain command using the debug logs and many `console.log` statements. 
+
+> Prompt used - "Error starting Interceptor Proxy: Error: Worker exited with code 9" is the error code I get testing the activation of a proxy server within an async await statement in typescript. I want to make sure the proxy server activates and do this by utilising a flag that switches to true when the server is running. Within the test file, an await is used alongside a promise to ensure the tests don't hang, and then checks this flag. The promise waits for 500ms. Why is error code 9 appearing in my proxy server? I have checked and the extension activates fully. What does error code 9 mean?
+
+This helped me to identify the problem was in fact with the environment surrounding the code, and not the code itself. The error was fixed by ensuring the proxy server span up using a clean instance of node, and not using any extra environment variables inherited from the main parent process.
+
+ I only use AI as a last resort when common helpful resources such as geeksforgeeks or StackOverflow have no helpful solutions.
+
+
 
 <h3>Review</h3>
 I don't use AI to review my code, I have only used it for small excerpts, prototyping and error analysis.

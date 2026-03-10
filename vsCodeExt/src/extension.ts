@@ -28,12 +28,12 @@ export function setDisplay(t: MyTreeDataProvider, b: statusBarManager) {
     bar = b;
 }
 
-
 let proxyServer: InterceptorProxy;
 const PROXY_PORT = 3024;
 var budg: budget.budget;
 
 export async function activate(context: vscode.ExtensionContext) {
+
 
     const copilotChat = vscode.extensions.getExtension('github.copilot-chat');
     if (!copilotChat) {
@@ -52,6 +52,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     budg = new budget.budget(context.workspaceState);
 
+
     // state.runningInterceptor = true;
 
     var barManager = new statusBarManager();
@@ -69,16 +70,20 @@ export async function activate(context: vscode.ExtensionContext) {
         return x;
     }
 
+
     //let lastInlineState = false;
     const disposables: vscode.Disposable[] = [];
 
 
+
     setDisplay(treeDataProvider, barManager);
+
 
     vscode.window.registerTreeDataProvider(
         'myPrimaryView',
         treeDataProvider
     );
+
 
 
     // budget.initStorage(context.workspaceState);
@@ -88,10 +93,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
 
+
     disposables.push(vscode.workspace.onDidSaveTextDocument(async evt => {
         console.log("Updating logs..........");
         getLogs(context);
     }));
+
 
 
     const reset = vscode.commands.registerCommand('ecode.clearStore', () => {
@@ -104,6 +111,7 @@ export async function activate(context: vscode.ExtensionContext) {
         CarbonDashboardPanel.sendData();
 
     });
+
     // }));
 
     // Dashboard command 
@@ -112,9 +120,11 @@ export async function activate(context: vscode.ExtensionContext) {
         console.log('Carbon Dashboard command registered.');
     });
 
+
     const refresh = vscode.commands.registerCommand('ecode.refreshLogs', async () => {
         getLogs(context);
     });
+
 
 
     const input = vscode.commands.registerCommand('ecode.inputdisplay', async () => {
@@ -124,6 +134,7 @@ export async function activate(context: vscode.ExtensionContext) {
             placeHolder: 'eg. 5',
             ignoreFocusOut: true // keep input box open even if focus moves away from window
         });
+
         var num = Number(limit);
         if (!Number.isNaN(num)) {
             let date = new Date();
@@ -138,9 +149,14 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(input);
     context.subscriptions.push(dashboardCommand);
 
-    console.log('Interceptor Proxy Server is active');
+    console.log('Interceptor Proxy Server is activating');
 
     let startDisposable = vscode.commands.registerCommand('ecode.interceptorStart', async () => {
+
+        if (state.runningInterceptor) {
+            console.log("Interceptor is already running!");
+            return;
+        }
         try {
             // start local server
             proxyServer = new InterceptorProxy(PROXY_PORT);
@@ -170,6 +186,7 @@ export async function activate(context: vscode.ExtensionContext) {
             // vscode.window.showInformationMessage('Interceptor Proxy started on port ' + "->" + PROXY_PORT + state.runningInterceptor + "DONE");
             // vscode.window.showInformationMessage("Status: " + state.runningInterceptor);
         } catch (error) {
+            console.error("Error starting Interceptor Proxy:", error);
             vscode.window.showErrorMessage('Failed to start Interceptor Proxy: ' + error);
         }
     });
@@ -218,10 +235,13 @@ export async function activate(context: vscode.ExtensionContext) {
         // vscode.window.showInformationMessage("Opened Terminal with Proxy Environment Vars");
     });
 
+
     let stopDisposable = vscode.commands.registerCommand('ecode.interceptorStop', async () => {
         // stop local server
         if (proxyServer) {
             proxyServer.stop();
+            state.runningInterceptor = false;
+            vscode.window.showInformationMessage('Runtime Analysis stopped. ');
         }
 
         if (terminal) {
@@ -293,17 +313,18 @@ export async function activate(context: vscode.ExtensionContext) {
     // This isn't handled very gracefully at the moment.
 
 
-
     context.subscriptions.push(terminalDisposable);
     context.subscriptions.push(startDisposable);
     context.subscriptions.push(stopDisposable);
     context.subscriptions.push(runtimeDisposable);
     context.subscriptions.push(runtimeLaunchButton);
     context.subscriptions.push(ecodeMenu);
+
     return {
         budg,
         isInterceptorRunning: () => state.runningInterceptor
     };
+
 }
 export async function deactivate() {
     // make sure that the vscode isn't always vulnerable, disable configurations
@@ -313,6 +334,7 @@ export async function deactivate() {
     // const config = vscode.workspace.getConfiguration('http');
     // await config.update('proxy', undefined, vscode.ConfigurationTarget.Global);
     // await config.update('proxyStrictSSL', undefined, vscode.ConfigurationTarget.Global);
+
 }
 
 
