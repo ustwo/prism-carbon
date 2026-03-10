@@ -186,7 +186,7 @@ export async function activate(context: vscode.ExtensionContext) {
             // vscode.window.showInformationMessage('Interceptor Proxy started on port ' + "->" + PROXY_PORT + state.runningInterceptor + "DONE");
             // vscode.window.showInformationMessage("Status: " + state.runningInterceptor);
         } catch (error) {
-            console.log(`Error starting Interceptor Proxy: ${error}`);
+            console.error("Error starting Interceptor Proxy:", error);
             vscode.window.showErrorMessage('Failed to start Interceptor Proxy: ' + error);
         }
     });
