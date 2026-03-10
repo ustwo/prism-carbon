@@ -38,6 +38,7 @@ Tick all that apply:
 - [ ] My changes generate no new warnings
 - [ ] I have added tests that prove my fix is effective or that my feature works
 - [ ] New and existing unit tests pass locally with my changes
+- [ ] I have updated the version number in package.json IMPORTANT!!!!!
 
 
 ## Reviewer Notes:
