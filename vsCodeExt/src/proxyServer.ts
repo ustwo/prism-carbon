@@ -14,6 +14,7 @@ export class InterceptorProxy {
 
     constructor(port: number) {
         this.port = port;
+
         this.logger = vscode.window.createOutputChannel("Interceptor");
     }
 
@@ -26,7 +27,8 @@ export class InterceptorProxy {
             const workerPath = path.join(__dirname, 'serverWorker.js');
 
             this.child = cp.fork(workerPath, [], {
-                env: { ...process.env }
+                env: { ...process.env },
+                execArgv: []
             });
 
             this.child.on('message', (msg: any) => {
@@ -41,13 +43,6 @@ export class InterceptorProxy {
 
                     //!! purely for Dev, can be removed in main once incoorperated with UI
                     this.logger.appendLine(msg.message);
-                    // if (msg.message.includes('gCO2e}🔥')) {
-                    //     // let parsedMessage = msg.message.slice(0, msg.message.length)
-                    // updateTree()
-                    // }
-                    // if (msg.message.includes('🔥🔥')) {
-                    //     vscode.window.showInformationMessage(msg.message);
-                    // }
                     if (msg.message.includes('>> DateTime:')) {
                         id = msg.message.slice(16);
                         console.log(`id: ${id}`);
@@ -63,10 +58,9 @@ export class InterceptorProxy {
                         fullCall = true;
                         console.log(`cost: ${cost}`);
                     }
-                    //!!
                     if (fullCall === true) {
                         console.log(`id: ${id}, model: ${mod}, cost: ${cost}`);
-                        var call: budget.Call = { DateTime: id, Model: mod, Emissions: +cost };
+                        var call: budget.Call = { DateTime: new Date(id).getTime(), Model: mod, Emissions: +cost };
                         updateTree(call);
                     }
                 } else if (msg.type === 'error') {
@@ -77,6 +71,13 @@ export class InterceptorProxy {
 
             this.child.on('error', (err) => {
                 reject(err);
+            });
+
+            this.child.on('exit', (code) => {
+                if (code !== 0) {
+                    reject(new Error(`Worker exited with code ${code}`))
+                    console.log(`Worker exited with code ${code}`);
+                };
             });
 
             // start server

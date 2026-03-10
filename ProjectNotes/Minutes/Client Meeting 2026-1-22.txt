@@ -1,0 +1,11 @@
+At the start of the new teaching block, we reported to our client about the beta release goals and the client decided to schedule a Google Meet with us
+the client to provide feedback and suggestions on beta release. They also offered us some technical support.
+
+1. The client strongly suggested that the bottom bar needs to be redesigned. We decided to make a new dashboard style UI, which can be popped up, alongside the redesigned bottom bar. 
+The client said they would like the line chart that shows daily CO₂ consumption and other metrics changing over time, with a particular interest in session time on the Y-axis.
+2.the client would like to adding new AI models. Anthropic was their top priority, then OpenAI then Gemmini.
+3. For the dashboard design, the client prefers per project metric first. They also like the idea of keeping budget within the dashboard. The Cursor dashboard would be a good point of inspiration.
+3.5. Client also interested in per session metrics – identifying high volume sessions etc to improve future coding practices.
+4.The client suggests we can use resources from the [Green Software Foundation](https://impact.esg.ai/). Transparency in conversion calculations is a priority – client suggests documentation/manual towards the end of the project.
+5.After the beta release, the client suggested an online meeting with their development team to provide technical and holistic feedback on the release.
+6.client suggested that we should name the project. And create a logo for our project.

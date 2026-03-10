@@ -1,23 +1,31 @@
 {
-  "name": "vsCodeExt",
-  "displayName": "EstimatingCarbon",
+  "name": "ecode",
+  "displayName": "Ecode",
+  "publisher": "development",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spe-uob/2025-EstimatingCarbon.git"
+  },
   "description": "",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "engines": {
-    "vscode": "^1.104.0"
+    "vscode": "^1.109.0"
   },
   "categories": [
     "Other"
   ],
   "activationEvents": [
-    "onCommand:vsCodeExt.helloWorld",
-    "onCommand:vsCodeExt.resetStore",
-    "onCommand:vsCodeExt.inputdisplay",
-    "onCommand:vsCodeExt.setApiKey",
-    "onView:myPrimaryView"
+    "onCommand:ecode.resetStore",
+    "onCommand:ecode.inputdisplay",
+    "onCommand:ecode.setApiKey",
+    "onCommand:ecode.openDashboard",
+    "onCommand:ecode.refreshLogs",
+    "onView:myPrimaryView",
+    "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "keybindings": [],
     "viewsContainers": {
       "activitybar": [
         {
@@ -31,40 +39,51 @@
       "my-view-container": [
         {
           "id": "myPrimaryView",
-          "name": "Carbon Estimates"
+          "name": "Carbon Estimates",
+          "icon": "$(eye)"
         }
       ]
     },
     "commands": [
       {
-        "command": "vsCodeExt.helloWorld",
-        "title": "Hello World"
+        "command": "ecode.openDashboard",
+        "title": "Ecode: Open Carbon Dashboard"
       },
       {
-        "command": "vsCodeExt.clearStore",
-        "title": "Clear stored calls"
+        "command": "ecode.testInput",
+        "title": "test input"
       },
       {
-        "command": "vsCodeExt.inputdisplay",
-        "title": "Input Display"
+        "command": "ecode.clearStore",
+        "title": "Ecode: Clear stored calls"
       },
       {
-        "command": "vsCodeExt.setApiKey",
-        "title": "Set Api Key"
+        "command": "ecode.inputdisplay",
+        "title": "Ecode: Input Display"
       },
       {
-        "command": "interceptor.start",
-        "title": "Start Proxy Interceptor",
+        "command": "ecode.refreshLogs",
+        "title": "Ecode: Refresh carbon data",
+        "category": "Logging"
+      },
+      {
+        "command": "ecode.interceptorStart",
+        "title": "Ecode: Start Proxy Interceptor",
         "category": "Interceptor"
       },
       {
-        "command": "interceptor.stop",
-        "title": "Stop Proxy Interceptor",
+        "command": "ecode.interceptorStop",
+        "title": "Ecode: Stop Proxy Interceptor",
         "category": "Interceptor"
       },
       {
-        "command": "interceptor.openTerminal",
-        "title": "Open Runtime Terminal",
+        "command": "ecode.interceptorOpenTerminal",
+        "title": "Ecode: Open Runtime Terminal",
+        "category": "Interceptor"
+      },
+      {
+        "command": "ecode.runtimeAnalysis",
+        "title": "Ecode: Analyse Runtime",
         "category": "Interceptor"
       }
     ]
@@ -80,25 +99,33 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "check-types": "tsc --noEmit",
-    "lint": "eslint src",
-    "test": "vscode-test"
+    "lint": "eslint src --format json",
+    "test": "vscode-test",
+    "release": "vsce package"
   },
   "devDependencies": {
-    "@types/http-proxy": "^1.17.16",
+    "@types/http-proxy": "^1.17.17",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^22.18.11",
-    "@types/vscode": "^1.104.0",
-    "@typescript-eslint/eslint-plugin": "^8.45.0",
-    "@typescript-eslint/parser": "^8.45.0",
-    "@vscode/test-cli": "^0.0.11",
+    "@types/node": "^25.2.3",
+    "@types/sinon": "^21.0.0",
+    "@types/vscode": "^1.109.0",
+    "@typescript-eslint/eslint-plugin": "^8.56.0",
+    "@typescript-eslint/parser": "^8.56.0",
+    "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
-    "esbuild": "^0.25.10",
-    "eslint": "^9.36.0",
+    "esbuild": "^0.27.3",
+    "eslint": "^10.0.2",
     "npm-run-all": "^4.1.5",
-    "typescript": "^5.9.3"
+    "sinon": "^21.0.1",
+    "typescript": "^5.9.3",
+    "vscode": "^1.1.37"
   },
   "dependencies": {
+    "@vscode/codicons": "^0.0.44",
+    "axios": "^1.13.5",
     "http-proxy": "^1.18.1",
-    "mockttp": "^4.2.1"
+    "mocha": "^11.7.5",
+    "mockttp": "^4.2.1",
+    "tiktoken": "^1.0.22"
   }
 }
