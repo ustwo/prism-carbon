@@ -81,7 +81,9 @@ This helped me to identify the problem was in fact with the environment surround
 
 
 <h3>Review</h3>
-I don't use AI to review my code, I have only used it for small excerpts, prototyping and error analysis.
+
+I used AI to review the release.yml file to ensure that it worked before merging to main. I tested it briefly on a test repo, but it ended up failing on main anyway. To prevent this problem from occuring again when trying to fix it, I copied and pasted the file into gemini 3.1 pro and asked it to make sure the file would run. It said that it was happy for it to run, and so I merged the file.
+
 
 <h2>Hao Ni</h2>
 <p> I, Hao Ni declare that this document is accurate to my AI usage throughout the course of SEP</p>
