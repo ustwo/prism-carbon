@@ -181,7 +181,8 @@ export class CarbonDashboardPanel {
             branchMap[branch].push(
                 {
                     xAxis: branchCounts[branch] * 30 + 10,
-                    carbon: call.Emissions
+                    carbon: call.Emissions,
+                    timeStamp: call.DateTime
                 });
 
             branchCounts[branch]++;

@@ -197,6 +197,17 @@ function buildGraph() {
     });
 
     mainGraphArea.appendChild(horizontalLineWrapper);
+
+    const xAxisTimeStamp = document.createElement("div");
+    xAxisTimeStamp.id = "timestamp-on-x-axis";
+    xAxisTimeStamp.style.display = "flex";
+    xAxisTimeStamp.style.justifyContent = "space-between";
+    xAxisTimeStamp.style.fontSize = "11px";
+    xAxisTimeStamp.style.padding = "4px 12px";
+    xAxisTimeStamp.style.color = "var(--secondary-text)";
+    xAxisTimeStamp.style.marginTop = "6px";
+
+    mainGraphArea.appendChild(xAxisTimeStamp);
 }
 
 function deleteBranches() {
@@ -351,7 +362,7 @@ function drawCumulativeGraph() {
     yAxisHeading.setAttribute("y", height / 2);
     yAxisHeading.setAttribute("fill", "var(--text-color)");
     yAxisHeading.setAttribute("transform", `rotate(-90 15 ${height / 2})`);
-    yAxisHeading.textContent = "Carbon";
+    yAxisHeading.textContent = "Carbon (g CO₂)";
     svg.appendChild(yAxisHeading);
 
     const xAxisHeading = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -422,7 +433,9 @@ function drawCommitDots() {
                     commitDot.style.cursor = "pointer";
 
                     commitDot.addEventListener("mouseenter", (e) => {
+                        const timeStamp = new Date(commit.timeStamp).toLocaleString();
                         hoverFunctionality.innerHTML = `<strong>${branchName}</strong><br/>
+                                                        Time: ${timeStamp}<br/>
                                                         Carbon: ${commit.carbon}g CO2`;
                         hoverFunctionality.style.opacity = "1";
                     });
