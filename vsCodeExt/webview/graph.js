@@ -200,12 +200,13 @@ function buildGraph() {
 
     const xAxisTimeStamp = document.createElement("div");
     xAxisTimeStamp.id = "timestamp-on-x-axis";
-    xAxisTimeStamp.style.display = "flex";
-    xAxisTimeStamp.style.justifyContent = "space-between";
+    xAxisTimeStamp.style.position = "relative";
+    xAxisTimeStamp.style.height = "18px";
     xAxisTimeStamp.style.fontSize = "11px";
     xAxisTimeStamp.style.padding = "4px 12px";
     xAxisTimeStamp.style.color = "var(--secondary-text)";
     xAxisTimeStamp.style.marginTop = "6px";
+    xAxisTimeStamp.style.width = "100%";
 
     mainGraphArea.appendChild(xAxisTimeStamp);
 }
@@ -405,14 +406,17 @@ function drawCommitDots() {
             return;
         }
 
-        const horizontalPaths = document.querySelectorAll("#carbon-usage-graph-main-area > div > div");
+        const allTimeStamps = [];
+
+        const horizontalPaths = document.querySelectorAll("#carbon-usage-graph-main-area > div > div > span");
 
         if (horizontalPaths.length === 0) {
             return;
         }
 
-        horizontalPaths.forEach(horizontalPath => {
-            const branchName = horizontalPath.querySelector("span").innerText;
+        horizontalPaths.forEach(span => {
+            const horizontalPath = span.parentElement;
+            const branchName = span.innerText;
             const horizontalLine = horizontalPath.querySelector("div");
 
             horizontalLine.querySelectorAll(".commit-dot").forEach(dot => dot.remove());
@@ -421,6 +425,7 @@ function drawCommitDots() {
 
             if (commitDots) {
                 commitDots.forEach(commit => {
+                    allTimeStamps.push(commit.timeStamp);
                     const commitDot = document.createElement("div");
                     commitDot.classList.add("commit-dot");
                     commitDot.style.width = "10px";
@@ -455,6 +460,33 @@ function drawCommitDots() {
                 });
             }
         });
+        const xAxisTimeStamp = document.getElementById("timestamp-on-x-axis");
+        if (xAxisTimeStamp){
+            xAxisTimeStamp.innerHTML = "";
+            const displayedTimeStamps = new Set();
+            horizontalPaths.forEach(span => {
+                const branchName = span.innerText;
+                const commitDots = pendingCommitDots[branchName];
+                if (commitDots) {
+                    commitDots.forEach(commit => {
+                        if (displayedTimeStamps.has(commit.timeStamp)) {
+                            return;
+                        }
+                        displayedTimeStamps.add(commit.timeStamp);
+
+                        const heading = document.createElement("span");
+                        heading.innerText = new Date(commit.timeStamp).toLocaleTimeString();
+                        heading.style.position = "absolute";
+                        heading.style.left = (commit.xAxis) + "px";
+                        heading.style.transform = "translateX(-50%)";
+                        heading.style.whiteSpace = "nowrap";
+                        heading.style.fontSize = "10px";
+
+                        xAxisTimeStamp.appendChild(heading);
+                    });
+                }
+            });
+        }
     }
 }
 
