@@ -2,7 +2,7 @@ let pendingCommitDots = null;
 let cumulativeGraphButton;
 let timelineGraphButton;
 let slider;
-let graphType = "cumulative";
+let graphType = "timeline";
 let workspaceBranches = [];
 let referenceStrip;
 let hoverFunctionality;
@@ -81,7 +81,7 @@ if (ref) {
     slider = document.createElement("div");
     slider.style.position = "absolute";
     slider.style.inset = "3px";
-    slider.style.width = "calc(50% - 3px)";
+    slider.style.width = "calc(50% - 6px)";
     slider.style.borderRadius = "999px";
     slider.style.transition = "transform 0.25s cubic-bezier(.4,0,.2,1)";
     slider.style.transform = "translateX(0%)";
@@ -90,11 +90,11 @@ if (ref) {
     slider.style.boxShadow = `0 2px 6px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.6), inset 0 -1px 2px rgba(0,0,0,0.15)`;
     slider.style.backdropFilter = "blur(4px)";
 
-    cumulativeGraphButton = makeButtons("Cumulative Graph", "cumulative-button");
     timelineGraphButton = makeButtons("Timeline Graph", "timeline-button");
+    cumulativeGraphButton = makeButtons("Cumulative Graph", "cumulative-button");
 
-    cumulativeGraphButton.classList.add("toggle-active");
-    timelineGraphButton.classList.add("toggle-inactive");
+    timelineGraphButton.classList.add("toggle-active");
+    cumulativeGraphButton.classList.add("toggle-inactive");
 
     const mainGraphArea = document.createElement("div");
     mainGraphArea.id = "carbon-usage-graph-main-area";
@@ -119,8 +119,8 @@ if (ref) {
     container.appendChild(hoverFunctionality);
 
     toggleButtonContainer.appendChild(slider);
-    toggleButtonContainer.appendChild(cumulativeGraphButton);
     toggleButtonContainer.appendChild(timelineGraphButton);
+    toggleButtonContainer.appendChild(cumulativeGraphButton);
 
     references.appendChild(title);
     branchSelector = document.createElement("select");
@@ -293,7 +293,7 @@ function drawCumulativeGraph() {
     const margin = { top: 20, right: 40, bottom: 40, left: 60 };
     let maxTime = 0;
     let maxCarbon = 0;
-    const timeScale = 5;
+    const timeScale = 40;
 
     const cumulativeGraphData = getCumulativeGraphData();
 
@@ -317,7 +317,7 @@ function drawCumulativeGraph() {
     }
 
     const oldWidth = mainGraphArea.clientWidth;
-    const width = Math.max(oldWidth, maxTime * timeScale + margin.left + margin.right + 100);
+    const width = Math.max(oldWidth, maxTime * timeScale + margin.left + margin.right + 200);
 
     svg.setAttribute("width", width);
     svg.setAttribute("height", height);
@@ -326,6 +326,10 @@ function drawCumulativeGraph() {
     const graphHeight = height - margin.top - margin.bottom;
 
     Object.keys(cumulativeGraphData).forEach(branch => {
+
+        if(selectedBranch !== "all" && branch !== selectedBranch){
+            return;
+        }
 
         const branchIndex = workspaceBranches.indexOf(branch);
         const hue = Math.floor((branchIndex * 137.5 + 150) % 360);
@@ -353,7 +357,7 @@ function drawCumulativeGraph() {
 
         if (endPoint) {
             const branchHeading = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            branchHeading.setAttribute("x", endPoint.x + 4);
+            branchHeading.setAttribute("x", endPoint.x + 10);
             branchHeading.setAttribute("y", endPoint.y - 6);
             branchHeading.setAttribute("fill", branchColour);
             branchHeading.setAttribute("font-size", "11");
@@ -430,7 +434,7 @@ function makeButtons(text, id) {
 
 cumulativeGraphButton.addEventListener("click", () => {
     graphType = "cumulative";
-    slider.style.transform = "translateX(0%)";
+    slider.style.transform = "translateX(100%)";
 
     cumulativeGraphButton.classList.add("toggle-active");
     cumulativeGraphButton.classList.remove("toggle-inactive");
@@ -443,7 +447,7 @@ cumulativeGraphButton.addEventListener("click", () => {
 
 timelineGraphButton.addEventListener("click", () => {
     graphType = "timeline";
-    slider.style.transform = "translateX(calc(100% + 3px))";
+    slider.style.transform = "translateX(0%)";
 
     timelineGraphButton.classList.add("toggle-active");
     timelineGraphButton.classList.remove("toggle-inactive");
