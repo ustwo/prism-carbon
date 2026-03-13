@@ -124,18 +124,63 @@ if (ref) {
 
     references.appendChild(title);
     branchSelector = document.createElement("select");
-    branchSelector.style.padding = "4px 8px";
-    branchSelector.style.borderRadius = "6px";
-    branchSelector.style.background = "var(--base-variant)";
+    branchSelector.style.padding = "6px 34px 6px 14px";
+    branchSelector.style.borderRadius = "999px";
+    branchSelector.style.background = "linear-gradient(to bottom, rgba(255,255,255,0.18), rgba(255,255,255,0.05))";
     branchSelector.style.color = "var(--text-color)";
-    branchSelector.style.border = "1px solid var(--secondary-text)";
-    branchSelector.style.fontSize = "12px";
+    branchSelector.style.border = "1px solid rgba(0,0,0,0.45)";
+    branchSelector.style.fontSize = "13px";
+    branchSelector.style.fontWeight = "500";
+    branchSelector.style.cursor = "pointer";
+    branchSelector.style.appearance = "none";
+    branchSelector.style.transition = "all 0.2s ease";
+    branchSelector.style.minWidth = "160px";
+    branchSelector.style.boxShadow = `0 2px 6px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.55), inset 0 -1px 2px rgba(0, 0, 0, 0.2)`;
+    branchSelector.style.backdropFilter = "blur(4px)";
+    
 
     branchSelector.addEventListener("change", () => {
         selectedBranch = branchSelector.value;
         drawGraphs();
     });
-    references.appendChild(branchSelector);
+
+    branchSelector.addEventListener("mouseenter", () => {
+        branchSelector.style.boxShadow = `0 3px 8px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.7), inset 0 -1px 2px rgba(0, 0, 0, 0.25)`;
+
+    });
+
+    branchSelector.addEventListener("mouseleave", () => {
+        branchSelector.style.boxShadow = `0 2px 6px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.55), inset 0 -1px 2px rgba(0, 0, 0, 0.2)`;
+
+    });
+
+    branchSelector.addEventListener("focus", () => {
+        branchSelector.style.outline = "none";
+        branchSelector.style.borderColor = "var(--text-color)";
+    });
+
+    branchSelector.addEventListener("blur", () => {
+        branchSelector.style.borderColor = "var(--secondary-text)";
+    });
+
+
+    const branchSelectorWrapper = document.createElement("div");
+    branchSelectorWrapper.style.position = "relative";
+    branchSelectorWrapper.style.display = "inline-flex";
+    branchSelectorWrapper.style.alignItems = "center";
+
+    const dropDownArrow = document.createElement("div");
+    dropDownArrow.innerHTML = "&#x25BC;";
+    dropDownArrow.style.position = "absolute";
+    dropDownArrow.style.right = "10px";
+    dropDownArrow.style.pointerEvents = "none";
+    dropDownArrow.style.fontSize = "12px";
+    dropDownArrow.style.color = "var(--text-color)";
+
+    branchSelectorWrapper.appendChild(branchSelector);
+    branchSelectorWrapper.appendChild(dropDownArrow);
+
+    references.appendChild(branchSelectorWrapper);
     references.appendChild(toggleButtonContainer);
 
     header.appendChild(references);
@@ -654,6 +699,10 @@ function drawCandleStickTimelineGraph(){
 
     scrollContainer.appendChild(svg);
     mainGraphArea.appendChild(scrollContainer);
+
+    setTimeout(() => {
+        scrollContainer.scrollLeft = scrollContainer.scrollWidth;
+    }, 10);
 }
 
 function enableDynamicSizeChanger() {
