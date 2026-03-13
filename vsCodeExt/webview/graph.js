@@ -405,10 +405,10 @@ function drawCumulativeGraph() {
 }
 
 function getCColor(carbon) {
-    if (carbon < 0.5) {
+    if (carbon < 15) {
         return "var(--low-carbon)";
     }
-    if (carbon < 4.5) {
+    if (carbon < 40) {
         return "var(--avg-carbon)";
     }
     return "var(--high-carbon)";
@@ -463,7 +463,7 @@ function drawCandleStickTimelineGraph(){
         if (selectedBranch !== "all" && branch !== selectedBranch) return;
 
         pendingCommitDots[branch].forEach(commit => {
-            commits.push({
+            allCommits.push({
                 branch: branch,
                 carbon: commit.carbon,
                 time: new Date(commit.timeStamp).getTime(),
@@ -472,7 +472,78 @@ function drawCandleStickTimelineGraph(){
         });
 
     });
-    if (commits.length === 0) return;
-    
-    commits.sort((a,b) => a.time - b.time);
+    if (allCommits.length === 0) return;
+
+    allCommits.sort((a,b) => a.time - b.time);
+
+    const pixelsPerCommit = 50;
+
+    const width = Math.max(mainGraphArea.clientWidth, allCommits.length * pixelsPerCommit);
+    const height = mainGraphArea.clientHeight;
+
+    const margin = { top: 20, right: 60, bottom: 50, left: 60 };
+
+    const graphWidth = width - margin.left - margin.right;
+    const graphHeight = height - margin.top - margin.bottom;
+
+    let minTime = Infinity;
+    let maxTime = -Infinity;
+    let maxCarbon = 0;
+
+    allCommits.forEach(c => {
+        if (c.time < minTime) {
+            minTime = c.time;
+        }
+        if (c.time > maxTime) {
+            maxTime = c.time;
+        }
+        if (c.carbon > maxCarbon) {
+            maxCarbon = c.carbon;
+        }
+    });
+
+    if (maxCarbon === 0) {
+        maxCarbon = 1;
+    }
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", width);
+    svg.setAttribute("height", height);
+
+    allCommits.forEach(commit => {
+        const xAxis = margin.left + ((commit.time - minTime)/(maxTime - minTime)) * graphWidth;
+        const topYSpace = margin.top + graphHeight - (commit.carbon / maxCarbon) * graphHeight;
+        const bottomYSpace = margin.top + graphHeight;
+
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", xAxis);
+        line.setAttribute("x2", xAxis);
+        line.setAttribute("y1", bottomYSpace);
+        line.setAttribute("y2", topYSpace);
+
+        line.setAttribute("stroke", getCColor(commit.carbon));
+        line.setAttribute("stroke-width", "5.5");
+
+        svg.appendChild(line);
+    });
+
+    const xAxisLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    xAxisLine.setAttribute("x1", margin.left);
+    xAxisLine.setAttribute("x2", width - margin.right);
+    xAxisLine.setAttribute("y1", height - margin.bottom);
+    xAxisLine.setAttribute("y2", height - margin.bottom);
+    xAxisLine.setAttribute("stroke", "var(--text-color)");
+
+    svg.appendChild(xAxisLine);
+
+    const yAxisLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    yAxisLine.setAttribute("x1", margin.left);
+    yAxisLine.setAttribute("x2", margin.left);
+    yAxisLine.setAttribute("y1", margin.top);
+    yAxisLine.setAttribute("y2", height - margin.bottom);
+    yAxisLine.setAttribute("stroke", "var(--text-color)");
+
+    svg.appendChild(yAxisLine);
+
+    mainGraphArea.appendChild(svg);
 }
