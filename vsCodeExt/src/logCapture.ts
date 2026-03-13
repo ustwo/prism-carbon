@@ -40,43 +40,59 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
         for(var i = 0;i< models.length;i++){
             var model = models[i]; 
             console.log("testing testing ",model);
+
+            if (model.startsWith('gpt-5')){
+                console.log("gpt model caught");
+                GPTs.push(model);
+                newGPTFlag = true;
+            };
+
             switch (model) {
                 case 'claude-haiku-4.5': //adds the specifc claude model to an array of claude models
+                    console.log("claude-haiku-4.5 found");
                     claudes.push(model);
                     claudeFlag = true;
+                    break;
                     
                 case 'claude-opus-4.5':
                     claudes.push(model);
                     claudeFlag = true;
-                    
+                    break;
+
                 case 'claude-opus-4.6':
                     claudes.push(model);
                     claudeFlag = true;
-                 
+                    break;
+
                 case 'claude-sonnet-4':
                     claudes.push(model);
                     claudeFlag = true;
-           
+                    break;
+
                 case 'claude-sonnet-4.5':
                     claudes.push(model);
                     claudeFlag = true;
+                    break;
          
                 case 'claude-sonnet-4.6':
                     claudes.push(model);
                     claudeFlag = true;
-         
+                    break;
+
                 case 'gpt-5.2-codex':
+                    console.log("model again???",model);
+                    console.log("gpt model caught codex edish");
                     newGPTFlag = true;
                     GPTs.push(model);
-                  
+                    break;
+   
                 default:
                     console.log("Functionality coming soon!");
                     break;
-            
             }
-        }
-        
+        } 
     }
+    console.log("GPT flag",newGPTFlag);
     if (claudeFlag || newGPTFlag){
         var times:number[] = [];
         var results:number[] = [];
@@ -89,6 +105,7 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
             console.log("Claude Results: ",resultsC);
         }
         if(newGPTFlag){
+            console.log("checking for GPT pattern");
             const [timesG,resultsG] = findModel(rawLog,GPTPattern,"shouldContinue=false");
             results = results.concat(resultsG);
             times = times.concat(timesG);
@@ -100,11 +117,12 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
         for(var i = 0; i<results.length;i++){
             if (results[i] !== -1) { 
                 activeCall.Model = allModels[i];
-                activeCall.Emissions = Number(convert.calculateEmission(activeCall.Model, results[i]).toFixed(4));
+                activeCall.Emissions = Number(results[i]);
+                //convert.calculateEmission(activeCall.Model, results[i]).toFixed(4));
                 // converts current call's token count to emissions 
                 activeCall.DateTime = times[i]; //apply appropriate time stamp
                 claudeFlag = false; //resets flags
-
+                newGPTFlag = false;
                 matches.push(activeCall);
                 var activeCall: budget.Call = { Emissions: 0, Model: "TEST", DateTime: 0 };//resets the call
             }  
@@ -149,6 +167,7 @@ function findModel(log: string,pattern : RegExp,splitString : String): [number[]
         }
 
         }
+        console.log(timestamp,result)
         return [timestamp, result];
     }
 

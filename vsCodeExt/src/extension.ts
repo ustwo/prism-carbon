@@ -494,6 +494,7 @@ export async function getLogs(context: vscode.ExtensionContext) {
         //vscode.window.showInformationMessage("Copilot log files refreshed.");
     }
     catch (error) {
+        console.log(error);
         vscode.window.showErrorMessage("Error: Copilot log files not found.");
     }
 }
