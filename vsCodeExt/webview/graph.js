@@ -9,6 +9,7 @@ let hoverFunctionality;
 let container;
 let branchSelector;
 let selectedBranch = "all";
+let dynamicSizeChanger;
 
 const ref = document.getElementById("branchGraph");
 
@@ -236,6 +237,10 @@ function deleteBranches() {
 function drawGraphs() {
 
     deletePreviousGraph();
+
+    if(!dynamicSizeChanger){
+        enableDynamicSizeChanger();
+    }
 
     if (graphType === "timeline") {
         if (referenceStrip) {
@@ -560,7 +565,8 @@ function drawCandleStickTimelineGraph(){
 
     svg.appendChild(xAxisLine);
 
-    const xMarkings = 6;
+    const xMarkingsSpacing = 140;
+    const xMarkings = Math.floor(graphWidth / xMarkingsSpacing);
     for (let i = 0; i <= xMarkings; i++) {
         const time = minTime + (i / xMarkings) * (maxTime - minTime);
         const xAxis = margin.left + ((time - minTime)/(maxTime - minTime)) * graphWidth;
@@ -611,5 +617,57 @@ function drawCandleStickTimelineGraph(){
         svg.appendChild(heading);
     }
 
-    mainGraphArea.appendChild(svg);
+    const now = Date.now();
+
+    if(now >= minTime && now <= maxTime){
+        const xAxisNow = margin.left + ((now - minTime)/(maxTime - minTime)) * graphWidth;
+        const nowVerticalLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        nowVerticalLine.setAttribute("x1", xAxisNow);
+        nowVerticalLine.setAttribute("x2", xAxisNow);
+        nowVerticalLine.setAttribute("y1", margin.top);
+        nowVerticalLine.setAttribute("y2", height - margin.bottom);
+        nowVerticalLine.setAttribute("stroke", "var(--secondary-text)");
+        nowVerticalLine.setAttribute("stroke-dasharray", "5 5");
+
+        svg.appendChild(nowVerticalLine);
+
+        const nowHeading = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        nowHeading.setAttribute("x", xAxisNow);
+        nowHeading.setAttribute("y", margin.top - 6);
+        nowHeading.setAttribute("text-anchor", "middle");
+        nowHeading.setAttribute("font-size", "11");
+        nowHeading.setAttribute("fill", "var(--secondary-text)");
+        nowHeading.setAttribute("font-weight", "600");
+        nowHeading.textContent = "Now";
+        svg.appendChild(nowHeading);
+    }
+
+    const scrollContainer = document.createElement("div");
+    scrollContainer.style.width = "100%";
+    scrollContainer.style.height = "100%";
+    scrollContainer.style.overflowX = "auto";
+    scrollContainer.style.overflowY = "hidden";
+
+    scrollContainer.appendChild(svg);
+    mainGraphArea.appendChild(scrollContainer);
+}
+
+function enableDynamicSizeChanger() {
+    const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
+
+    if (!mainGraphArea){
+        return;
+    }
+
+    if(dynamicSizeChanger){
+        dynamicSizeChanger.disconnect();
+    }
+
+    dynamicSizeChanger = new ResizeObserver(() => {
+        drawGraphs();
+    });
+
+    dynamicSizeChanger.observe(mainGraphArea);
+
+
 }
