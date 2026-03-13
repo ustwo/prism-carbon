@@ -42,7 +42,6 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
             console.log("testing testing ",model);
             switch (model) {
                 case 'claude-haiku-4.5': //adds the specifc claude model to an array of claude models
-                    console.log("claude model found");
                     claudes.push(model);
                     claudeFlag = true;
                     
@@ -67,7 +66,6 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
                     claudeFlag = true;
          
                 case 'gpt-5.2-codex':
-                    console.log("caught GPT model");
                     newGPTFlag = true;
                     GPTs.push(model);
                   
