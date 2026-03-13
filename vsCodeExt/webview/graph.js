@@ -506,6 +506,10 @@ function drawCandleStickTimelineGraph(){
         maxCarbon = 1;
     }
 
+    const startEdgePadding = (maxTime - minTime) * 0.08;
+    minTime = minTime - startEdgePadding;
+    maxTime = maxTime + startEdgePadding;
+
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("width", width);
     svg.setAttribute("height", height);
@@ -524,6 +528,26 @@ function drawCandleStickTimelineGraph(){
         line.setAttribute("stroke", getCColor(commit.carbon));
         line.setAttribute("stroke-width", "5.5");
 
+        line.style.cursor = "pointer";
+        
+        line.addEventListener("mouseenter", () => {
+            const timeStamp = new Date(commit.timeStamp).toLocaleString();
+            hoverFunctionality.innerHTML = `<strong>Branch:</strong> ${commit.branch}<br>
+                                        <strong>Carbon Emitted:</strong> ${commit.carbon.toFixed(2)} g CO₂<br>
+                                        <strong>Time:</strong> ${timeStamp}`;
+            hoverFunctionality.style.opacity = "1";
+        });
+
+        line.addEventListener("mousemove", (e) => {
+            const rect = container.getBoundingClientRect();
+            hoverFunctionality.style.left = (e.clientX - rect.left + 12) + "px";
+            hoverFunctionality.style.top = (e.clientY - rect.top - 20) + "px";
+        });
+
+        line.addEventListener("mouseleave", () => {
+            hoverFunctionality.style.opacity = "0";
+        });
+
         svg.appendChild(line);
     });
 
@@ -536,6 +560,29 @@ function drawCandleStickTimelineGraph(){
 
     svg.appendChild(xAxisLine);
 
+    const xMarkings = 6;
+    for (let i = 0; i <= xMarkings; i++) {
+        const time = minTime + (i / xMarkings) * (maxTime - minTime);
+        const xAxis = margin.left + ((time - minTime)/(maxTime - minTime)) * graphWidth;
+
+        const heading = document.createElementNS("http://www.w3.org/2000/svg", "text");
+
+        heading.setAttribute("x", xAxis);
+        heading.setAttribute("y", height - margin.bottom + 18);
+        heading.setAttribute("text-anchor", "middle");
+        heading.setAttribute("font-size", "12");
+        heading.setAttribute("fill", "var(--secondary-text)");
+
+        heading.textContent = new Date(time).toLocaleString([], {
+             day: "2-digit",
+             month: "short",
+             hour: "2-digit",
+             minute: "2-digit"
+            });
+
+        svg.appendChild(heading);
+    }
+
     const yAxisLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
     yAxisLine.setAttribute("x1", margin.left);
     yAxisLine.setAttribute("x2", margin.left);
@@ -544,6 +591,25 @@ function drawCandleStickTimelineGraph(){
     yAxisLine.setAttribute("stroke", "var(--text-color)");
 
     svg.appendChild(yAxisLine);
+
+    const yMarkings = 5;
+
+    for (let i = 1; i <= yMarkings; i++) {
+        const carbonEmitted = (i / yMarkings) * maxCarbon;
+        const yAxis = margin.top + graphHeight - (carbonEmitted / maxCarbon) * graphHeight;
+
+        const heading = document.createElementNS("http://www.w3.org/2000/svg", "text");
+
+        heading.setAttribute("x", margin.left - 8);
+        heading.setAttribute("y", yAxis + 3);
+        heading.setAttribute("text-anchor", "end");
+        heading.setAttribute("font-size", "12");
+        heading.setAttribute("fill", "var(--secondary-text)");
+
+        heading.textContent = carbonEmitted.toFixed(1) + "g";
+
+        svg.appendChild(heading);
+    }
 
     mainGraphArea.appendChild(svg);
 }
