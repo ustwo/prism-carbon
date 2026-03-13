@@ -65,10 +65,6 @@ export async function activate(context: vscode.ExtensionContext) {
     );
 
 
-    function convert(x: any) {
-        //treeDataProvider.addMessage(String(x));
-        return x;
-    }
 
 
     //let lastInlineState = false;

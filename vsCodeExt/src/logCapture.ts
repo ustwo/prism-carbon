@@ -107,13 +107,11 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
         //var totalResults = [resultsC,resultsG];
         
         //for (const results of totalResults)
-        console.log("models:",allModels);
-        console.log("results: ",results);
+
         for(var i = 0; i<results.length;i++){
             if (results[i] !== -1) { 
                 activeCall.Model = allModels[i];
-                activeCall.Emissions = Number(results[i]);
-                //convert.calculateEmission(activeCall.Model, results[i]).toFixed(4));
+                activeCall.Emissions = Number(convert.calculateEmission(activeCall.Model, results[i]).toFixed(4));
                 // converts current call's token count to emissions 
                 activeCall.DateTime = times[i]; //apply appropriate time stamp
                 claudeFlag = false; //resets flags
