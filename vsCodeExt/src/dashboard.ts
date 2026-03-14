@@ -171,7 +171,7 @@ export class CarbonDashboardPanel {
             modelLabels,
             modelEmissions,
             heatMapData,
-            sessionBudget
+            sessionBudget,
             averageEmission // this is the average emission value calculated from all calls, sent to the frontend to be displayed on the dashboard
         });
 
