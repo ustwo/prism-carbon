@@ -446,9 +446,8 @@ export function updateTree(call: budget.Call) {
         call.Branch = getCurrentBranch();
     }
     budg.storeCall(call);
-    var cLimit = budg.updateLimit();
-    console.log("limit: " + cLimit);
-    bar.updateBar(call.Emissions, cLimit);
+   
+    bar.updateBar(call.Emissions);
     tree.addMessage("Emissions: " + call.Emissions + "g CO₂e - Model: " + call.Model + " - Date: " + new Date(call.DateTime).toLocaleString());
 
     CarbonDashboardPanel.sendData();
