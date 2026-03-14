@@ -379,55 +379,42 @@ class MyTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
 
 }
 class statusBarManager {
-    mainItem = vscode.window.createStatusBarItem(); //creates a status bar item for limit word
-    loading: vscode.StatusBarItem[] = []; //creates a list of statusbar items for the loading bar items
-    defaultColour: string = "statusBarItem.activeBackground";
-    newColour: string;
+    mainItem = vscode.window.createStatusBarItem(); // creates a new item in the VS Code status bar
+    defaultColour: string = "statusBarItem.activeBackground"; // defines default colour for the status bar item
+    newColour: string; // stores the new colour calculated based on the carbon emissions of the latest request
 
     constructor() {
         this.newColour = this.defaultColour;
-        this.mainItem.text = 'Average carbon cost: g CO₂e';
-        this.mainItem.show();//displays the limit item
-
-
+        this.mainItem.text = 'Last Request: 0 g CO₂e';
+        this.mainItem.show();
     }
 
     updateLimit(input: number) {
-        this.mainItem.text = 'Average carbon cost: ' + input + ' g CO₂e';
+        this.mainItem.text = 'Last Request: 0 g CO₂e';
         this.newColour = "statusBarItem.activeBackground";
     }
-
-    updateBar(input: number, limit: number) {
-
-        if (input) {
-            this.mainItem.text = 'Average carbon cost: ' + limit.toFixed(4) + ' g CO₂e';
-            if (input >= 3 * limit) {
-                this.newColour = "statusBarItem.errorBackground"; //if well beyond the limit the loading bar goes red
-                //vscode.window.showInformationMessage('VERY high carbon AI call made (check pane for details)');
+    //this method updates the status bar item with the carbon emissions of the latest request and changes its colour based on predefined thresholds to provide real-time feedback on the environmental impact of development activities
+    updateBar(input: number) { 
+        if (input !== undefined) {
+            this.mainItem.text = 'Last Request: ' + input.toFixed(4) + ' g CO₂e';
+            
+            // Utilising static thresholds for real-time feedback
+            if (input >= 40) {
+                this.newColour = "statusBarItem.errorBackground"; // High Emission
             }
-            else if (input >= 1.5 * limit) {
-                this.newColour = "statusBarItem.warningBackground"; //if beyond the limit the loading bar goes yellow
-                //vscode.window.showInformationMessage('High carbon AI call made (check pane for details)');
+            else if (input >= 15) {
+                this.newColour = "statusBarItem.warningBackground"; // Average Emission
             }
             else {
-                this.newColour = "statusBarItem.activeBackground"; //if not beyond the limit loading bar is clear
-                //vscode.window.showInformationMessage('below limit');  
+                this.newColour = "statusBarItem.activeBackground"; // Low Emission
             }
-            var i: number = 0;
         }
         else {
             this.newColour = "statusBarItem.activeBackground";
-            input = 0;
-            //vscode.window.showInformationMessage('not satisfied!');
+            this.mainItem.text = 'Last Request: 0 g CO₂e';
         }
-        // for(i = 0;i<Math.max(input);i++){ //populates the loading bar
-        //  this.loading[i].backgroundColor = new vscode.ThemeColor(this.newColour);
-        //  }
-        // for(i;i<this.loading.length;i++){
-        //  this.loading[i].backgroundColor = new vscode.ThemeColor("statusBarItem.activeBackground");
-        //  }
 
-        this.mainItem.backgroundColor = new vscode.ThemeColor(this.newColour); //colours the word "loading"
+        this.mainItem.backgroundColor = new vscode.ThemeColor(this.newColour);  // Update the background color of the status bar item based on the new colour
     }
 }
 
