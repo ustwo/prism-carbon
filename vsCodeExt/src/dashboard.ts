@@ -108,6 +108,11 @@ export class CarbonDashboardPanel {
         // Aggregate emissions by model from stored calls
         const sessionBudget = require('./extension').wrappedGetBudget();
         const calls = require('./extension').wrappedGetCall();
+
+        // calculate mean average of all calls
+        const totalEmissions = calls.reduce((sum: number, call: any) => sum + call.Emissions, 0);
+        const averageEmission = calls.length > 0 ? totalEmissions / calls.length : 0;
+
         const modelMap: Record<string, number> = {};
         for (const call of calls) {
             const model = call.Model || 'Unknown';
@@ -167,6 +172,7 @@ export class CarbonDashboardPanel {
             modelEmissions,
             heatMapData,
             sessionBudget
+            averageEmission // this is the average emission value calculated from all calls, sent to the frontend to be displayed on the dashboard
         });
 
         const branchMap: Record<string, any[]> = {};
@@ -274,36 +280,46 @@ export class CarbonDashboardPanel {
     
 
         <section id="main-view"> 
-            <div class="budget-tracker-container">
-                <div class="budget-header">
-                    <h2>Session Budget</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; max-width: 1000px; margin: 0 auto;">
+                
+                <div class="budget-tracker-container" style="max-width: 100%; margin: 0;">
+                    <div class="budget-header">
+                        <h2>Session Budget</h2>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="session-progress-fill"></div>
+                    </div>
+                    <div class="budget-footer">
+                        <span id="session-percent-used" class="budget-percent">0% used</span>
+                        <span id="session-text-right" class="budget-detail">0g / 0g</span>
+                    </div>
+                    <div class="budget-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; margin-top: 15px;">
+                        <button id="set-budget-btn" style="padding: 5px 10px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 10px;">Set Budget</button>
+                        <button id="reset-btn" style="padding: 5px 10px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Reset</button>
+                    </div>
                 </div>
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" id="session-progress-fill"></div>
+
+                <div class="budget-tracker-container" style="max-width: 100%; margin: 0; display: flex; flex-direction: column; justify-content: center;">
+                    <div class="budget-header">
+                        <h2>Average Request Cost</h2>
+                    </div>
+                    <div style="text-align: center; margin-top: 10px;">
+                        <span id="average-cost-display" style="font-size: 2.2rem; font-weight: bold; color: var(--text-color);">0.0000 g</span>
+                        <span style="color: var(--secondary-text); font-size: 1.2rem;"> CO₂e</span>
+                    </div>
                 </div>
-                <div class="budget-footer">
-                    <span id="session-percent-used" class="budget-percent">0% used</span>
-                    <span id="session-text-right" class="budget-detail">0g / 0g</span>
-                </div>
-                <div class="budget-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    
-                    <button id="set-budget-btn" style="padding: 5px 10px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 10px;">Set Budget</button>
-                    <button id="reset-btn" style="padding: 5px 10px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Reset</button>
+
             </div>
-    </div>
 
-
-    <div style = "margin-top:60px;">
-        <h2 style = "text-align:center;">Heat Map</h2>
-        <div style = "max-width:900px; margin:0 auto;">
-        <div class = "chart-container" style="height:220px;">
-        <canvas id="myChart"></canvas>
-        </div>
-        </div>
-        </div>
-            
+            <div style="margin-top:60px;">
+                <h2 style="text-align:center;">Heat Map</h2>
+                <div style="max-width:900px; margin:0 auto;">
+                    <div class="chart-container" style="height:220px;">
+                        <canvas id="myChart"></canvas>
+                    </div>
+                </div>
+            </div>
         </section>
-
     
 
         <script src="${scriptUri}"></script>
