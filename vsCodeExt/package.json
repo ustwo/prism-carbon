@@ -91,10 +91,7 @@
         "command": "ecode.openDashboard",
         "title": "Ecode: Open Carbon Dashboard"
       },
-      {
-        "command": "ecode.testInput",
-        "title": "test input"
-      },
+
       {
         "command": "ecode.clearStore",
         "title": "Ecode: Clear stored calls"

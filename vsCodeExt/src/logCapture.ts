@@ -136,7 +136,6 @@ function findModel(log: string,pattern : RegExp,splitString : String): [number[]
         var timestamp:number[] = [];
         var j = 0;
         var flag:boolean = false;
-        console.log("matchings:",match);
         for (let i = 0; i < match.length; i++) { //loops through all the matches (all types of tokens and appropriate time stamps)
             if (match[i] === splitString){ //built into the regex to grab this at the end of every claude call so multiple calls don't get merged into one
                 j++;
@@ -149,12 +148,10 @@ function findModel(log: string,pattern : RegExp,splitString : String): [number[]
                 } 
                 else{          
                     if (!flag){ //if its the first token in the match set add a new value to the results array
-                        console.log("new call starting with this number:",Number(match[i]));
                         result.push(Number(match[i]));
                         flag = true;
                     }
                     else{//otherwise update the result we are looking at
-                        console.log("adding this number to the call",Number(match[i]));
                         result[j] += Number(match[i]);
                         }
                 }
