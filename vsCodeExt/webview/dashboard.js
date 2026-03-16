@@ -119,7 +119,8 @@
     bounds: 'ticks', // This stops the blocks from vanishing
     time: {
         unit: 'week',
-        isoWeekDay: 1,
+        round:'week',
+        isoWeekday: 1,
         displayFormats: {
             week: 'MMM dd'
         }
@@ -129,6 +130,11 @@
         maxRotation: 45,
         minRotation: 45,
         autoSkip: true,
+        callback: function(value, index, values) {
+            const date = new Date(value);
+            date.setDate(date.getDate() + 6 );
+            return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
+        },
         font: { size: 8 }
     },
     grid: { display: false }
