@@ -21,7 +21,16 @@
     }
 
     const btn = document.getElementById('theme-switch');
-    btn.addEventListener('click', () => { document.body.classList.toggle('darkmode'); });
+    btn.addEventListener('click', () => { document.body.classList.toggle('darkmode'); 
+
+        if(heatChart){
+            const newTextColor = getChartTextColor();
+        heatChart.data.datasets[0].borderColor = getGridColor();
+        heatChart.options.scales.x.ticks.color = newTextColor;
+        heatChart.options.scales.y.ticks.color = newTextColor;
+        heatChart.update();
+        }
+    });
 
     // --- heat map here ---
 
@@ -57,7 +66,8 @@
     return data2;
 }
     //setup block
-
+const getGridColor = () => getComputedStyle(document.body).getPropertyValue('--grid-border').trim();
+const getChartTextColor = () => getComputedStyle(document.body).getPropertyValue('--chart-text').trim();
     const data = {
         datasets: [{
             label: 'Heat Map',
@@ -70,7 +80,7 @@
                 const alpha = Math.min(1, (10 + (value * 0.2)) / 60);
                 return `rgba(0, 255, 150, ${alpha})`;
             },
-            borderColor: `green`,
+            borderColor: getGridColor(),
             borderRadius: 1,
             borderWidth: 1,
             hoverBackgroundColor: `rgba(54, 162, 235, 0.2)`,
@@ -97,6 +107,7 @@
             min: 1,
             max: 7,
             ticks: {
+                color:getChartTextColor(),
                 stepSize: 1,
                 callback: function (value) {
                     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -126,6 +137,7 @@
         }
     },
     ticks: {
+        color:getChartTextColor(),
         source: 'auto', 
         maxRotation: 45,
         minRotation: 45,
