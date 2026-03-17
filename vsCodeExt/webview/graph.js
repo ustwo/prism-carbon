@@ -192,16 +192,6 @@ if (ref) {
 
     });
 
-    branchSelector.addEventListener("focus", () => {
-        branchSelector.style.outline = "none";
-        branchSelector.style.borderColor = "var(--text-color)";
-    });
-
-    branchSelector.addEventListener("blur", () => {
-        branchSelector.style.borderColor = "var(--secondary-text)";
-    });
-
-
     const branchSelectorWrapper = document.createElement("div");
     branchSelectorWrapper.style.position = "relative";
     branchSelectorWrapper.style.display = "flex";
@@ -209,8 +199,7 @@ if (ref) {
     branchSelectorWrapper.style.gap = "12px";
 
     const branchSelectorToolText = document.createElement("span");
-    branchSelectorToolText.textContent = "Select branches to analyze:";
-    branchSelectorToolText.style.marginRight = "10px";
+    branchSelectorToolText.textContent = "Branch Selection:";
     branchSelectorToolText.style.color = "var(--text-color)";
 
     branchSelectorWrapper.appendChild(branchSelectorToolText);
@@ -220,7 +209,6 @@ if (ref) {
         branchSelectorTool.appendChild(branchSelectorWrapper);
     }
 
-    references.appendChild(title);
     references.appendChild(toggleButtonContainer);
 
     header.appendChild(references);
@@ -289,61 +277,6 @@ function deletePreviousGraph() {
     mainGraphArea.innerHTML = "";
 }
 
-
-function buildGraph() {
-    const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
-    if (!mainGraphArea) return;
-
-    mainGraphArea.innerHTML = "";
-
-    const horizontalLineWrapper = document.createElement("div");
-    horizontalLineWrapper.style.display = "flex";
-    horizontalLineWrapper.style.flexDirection = "column";
-    horizontalLineWrapper.style.height = "100%";
-    horizontalLineWrapper.style.justifyContent = "space-evenly";
-    horizontalLineWrapper.style.width = "100%";
-
-    workspaceBranches.filter(branch => selectedBranches.has(branch)).forEach((branch, index) => {
-        const hue = Math.floor((index * 137.5 + 150) % 360);
-        const branchColor = `hsl(${hue}, 70%, 80%)`;
-
-        const horizontalPath = document.createElement("div");
-        horizontalPath.style.display = "flex";
-        horizontalPath.style.alignItems = "center";
-        horizontalPath.style.paddingLeft = "12px";
-        horizontalPath.style.width = "100%";
-
-        const horizontalLine = document.createElement("div");
-        horizontalLine.style.position = "relative";
-        horizontalLine.dataset.branch = branch;
-        horizontalLine.style.flex = "1";
-        horizontalLine.style.height = "2px";
-        horizontalLine.style.background = branchColor;
-
-        horizontalPath.appendChild(horizontalLine);
-        horizontalLineWrapper.appendChild(horizontalPath);
-    });
-
-    mainGraphArea.appendChild(horizontalLineWrapper);
-
-    const xAxisTimeStamp = document.createElement("div");
-    xAxisTimeStamp.id = "timestamp-on-x-axis";
-    xAxisTimeStamp.style.position = "relative";
-    xAxisTimeStamp.style.height = "18px";
-    xAxisTimeStamp.style.fontSize = "11px";
-    xAxisTimeStamp.style.padding = "4px 12px";
-    xAxisTimeStamp.style.color = "var(--secondary-text)";
-    xAxisTimeStamp.style.marginTop = "6px";
-    xAxisTimeStamp.style.width = "100%";
-
-    mainGraphArea.appendChild(xAxisTimeStamp);
-}
-
-function deleteBranches() {
-    const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
-    mainGraphArea.innerHTML = "";
-}
-
 function drawGraphs() {
 
     deletePreviousGraph();
@@ -357,9 +290,7 @@ function drawGraphs() {
             referenceStrip.style.visibility = "visible";
         }
 
-        if (workspaceBranches.length > 0) {
-            drawCandleStickTimelineGraph();
-        }
+        drawCandleStickTimelineGraph();
 
     }
     else {
@@ -367,7 +298,6 @@ function drawGraphs() {
             referenceStrip.style.visibility = "hidden";
         }
 
-        deleteBranches();
         drawCumulativeGraph();
     }
 }
@@ -576,7 +506,6 @@ function drawCandleStickTimelineGraph(){
     const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
     
     if (!mainGraphArea || !pendingCommitDots) return;
-    mainGraphArea.innerHTML = "";
     
     const allCommits = [];
 
