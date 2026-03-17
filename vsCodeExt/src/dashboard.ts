@@ -178,10 +178,12 @@ export class CarbonDashboardPanel {
                 branchMap[branch] = [];
                 branchCounts[branch] = 0;
             }
+            const time = new Date(call.DateTime).getTime();
             branchMap[branch].push(
                 {
-                    xAxis: branchCounts[branch] * 30 + 10,
-                    carbon: call.Emissions
+                    xAxis: time,
+                    carbon: call.Emissions,
+                    timeStamp: call.DateTime
                 });
 
             branchCounts[branch]++;
@@ -254,6 +256,10 @@ export class CarbonDashboardPanel {
   <header id="header">
   <h1>Carbon Analysis Dashboard</h1>
   <p> Carbon impact based on each file will be depicted below: </p>
+  <div id="dashboard-preferences-selector">
+  <h3> Preferences: </h3>
+  <div id = "branch-selector-tool"></div>
+  </div>
   </header>
 
         <div id="branchGraph" style="width:100%; height:350px;"></div>
