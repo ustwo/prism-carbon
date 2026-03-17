@@ -12,6 +12,7 @@ let selectedBranches = new Set();
 let dynamicSizeChanger;
 const branchSelectorTool = document.getElementById("branch-selector-tool");
 let dropDownTool;
+let displaySelectedBranchesCount;
 
 const ref = document.getElementById("branchGraph");
 
@@ -134,17 +135,30 @@ if (ref) {
     dropdownButton.textContent = "Select branches to analyze";
     dropdownButton.style.padding = "6px 14px";
     dropdownButton.style.borderRadius = "999px";
-    dropdownButton.style.border = "1px solid var(--secondary-text)";
+    dropdownButton.style.border = "1px solid rgba(255, 255, 255, 0.15)";
     dropdownButton.style.cursor = "pointer";
-    dropdownButton.style.background = "var(--base-variant)";
+    dropdownButton.style.background = "rgba(255, 255, 255, 0.05)";
+    dropdownButton.style.backdropFilter = "blur(8px)";
     dropdownButton.style.color = "var(--text-color)";
     dropdownButton.style.fontSize = "13px";
     dropdownButton.style.minWidth = "220px";
-    dropdownButton.style.transition = "all 0.2s ease";
+    dropdownButton.style.transition = "all 0.25s ease";
     dropdownButton.style.display = "flex";
     dropdownButton.style.alignItems = "center";
     dropdownButton.style.justifyContent = "space-between";   
     dropdownButton.style.gap = "8px"; 
+    dropdownButton.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.25)";
+
+    displaySelectedBranchesCount = document.createElement("span");
+    displaySelectedBranchesCount.style.fontSize = "11px";
+    displaySelectedBranchesCount.style.fontWeight = "500";
+    displaySelectedBranchesCount.style.opacity = "0.75";
+    displaySelectedBranchesCount.style.whiteSpace = "nowrap";
+    displaySelectedBranchesCount.style.color = "var(--text-color)";
+    displaySelectedBranchesCount.style.padding = "4px 10px";
+    displaySelectedBranchesCount.style.borderRadius = "999px";
+    displaySelectedBranchesCount.style.background = "rgba(255, 255, 255, 0.08)";
+    displaySelectedBranchesCount.style.border = "1px solid var(--secondary-text)";
 
     const dropDownArrow = document.createElement("span");
     dropDownArrow.innerHTML = "&#x25BC;";
@@ -159,44 +173,39 @@ if (ref) {
     dropDownTool.style.top = "110%";
     dropDownTool.style.left = "0";
     dropDownTool.style.background = "var(--base-variant)";
-    dropDownTool.style.border = "1px solid var(--secondary-text)";
+    dropDownTool.style.backdropFilter = "blur(10px)";
+    dropDownTool.style.border = "1px solid rgba(255, 255, 255, 0.1)";
     dropDownTool.style.borderRadius = "8px";
     dropDownTool.style.padding = "8px";
     dropDownTool.style.display = "none";    
     dropDownTool.style.zIndex = "1000";
     dropDownTool.style.maxHeight = "200px";
     dropDownTool.style.overflowY = "auto";
+    dropDownTool.style.boxShadow = "0 10px 30px rgba(0, 0, 0, 0.4)";
+    dropDownTool.style.animation = "fadeIn 0.2s ease";
     
     dropdownButton.addEventListener("click", () => {
         dropDownTool.style.display = dropDownTool.style.display === "none" ? "block" : "none";
     });
 
     dropdownButton.addEventListener("mouseenter", () => {
-        dropdownButton.style.borderColor = "var(--text-color)";
+        dropdownButton.style.transform = "translateY(-1px)";
+        dropdownButton.style.boxShadow = "0 6px 18px rgba(0, 0, 0, 0.35)";
     });
 
     dropdownButton.addEventListener("mouseleave", () => {
-        dropdownButton.style.borderColor = "var(--secondary-text)";
+        dropdownButton.style.transform = "translateY(0)";
+        dropdownButton.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.25)";
     });
 
     branchSelector.appendChild(dropdownButton);
     branchSelector.appendChild(dropDownTool);
 
-    branchSelector.addEventListener("mouseenter", () => {
-        branchSelector.style.boxShadow = `0 3px 8px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.7), inset 0 -1px 2px rgba(0, 0, 0, 0.25)`;
-
-    });
-
-    branchSelector.addEventListener("mouseleave", () => {
-        branchSelector.style.boxShadow = `0 2px 6px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.55), inset 0 -1px 2px rgba(0, 0, 0, 0.2)`;
-
-    });
-
     const branchSelectorWrapper = document.createElement("div");
     branchSelectorWrapper.style.position = "relative";
     branchSelectorWrapper.style.display = "flex";
     branchSelectorWrapper.style.alignItems = "center";
-    branchSelectorWrapper.style.gap = "12px";
+    branchSelectorWrapper.style.gap = "10px";
 
     const branchSelectorToolText = document.createElement("span");
     branchSelectorToolText.textContent = "Branch Selection:";
@@ -204,6 +213,7 @@ if (ref) {
 
     branchSelectorWrapper.appendChild(branchSelectorToolText);
     branchSelectorWrapper.appendChild(branchSelector);
+    branchSelectorWrapper.appendChild(displaySelectedBranchesCount);
 
     if (branchSelectorTool) {
         branchSelectorTool.appendChild(branchSelectorWrapper);
@@ -242,9 +252,20 @@ window.addEventListener("message", event => {
             heading.style.gap = "8px";
             heading.style.cursor = "pointer";
 
+            heading.addEventListener("mouseenter", () => {
+                heading.style.background = "rgba(255, 255, 255, 0.05)";
+                heading.style.borderRadius = "6px";
+            });
+
+            heading.addEventListener("mouseleave", () => {
+                heading.style.background = "transparent";
+            });
+
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkbox.checked = true;
+            checkbox.style.accentColor = "#4ade80";
+            checkbox.style.cursor = "pointer";
 
             selectedBranches.add(branch);
 
@@ -255,6 +276,7 @@ window.addEventListener("message", event => {
                 else {
                     selectedBranches.delete(branch);
                 }
+                updateSelectedBranchesCount();
                 drawGraphs();
             });
 
@@ -267,6 +289,8 @@ window.addEventListener("message", event => {
             dropDownTool.appendChild(heading);
 
         });
+
+        updateSelectedBranchesCount();
         
     }
 });
@@ -727,4 +751,18 @@ function enableDynamicSizeChanger() {
     dynamicSizeChanger.observe(mainGraphArea);
 
 
+}
+
+function updateSelectedBranchesCount(){
+    const branchCount = selectedBranches.size;
+
+    if(branchCount === 0){
+        displaySelectedBranchesCount.textContent = "No branches selected";
+    }
+    else if(branchCount === workspaceBranches.length){
+        displaySelectedBranchesCount.textContent = "All branches selected";
+    }
+    else {
+        displaySelectedBranchesCount.textContent = `${branchCount} branch${branchCount > 1 ? "es" : ""} selected`;
+    }
 }
