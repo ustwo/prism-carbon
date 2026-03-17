@@ -131,6 +131,19 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
 
+    // keep track of the last known branch 
+    let lastKnownBranch = getCurrentBranch();
+
+    const branchChangeListener = vscode.workspace.onDidChangeWorkspaceFolders(() => {
+        const currentBranch = getCurrentBranch();
+        // only send new data if the branch has changed                   
+        if (currentBranch !== lastKnownBranch) {
+            lastKnownBranch = currentBranch;
+            //Trigger the data recalculation and update the dashboard with the new branch information
+            CarbonDashboardPanel.sendData();
+        }
+    });
+    context.subscriptions.push(branchChangeListener);
 
     const input = vscode.commands.registerCommand('ecode.inputdisplay', async () => {
         //vscode.window.showInformationMessage('Hello World from EstimatingCarbon!');
