@@ -11,6 +11,7 @@ export class CarbonDashboardPanel {
     private readonly _panel: vscode.WebviewPanel;
     private _disposables: vscode.Disposable[] = [];
     private readonly _extensionUri: vscode.Uri;
+    private _selectedBranch: string = 'all';
 
 
     private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
@@ -64,6 +65,11 @@ export class CarbonDashboardPanel {
                             }
                         });
                         return;
+
+                        case 'filterByBranch':
+                            this._selectedBranch = message.branch;
+                            this._sendData(); // Update the dashboard with the new branch filter
+                            return;
                 }
             },
             null,
@@ -107,7 +113,12 @@ export class CarbonDashboardPanel {
     private _sendData() {
         // Aggregate emissions by model from stored calls
         const sessionBudget = require('./extension').wrappedGetBudget();
-        const calls = require('./extension').wrappedGetCall();
+        const allCalls = require('./extension').wrappedGetCall();
+
+        // Filter calls based on the selected branch for the dashboard widgets
+        const calls = this._selectedBranch === 'all'
+            ? allCalls
+            : allCalls.filter((c: any) => (c.Branch || "Unknown Branch") === this._selectedBranch);
 
         // calculate mean average of all calls
         const totalEmissions = calls.reduce((sum: number, call: any) => sum + call.Emissions, 0);
@@ -178,7 +189,7 @@ export class CarbonDashboardPanel {
         const branchMap: Record<string, any[]> = {};
         const branchCounts: Record<string, number> = {};
 
-        for (const call of calls) {
+        for (const call of allCalls) {
             const branch = call.Branch || "Unknown Branch";
             if (!branchMap[branch]) {
                 branchMap[branch] = [];

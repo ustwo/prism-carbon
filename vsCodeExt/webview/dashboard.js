@@ -4,6 +4,10 @@
     // initialising vscode api so that back end can be connected
     const vscode = acquireVsCodeApi();
 
+
+    // exposing the API gloablly so graph.js can use it
+    window.vscodeAPI = vscode;
+
     // click listener so reset button can be used
     const resetBtn = document.getElementById('reset-btn');
     if (resetBtn) {
@@ -22,6 +26,9 @@
 
     const btn = document.getElementById('theme-switch');
     btn.addEventListener('click', () => { document.body.classList.toggle('darkmode'); });
+    
+    
+    
 
     // --- heat map here ---
 

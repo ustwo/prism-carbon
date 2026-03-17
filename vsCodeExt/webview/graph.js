@@ -142,6 +142,12 @@ if (ref) {
     branchSelector.addEventListener("change", () => {
         selectedBranch = branchSelector.value;
         drawGraphs();
+// send message directly to backend using the exposed API
+        if (window.vscodeAPI) {
+            window.vscodeAPI.postMessage({ command: 'filterByBranch', branch: selectedBranch });
+        }
+    
+    
     });
 
     branchSelector.addEventListener("mouseenter", () => {
@@ -215,6 +221,14 @@ window.addEventListener("message", event => {
             option.textContent = branch;
             branchSelector.appendChild(option);
         });
+
+        //Restore the user's selection so the dropdown doesn't reset visually
+        if (selectedBranch === "all" || workspaceBranches.includes(selectedBranch)) {
+            branchSelector.value = selectedBranch;
+        } else {
+            branchSelector.value = "all";
+            selectedBranch = "all";
+        }
     }
 });
 
