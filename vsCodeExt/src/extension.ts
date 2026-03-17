@@ -65,10 +65,6 @@ export async function activate(context: vscode.ExtensionContext) {
     );
 
 
-    function convert(x: any) {
-        //treeDataProvider.addMessage(String(x));
-        return x;
-    }
 
 
     //let lastInlineState = false;
@@ -98,8 +94,6 @@ export async function activate(context: vscode.ExtensionContext) {
         console.log("Updating logs..........");
         getLogs(context);
     }));
-
-
 
     const reset = vscode.commands.registerCommand('ecode.clearStore', () => {
         budg.resetBudget();
@@ -495,6 +489,7 @@ export async function getLogs(context: vscode.ExtensionContext) {
 
     }
     catch (error) {
+        console.log(error);
         vscode.window.showErrorMessage("Error: Copilot log files not found.");
     }
 }

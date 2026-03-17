@@ -97,7 +97,7 @@ suite("DevTime Tests", () => {
 		assert.strictEqual(matches[0], "gpt-4o-mini-2024-07-18");
 		assert.strictEqual(matches[1], "claude-haiku-4.5");
 	});
-	test("Regex Chat Token test", async () => {
+	test("Regex Claude Chat Token test", async () => {
 		var matches = text3.match(/(?<="stop_reason":"end_turn"(.*):{"cache_creation_input_tokens":)(\d+)|(?<=stop_reason":"end_turn"(.*)"cache_read_input_tokens":)(\d+)|(?<=stop_reason":"end_turn"(.*)"input_tokens":)(\d+)|(?<=stop_reason":"end_turn"(.*)"output_tokens":)(\d+)/g);
 		var tokens: number[] = [865, 8820, 8, 373];
 		assert.notEqual(matches, null);
@@ -116,6 +116,17 @@ suite("DevTime Tests", () => {
 		for (let i = 0; i < Math.max(tokens.length - 1, matches?.length - 1); i++) {
 			assert.strictEqual(Number(matches[i]), tokens[i]);
 		}
+	});
+	test("Regex Newer GPT Model Token test", async () =>{
+		const content:String = '"usage":{"input_tokens":14785,"input_tokens_details":{"cached_tokens":6784},"output_tokens":54,"output_tokens_details":{"reasoning_tokens":0},"total_tokens":14839},"user":null},"sequence_number":53,"type":"response.completed"}\n2026-03-13 13:15:26.427 [info] ccreq:79439032.copilotmd | success | gpt-5.2-codex | 3010ms | [panel/editAgent]\n2026-03-13 13:15:26.518 [info] [ToolCallingLoop] Stop hook result: shouldContinue=false, reasons=undefined\n2026-03-13 13:15:26.538 [trace] Resolving chat model';
+		const matches = content.match(/(?<={"input_tokens":)\d*|(?<=,"input_tokens_details":{"cached_tokens":)\d*|(?<=},"output_tokens":)\d*|(?<=,"output_tokens_details":{"reasoning_tokens":)\d*|\d*-\d*-\d* \d*:\d*:\d*.\d*(?= \[info\].*gpt-5)|shouldContinue=false/g);
+		const real: string[] = ["14785","6784","54","0","2026-03-13 13:15:26.427","shouldContinue=false"];
+		assert.notEqual(matches,null);
+		assert.strictEqual(matches?.length,6);
+		for (let i = 0; i < Math.min(real.length - 1, matches?.length - 1); i++) {
+			assert.strictEqual(matches[i], real[i]);
+		}
+
 	});
 });
 
