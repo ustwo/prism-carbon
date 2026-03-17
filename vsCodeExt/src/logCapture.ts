@@ -16,7 +16,9 @@ const modelPattern = /(?<= \| success \| )\S*/g; //gets all the models used in t
 //regex to capture Claude model tokens with datetime
 const dateRegex = /\d*-\d*-\d* \d*:\d*:\d*.\d*/g; //returns all the dates
 const claudePattern = /\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)"stop_reason":"end_turn")|(?<=stop_reason":null(.*)"cache_creation_input_tokens":)(\d+)|(?<=stop_reason":null(.*)"cache_read_input_tokens":)(\d+)|(?<=stop_reason":null(.*)"input_tokens":)(\d+)|(?<=stop_reason":"end_turn"(.*)"output_tokens":)(\d+)|(?<=stop_reason":"end_turn",(.*))}}/g;
-const GPTPattern =/(?<={"input_tokens":)\d*|(?<=,"input_tokens_details":{"cached_tokens":)\d*|(?<=},"output_tokens":)\d*|(?<=,"output_tokens_details":{"reasoning_tokens":)\d*|\d*-\d*-\d* \d*:\d*:\d*.\d*(?= \[info\].*gpt-5)|shouldContinue=false/g; 
+const GPTPattern =/shouldContinue=false|(?<={"input_tokens":)\d*|(?<=,"input_tokens_details":{"cached_tokens":)\d*|(?<=},"output_tokens":)\d*|(?<=,"output_tokens_details":{"reasoning_tokens":)\d*|\d*-\d*-\d* \d*:\d*:\d*.\d*(?= \[info\].*gpt-5)/g; 
+//fix the time issue
+
 // /(?<=usage":{.*tokens":)\d*|shouldContinue=false|\d*-\d*-\d* \d*:\d*:\d*.\d*(?= \[info\] \[ToolCallingLoop\] Stop hook result: shouldContinue=false)/g;
 //ToolCallingLoop] Stop hook result: shouldContinue=false, reasons=undefined
 //this may be a better ending bit for the call
@@ -127,11 +129,12 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
 }
 
 
-function findModel(log: string,pattern : RegExp,splitString : String): [number[], number[]] {
+function findModel(log: string,pattern : RegExp,splitString : string): [number[], number[]] {
+    
     var match = log.match(pattern); //matches the claude regex to the log file
     var timeIndex:number = 0; 
- 
-    if (match!==null){
+    console.log("matches:"+match);
+    if (match!==null && match.includes(splitString)){
         var result:number[] = [];
         var timestamp:number[] = [];
         var j = 0;
