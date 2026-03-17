@@ -184,10 +184,12 @@ export class CarbonDashboardPanel {
                 branchMap[branch] = [];
                 branchCounts[branch] = 0;
             }
+            const time = new Date(call.DateTime).getTime();
             branchMap[branch].push(
                 {
-                    xAxis: branchCounts[branch] * 30 + 10,
-                    carbon: call.Emissions
+                    xAxis: time,
+                    carbon: call.Emissions,
+                    timeStamp: call.DateTime
                 });
 
             branchCounts[branch]++;
