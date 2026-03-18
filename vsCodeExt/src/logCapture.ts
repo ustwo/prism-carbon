@@ -17,11 +17,8 @@ const modelPattern = /(?<= \| success \| )\S*/g; //gets all the models used in t
 const dateRegex = /\d*-\d*-\d* \d*:\d*:\d*.\d*/g; //returns all the dates
 const claudePattern = /\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)"stop_reason":"end_turn")|(?<=stop_reason":null(.*)"cache_creation_input_tokens":)(\d+)|(?<=stop_reason":null(.*)"cache_read_input_tokens":)(\d+)|(?<=stop_reason":null(.*)"input_tokens":)(\d+)|(?<=stop_reason":"end_turn"(.*)"output_tokens":)(\d+)|(?<=stop_reason":"end_turn",(.*))}}/g;
 const GPTPattern =/shouldContinue=false|(?<={"input_tokens":)\d*|(?<=,"input_tokens_details":{"cached_tokens":)\d*|(?<=},"output_tokens":)\d*|(?<=,"output_tokens_details":{"reasoning_tokens":)\d*|(?<= gpt-5.*\| \d+ms \| \[.*\]\s*)\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)shouldContinue=false)/g; 
-//fix the time issue
-
-// /(?<=usage":{.*tokens":)\d*|shouldContinue=false|\d*-\d*-\d* \d*:\d*:\d*.\d*(?= \[info\] \[ToolCallingLoop\] Stop hook result: shouldContinue=false)/g;
-//ToolCallingLoop] Stop hook result: shouldContinue=false, reasons=undefined
-//this may be a better ending bit for the call
+//should continue = false is the line in the log files for when a call is done
+//this collects all the tokens from GPT models past 5 and the timestamp 
 
 //gets the tokens used in claude calls
 //this is the same no matter the purpose
@@ -139,18 +136,18 @@ function findModel(log: string,pattern : RegExp,splitString : string): [number[]
         var timestamp:number[] = [];
         var j = 0;
         var flag:boolean = false;
-        var Tflag:boolean = false;
+        var timeFlag:boolean = false;
         for (let i = 0; i < match.length; i++) { //loops through all the matches (all types of tokens and appropriate time stamps)
             if (match[i] === splitString){ //built into the regex to grab this at the end of every claude call so multiple calls don't get merged into one
                 j++;
                 flag = false;
-                Tflag = false;
+                timeFlag = false;
             }
             else{
                 if (match[i].match(dateRegex) !== null){ //if match we are currently looking at is a date make it the timestamp
-                    if (!Tflag){
+                    if (!timeFlag){
                         timestamp.push(new Date(match[i]).getTime());
-                        Tflag = true;
+                        timeFlag = true;
                     }
                     else{
                         timestamp[i] = new Date(match[i]).getTime();

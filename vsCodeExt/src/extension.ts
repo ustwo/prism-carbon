@@ -33,8 +33,6 @@ const PROXY_PORT = 3024;
 var budg: budget.budget;
 
 export async function activate(context: vscode.ExtensionContext) {
-
-
     const copilotChat = vscode.extensions.getExtension('github.copilot-chat');
     if (!copilotChat) {
         vscode.window.showWarningMessage('GitHub Copilot Chat is not installed. Carbon emissions will not be tracked during development time!');
@@ -480,9 +478,6 @@ export async function getLogs(context: vscode.ExtensionContext) {
         const models: budget.Call[] = await logCap.identifyModel(input);
         console.log("CALLS: ", models);
         for (let index = 0; index < models.length; index++) {
-            console.log(models[index]);
-            console.log("current call: ",new Date(models[index].DateTime).toLocaleString());
-            console.log("last access: ",new Date(lastAccess).toLocaleString());
             if (models[index].DateTime > lastAccess) {
                 console.log("updating tree");
                 updateTree(models[index]);//updates side bar with all calls returned
