@@ -16,7 +16,7 @@ const modelPattern = /(?<= \| success \| )\S*/g; //gets all the models used in t
 //regex to capture Claude model tokens with datetime
 const dateRegex = /\d*-\d*-\d* \d*:\d*:\d*.\d*/g; //returns all the dates
 const claudePattern = /\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)"stop_reason":"end_turn")|(?<=stop_reason":null(.*)"cache_creation_input_tokens":)(\d+)|(?<=stop_reason":null(.*)"cache_read_input_tokens":)(\d+)|(?<=stop_reason":null(.*)"input_tokens":)(\d+)|(?<=stop_reason":"end_turn"(.*)"output_tokens":)(\d+)|(?<=stop_reason":"end_turn",(.*))}}/g;
-const GPTPattern =/shouldContinue=false|(?<={"input_tokens":)\d*|(?<=,"input_tokens_details":{"cached_tokens":)\d*|(?<=},"output_tokens":)\d*|(?<=,"output_tokens_details":{"reasoning_tokens":)\d*|\d*-\d*-\d* \d*:\d*:\d*.\d*(?= \[info\].*gpt-5)/g; 
+const GPTPattern =/shouldContinue=false|(?<={"input_tokens":)\d*|(?<=,"input_tokens_details":{"cached_tokens":)\d*|(?<=},"output_tokens":)\d*|(?<=,"output_tokens_details":{"reasoning_tokens":)\d*|(?<= gpt-5.*\| \d+ms \| \[.*\]\s*)\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)shouldContinue=false)/g; 
 //fix the time issue
 
 // /(?<=usage":{.*tokens":)\d*|shouldContinue=false|\d*-\d*-\d* \d*:\d*:\d*.\d*(?= \[info\] \[ToolCallingLoop\] Stop hook result: shouldContinue=false)/g;
@@ -139,15 +139,24 @@ function findModel(log: string,pattern : RegExp,splitString : string): [number[]
         var timestamp:number[] = [];
         var j = 0;
         var flag:boolean = false;
+        var Tflag:boolean = false;
         for (let i = 0; i < match.length; i++) { //loops through all the matches (all types of tokens and appropriate time stamps)
             if (match[i] === splitString){ //built into the regex to grab this at the end of every claude call so multiple calls don't get merged into one
                 j++;
                 flag = false;
+                Tflag = false;
             }
             else{
                 if (match[i].match(dateRegex) !== null){ //if match we are currently looking at is a date make it the timestamp
-                    timestamp.push(new Date(match[i]).getTime());
-                    if (match[timeIndex] === '0') {timestamp.push(new Date().getTime());}
+                    if (!Tflag){
+                        timestamp.push(new Date(match[i]).getTime());
+                        Tflag = true;
+                    }
+                    else{
+                        timestamp[i] = new Date(match[i]).getTime();
+                    }
+                    //add here what to do if flag is off and such
+                    
                 } 
                 else{          
                     if (!flag){ //if its the first token in the match set add a new value to the results array
