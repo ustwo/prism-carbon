@@ -16,7 +16,7 @@ const modelPattern = /(?<= \| success \| )\S*/g; //gets all the models used in t
 //regex to capture Claude model tokens with datetime
 const dateRegex = /\d*-\d*-\d* \d*:\d*:\d*.\d*/g; //returns all the dates
 const claudePattern = /\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)"stop_reason":"end_turn")|(?<=stop_reason":null(.*)"cache_creation_input_tokens":)(\d+)|(?<=stop_reason":null(.*)"cache_read_input_tokens":)(\d+)|(?<=stop_reason":null(.*)"input_tokens":)(\d+)|(?<=stop_reason":"end_turn"(.*)"output_tokens":)(\d+)|(?<=stop_reason":"end_turn",(.*))}}/g;
-const GPTPattern =/shouldContinue=false|(?<={"input_tokens":)\d*|(?<=,"input_tokens_details":{"cached_tokens":)\d*|(?<=},"output_tokens":)\d*|(?<=,"output_tokens_details":{"reasoning_tokens":)\d*|(?<= gpt-5.*\| \d+ms \| \[.*\]\s*)\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)shouldContinue=false)/g; 
+const GPTPattern =/(?<= gpt-5.*\| \d+ms \| \[.*\]\s*\d*-\d*-\d* \d*:\d*:\d*.\d* \[info\] \[ToolCallingLoop\] Stop hook result: )shouldContinue=false|(?<={"input_tokens":)\d*|(?<=,"input_tokens_details":{"cached_tokens":)\d*|(?<=},"output_tokens":)\d*|(?<=,"output_tokens_details":{"reasoning_tokens":)\d*|(?<= gpt-5.*\| \d+ms \| \[.*\]\s*)\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)shouldContinue=false)/g; 
 //should continue = false is the line in the log files for when a call is done
 //this collects all the tokens from GPT models past 5 and the timestamp 
 
@@ -110,6 +110,7 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
         for(var i = 0; i<results.length;i++){
             if (results[i] !== -1) { 
                 activeCall.Model = allModels[i];
+                console.log("MODEL:   "+ activeCall.Model);
                 activeCall.Emissions = Number(convert.calculateEmission(activeCall.Model, results[i]).toFixed(4));
                 // converts current call's token count to emissions 
                 activeCall.DateTime = times[i]; //apply appropriate time stamp

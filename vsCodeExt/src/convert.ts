@@ -48,6 +48,9 @@ export const modelRegistry: Record<string, TieredModel> = {
 };
 
 export function getModel(inputString: string): TieredModel | null {
+    if (inputString === undefined){
+        return null;
+    }
     const lowerModel = inputString.toLowerCase();
     if (modelRegistry[lowerModel]) { return modelRegistry[inputString]; }
     const key = Object.keys(modelRegistry).find(k => inputString.includes(k));
