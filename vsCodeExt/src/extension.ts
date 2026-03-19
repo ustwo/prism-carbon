@@ -476,15 +476,19 @@ export async function getLogs(context: vscode.ExtensionContext) {
         var input: string = content;
 
         const models: budget.Call[] = await logCap.identifyModel(input);
-        console.log("CALLS: ", models);
-        for (let index = 0; index < models.length; index++) {
-            if (models[index].DateTime > lastAccess) {
+        const sortedModels = models.sort((a: budget.Call, b: budget.Call) => {
+            return a.DateTime - b.DateTime;
+        });
+        console.log("CALLS: ", sortedModels);
+        for (let index = 0; index < sortedModels.length; index++) {
+            if (sortedModels[index].DateTime > lastAccess) {
                 console.log("updating tree");
-                updateTree(models[index]);//updates side bar with all calls returned
-                lastAccess = new Date().getTime(); //plan to only give identify model and such the log file after the last access to make it quicker
-
+                updateTree(sortedModels[index]);//updates side bar with all calls returned
+                 //plan to only give identify model and such the log file after the last access to make it quicker
             }
         }
+
+        if (sortedModels.length !== 0) {lastAccess = sortedModels[sortedModels.length-1].DateTime}
 
     }
     catch (error) {
