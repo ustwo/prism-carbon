@@ -9,6 +9,8 @@
     --high-carbon: #c62828;
     --theme-button-bg: #000000;
     --theme-button-icon: #ffffff;
+    --grid-border: #2e7d32;
+    --chart-text: #666666;
 }
 
 .darkmode{
@@ -22,6 +24,8 @@
     --high-carbon: #ef5350;
     --theme-button-bg: #ffffff;
     --theme-button-icon: #000000;
+    --grid-border: #39FF14;
+    --chart-text: #ffffff;
 }
 
 html, body {
@@ -83,6 +87,15 @@ p{
 }
 .darkmode #theme-switch svg:last-child{
   display: block;
+}
+
+.chart-container {
+    background-color: var(--base-color); 
+    padding: 15px;
+    border-radius: 8px;
+    position: relative;
+    height: 300px;
+    width: 100%;
 }
 .chart-container {
                 position: relative;

@@ -131,10 +131,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
         var num = Number(limit);
         if (!Number.isNaN(num)) {
-            let date = new Date();
-            var newCall: budget.Call = { Emissions: num, Model: "TEST", DateTime: Number(date.toLocaleDateString()) };
+            let now = new Date();
+            var newCall: budget.Call = { Emissions: num, Model: "TEST", DateTime: Number(now.getTime()) };
             updateTree(newCall);
+        vscode.window.showInformationMessage(`Added ${num}g CO2e for today.`);
         }
+        
         else {
             vscode.window.showInformationMessage('Error: NaN inputted.');
         }
@@ -482,11 +484,12 @@ export async function getLogs(context: vscode.ExtensionContext) {
         for (let index = 0; index < models.length; index++) {
 
             if (models[index].DateTime > lastAccess) {
-                updateTree(models[index]);//updates side bar with all calls returned
+                updateTree(models[index]);
             }
         }
-        lastAccess = new Date().getTime(); //plan to only give identify model and such the log file after the last access to make it quicker
+        lastAccess = new Date().getTime();
 
+        //vscode.window.showInformationMessage("Copilot log files refreshed.");
     }
     catch (error) {
         console.log(error);

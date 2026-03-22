@@ -21,7 +21,16 @@
     }
 
     const btn = document.getElementById('theme-switch');
-    btn.addEventListener('click', () => { document.body.classList.toggle('darkmode'); });
+    btn.addEventListener('click', () => { document.body.classList.toggle('darkmode'); 
+
+        if(heatChart){
+            const newTextColor = getChartTextColor();
+        heatChart.data.datasets[0].borderColor = getGridColor();
+        heatChart.options.scales.x.ticks.color = newTextColor;
+        heatChart.options.scales.y.ticks.color = newTextColor;
+        heatChart.update();
+        }
+    });
 
     // --- heat map here ---
 
@@ -32,51 +41,85 @@
 
     };
 
-    function generateEmptyData() {
-        const d = new Date();
-        const today = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0);
-        const data2 = [];
-        const end = today;
-        let dt = new Date(new Date().setDate(end.getDate() - 365));
-        while (dt <= end) {
-            const iso = dt.toISOString().substring(0, 10);
-            data2.push({
-                x: iso,
-                y: isoDayOfWeek(dt),
-                d: iso,
-                v: 0
-            });
-            dt = new Date(dt.setDate(dt.getDate() + 1));
-        }
-        // console.log(data2);
-        return data2;
+   function generateEmptyData() {
+    const today = new Date();
+    const end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const start = new Date(end);
+    start.setDate(start.getDate() - 365);
+
+    const data2 = [];
+    let dt = new Date(start);
+
+    while (dt <= end) {
+        const iso = dt.toISOString().substring(0, 10);
+
+        data2.push({
+            // Change x to the ISO date string so the time scale can read it
+            x: iso, 
+            y: isoDayOfWeek(dt),
+            d: iso,
+            v: 0
+        });
+
+        dt.setDate(dt.getDate() + 1);
     }
-
+    return data2;
+}
     //setup block
-
+const getGridColor = () => getComputedStyle(document.body).getPropertyValue('--grid-border').trim();
+const getChartTextColor = () => getComputedStyle(document.body).getPropertyValue('--chart-text').trim();
     const data = {
         datasets: [{
             label: 'Heat Map',
             data: generateEmptyData(),
-            backgroundColor(c) {
-                if (!c.dataset.data[c.dataIndex]) { return 'rgba(200, 200, 200, 0.1)'; }
-                const value = c.dataset.data[c.dataIndex].v;
-                if (value === 0) { return 'rgba(200, 200, 200, 0.1)'; }
-                const alpha = Math.min(1, (10 + (value * 0.2)) / 60);
-                return `rgba(0, 200, 0, ${alpha})`;
-            },
-            borderColor: `green`,
+            anchor: 'start',
+           // --- Replace the existing backgroundColor(c) block with this ---
+backgroundColor(c) {
+    const value = c.dataset.data[c.dataIndex]?.v || 0;
+    if (value === 0) { return 'rgba(200, 200, 200, 0.1)'; }
+
+    // Tier 1: 0 to 400 (Green Gradient)
+    if (value <= 400) {
+        // Map 0-400 to a range of 0-1
+        const p = value / 400; 
+        // Transition from Bright Green (0,255,0) to Deep Forest (0,80,0)
+        const r = 0;
+        const g = Math.round(255 - (p * 175));
+        const b = 0;
+        return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    // Tier 2: 400 to 2000 (Yellow/Gold Gradient)
+    if (value <= 2000) {
+        // Map 400-2000 to a range of 0-1
+        const p = (value - 400) / 1600;
+        // Transition from Bright Yellow (255,255,0) to Dark Gold (150,130,0)
+        const r = Math.round(255 - (p * 105));
+        const g = Math.round(255 - (p * 125));
+        const b = 0;
+        return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    // Tier 3: 2000+ (Red Gradient)
+    // Cap the "darkness" at 5000 so it doesn't turn black
+    const p = Math.min((value - 2000) / 3000, 1);
+    // Transition from Bright Red (255,0,0) to Deep Maroon (100,0,0)
+    const r = Math.round(255 - (p * 155));
+    return `rgb(${r}, 0, 0)`;
+},
+            borderColor: '#39FF14',
             borderRadius: 1,
             borderWidth: 1,
             hoverBackgroundColor: `rgba(54, 162, 235, 0.2)`,
             hoverBorderColor: `rgba(54, 162, 235, 1)`,
             width(c) {
                 const a = c.chart.chartArea || {};
-                return (a.right - a.left) / 53 - 1;
+                const cols = 53;
+                return (a.right - a.left) / cols -3 ;
             },
             height(c) {
                 const a = c.chart.chartArea || {};
-                return (a.bottom - a.top) / 7 - 1;
+                return (a.bottom - a.top) / 7-3 ;
             },
 
         }]
@@ -91,6 +134,7 @@
             min: 1,
             max: 7,
             ticks: {
+                color:getChartTextColor(),
                 stepSize: 1,
                 callback: function (value) {
                     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -104,32 +148,40 @@
                 display: false,
                 drawBorder: false,
                 tickLength: 0
+            },
+            border: {
+                display:false
             }
         },
-        x: {
-            type: 'time',
-            position: 'bottom',
-            offset: true,
-            time: {
-                unit: 'week',
-                isoWeekDay: 1,
-                displayFormats: {
-                    week: 'MMM dd'
-                }
-            },
-            ticks: {
-                maxRotation: 0,
-                autoSkip: true,
-                font: {
-                    size: 9
-                }
-            },
-            grid: {
-                display: false,
-                drawBorder: false,
-                tickLength: 0,
-            }
+       x: {
+    type: 'time',
+    position: 'bottom',
+    offset: true, // This stops the skewing by giving columns room
+    bounds: 'ticks', // This stops the blocks from vanishing
+    time: {
+        unit: 'week',
+        round:'week',
+        isoWeekday: 1,
+        displayFormats: {
+            week: 'MMM dd'
         }
+    },
+    ticks: {
+        color:getChartTextColor(),
+        source: 'auto', 
+        maxRotation: 45,
+        minRotation: 45,
+        autoSkip: true,
+        callback: function(value, index, values) {
+            const date = new Date(value);
+            date.setDate(date.getDate() + 6 );
+            return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
+        },
+        font: { size: 8 }
+    },
+    grid: { display: false },
+    border: { display: false }
+}
     };
 
     // config
@@ -138,9 +190,17 @@
         data,
         options: {
             maintainAspectRatio: false,
+            layout:{
+                padding:{
+                    top: 10,
+                }
+            },
             scales: scales,
 
             plugins: {
+                legend: {
+            display: false
+        },
                 tooltip: {
                     callbacks: {
                         title: function (context) {
