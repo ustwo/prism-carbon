@@ -8,9 +8,11 @@ let referenceStrip;
 let hoverFunctionality;
 let container;
 let branchSelector;
-let selectedBranch = "all";
+let selectedBranches = new Set();
 let dynamicSizeChanger;
 const branchSelectorTool = document.getElementById("branch-selector-tool");
+let dropDownTool;
+let displaySelectedBranchesCount;
 
 const ref = document.getElementById("branchGraph");
 
@@ -42,17 +44,19 @@ if (ref) {
         reference.style.alignItems = "center";
         reference.style.gap = "6px";
 
-        const dot = document.createElement("div");
-        dot.style.width = "10px";
-        dot.style.height = "10px";
-        dot.style.borderRadius = "50%";
-        dot.style.background = strip.color;
+        const verticalRectangle = document.createElement("div");
+        verticalRectangle.style.width = "5.5px";
+        verticalRectangle.style.height = "16px";
+        verticalRectangle.style.borderRadius = "2px";
+        verticalRectangle.style.background = strip.color;
+        verticalRectangle.style.display = "inline-block";
+        verticalRectangle.style.boxShadow = "inset 0 0 1px rgba(0, 0, 0, 0.2)";
 
         const heading = document.createElement("span");
         heading.innerText = strip.label;
         heading.style.color = "var(--text-color)";
 
-        reference.appendChild(dot);
+        reference.appendChild(verticalRectangle);
         reference.appendChild(heading);
         referenceStrip.appendChild(reference);
     });
@@ -124,81 +128,99 @@ if (ref) {
     toggleButtonContainer.appendChild(cumulativeGraphButton);
 
     references.appendChild(title);
-    branchSelector = document.createElement("select");
-    branchSelector.style.padding = "6px 34px 6px 14px";
-    branchSelector.style.borderRadius = "999px";
-    branchSelector.style.background = "linear-gradient(to bottom, rgba(255,255,255,0.18), rgba(255,255,255,0.05))";
-    branchSelector.style.color = "var(--text-color)";
-    branchSelector.style.border = "1px solid rgba(0,0,0,0.45)";
-    branchSelector.style.fontSize = "13px";
-    branchSelector.style.fontWeight = "500";
-    branchSelector.style.cursor = "pointer";
-    branchSelector.style.appearance = "none";
-    branchSelector.style.transition = "all 0.2s ease";
-    branchSelector.style.minWidth = "160px";
-    branchSelector.style.boxShadow = `0 2px 6px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.55), inset 0 -1px 2px rgba(0, 0, 0, 0.2)`;
-    branchSelector.style.backdropFilter = "blur(4px)";
-    branchSelector.style.backgroundColor = "var(--base-variant)";
-    branchSelector.style.color = "var(--text-color)";
+
+    branchSelector = document.createElement("div");
+    branchSelector.style.position = "relative";
+    branchSelector.style.minWidth = "180px";
+
+    const dropdownButton = document.createElement("div");
+    dropdownButton.textContent = "Select branches to analyze";
+    dropdownButton.style.padding = "6px 14px";
+    dropdownButton.style.borderRadius = "999px";
+    dropdownButton.style.border = "1px solid rgba(255, 255, 255, 0.15)";
+    dropdownButton.style.cursor = "pointer";
+    dropdownButton.style.background = "rgba(255, 255, 255, 0.05)";
+    dropdownButton.style.backdropFilter = "blur(8px)";
+    dropdownButton.style.color = "var(--text-color)";
+    dropdownButton.style.fontSize = "13px";
+    dropdownButton.style.minWidth = "220px";
+    dropdownButton.style.transition = "all 0.25s ease";
+    dropdownButton.style.display = "flex";
+    dropdownButton.style.alignItems = "center";
+    dropdownButton.style.justifyContent = "space-between";   
+    dropdownButton.style.gap = "8px"; 
+    dropdownButton.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.25)";
+
+    displaySelectedBranchesCount = document.createElement("span");
+    displaySelectedBranchesCount.style.fontSize = "11px";
+    displaySelectedBranchesCount.style.fontWeight = "500";
+    displaySelectedBranchesCount.style.opacity = "0.75";
+    displaySelectedBranchesCount.style.whiteSpace = "nowrap";
+    displaySelectedBranchesCount.style.color = "var(--text-color)";
+    displaySelectedBranchesCount.style.padding = "4px 10px";
+    displaySelectedBranchesCount.style.borderRadius = "999px";
+    displaySelectedBranchesCount.style.background = "rgba(255, 255, 255, 0.08)";
+    displaySelectedBranchesCount.style.border = "1px solid var(--secondary-text)";
+
+    const dropDownArrow = document.createElement("span");
+    dropDownArrow.innerHTML = "&#x25BC;";
+    dropDownArrow.style.fontSize = "10px";
+    dropDownArrow.style.opacity = "0.7";
+
+    dropdownButton.appendChild(dropDownArrow);
+
+
+    dropDownTool = document.createElement("div");
+    dropDownTool.style.position = "absolute";
+    dropDownTool.style.top = "110%";
+    dropDownTool.style.left = "0";
+    dropDownTool.style.background = "var(--base-variant)";
+    dropDownTool.style.backdropFilter = "blur(10px)";
+    dropDownTool.style.border = "1px solid rgba(255, 255, 255, 0.1)";
+    dropDownTool.style.borderRadius = "8px";
+    dropDownTool.style.padding = "8px";
+    dropDownTool.style.display = "none";    
+    dropDownTool.style.zIndex = "1000";
+    dropDownTool.style.maxHeight = "200px";
+    dropDownTool.style.overflowY = "auto";
+    dropDownTool.style.boxShadow = "0 10px 30px rgba(0, 0, 0, 0.4)";
+    dropDownTool.style.animation = "fadeIn 0.2s ease";
     
-
-    branchSelector.addEventListener("change", () => {
-        selectedBranch = branchSelector.value;
-
-        document.dispatchEvent(new CustomEvent("branchChangeEvent", {
-            detail: {branch: selectedBranch}
-        }));
-
-        drawGraphs();
+    dropdownButton.addEventListener("click", () => {
+        dropDownTool.style.display = dropDownTool.style.display === "none" ? "block" : "none";
     });
 
-    branchSelector.addEventListener("mouseenter", () => {
-        branchSelector.style.boxShadow = `0 3px 8px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.7), inset 0 -1px 2px rgba(0, 0, 0, 0.25)`;
-
+    dropdownButton.addEventListener("mouseenter", () => {
+        dropdownButton.style.transform = "translateY(-1px)";
+        dropdownButton.style.boxShadow = "0 6px 18px rgba(0, 0, 0, 0.35)";
     });
 
-    branchSelector.addEventListener("mouseleave", () => {
-        branchSelector.style.boxShadow = `0 2px 6px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.55), inset 0 -1px 2px rgba(0, 0, 0, 0.2)`;
-
+    dropdownButton.addEventListener("mouseleave", () => {
+        dropdownButton.style.transform = "translateY(0)";
+        dropdownButton.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.25)";
     });
 
-    branchSelector.addEventListener("focus", () => {
-        branchSelector.style.outline = "none";
-        branchSelector.style.borderColor = "var(--text-color)";
-    });
-
-    branchSelector.addEventListener("blur", () => {
-        branchSelector.style.borderColor = "var(--secondary-text)";
-    });
-
+    branchSelector.appendChild(dropdownButton);
+    branchSelector.appendChild(dropDownTool);
 
     const branchSelectorWrapper = document.createElement("div");
     branchSelectorWrapper.style.position = "relative";
-    branchSelectorWrapper.style.display = "inline-flex";
+    branchSelectorWrapper.style.display = "flex";
     branchSelectorWrapper.style.alignItems = "center";
-
-    const dropDownArrow = document.createElement("div");
-    dropDownArrow.innerHTML = "&#x25BC;";
-    dropDownArrow.style.position = "absolute";
-    dropDownArrow.style.right = "10px";
-    dropDownArrow.style.pointerEvents = "none";
-    dropDownArrow.style.fontSize = "12px";
-    dropDownArrow.style.color = "var(--text-color)";
+    branchSelectorWrapper.style.gap = "10px";
 
     const branchSelectorToolText = document.createElement("span");
-    branchSelectorToolText.textContent = "Select branch to analyze:";
-    branchSelectorToolText.style.marginRight = "10px";
+    branchSelectorToolText.textContent = "Branch Selection:";
     branchSelectorToolText.style.color = "var(--text-color)";
 
     branchSelectorWrapper.appendChild(branchSelectorToolText);
     branchSelectorWrapper.appendChild(branchSelector);
-    branchSelectorWrapper.appendChild(dropDownArrow);
+    branchSelectorWrapper.appendChild(displaySelectedBranchesCount);
 
     if (branchSelectorTool) {
         branchSelectorTool.appendChild(branchSelectorWrapper);
     }
 
-    references.appendChild(title);
     references.appendChild(toggleButtonContainer);
 
     header.appendChild(references);
@@ -221,78 +243,62 @@ window.addEventListener("message", event => {
 
     if (message.command === "workspaceBranches") {
         workspaceBranches = message.data;
-        branchSelector.innerHTML = "";
-        const allBranchesOption = document.createElement("option");
-        allBranchesOption.value = "all";
-        allBranchesOption.textContent = "All Branches";
-        branchSelector.appendChild(allBranchesOption);
+        dropDownTool.innerHTML = "";
+
+        selectedBranches.clear();
 
         workspaceBranches.forEach(branch => {
-            const option = document.createElement("option");
-            option.value = branch;
-            option.textContent = branch;
-            branchSelector.appendChild(option);
+            const heading = document.createElement("label");
+            heading.style.display = "flex";
+            heading.style.alignItems = "center";
+            heading.style.gap = "8px";
+            heading.style.cursor = "pointer";
+
+            heading.addEventListener("mouseenter", () => {
+                heading.style.background = "rgba(255, 255, 255, 0.05)";
+                heading.style.borderRadius = "6px";
+            });
+
+            heading.addEventListener("mouseleave", () => {
+                heading.style.background = "transparent";
+            });
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.checked = true;
+            checkbox.style.accentColor = "#4ade80";
+            checkbox.style.cursor = "pointer";
+
+            selectedBranches.add(branch);
+
+            checkbox.addEventListener("change", () => {
+                if (checkbox.checked) {
+                    selectedBranches.add(branch);
+                }
+                else {
+                    selectedBranches.delete(branch);
+                }
+                updateSelectedBranchesCount();
+                drawGraphs();
+            });
+
+            const branchName = document.createElement("span");
+            branchName.innerText = branch;
+
+            heading.appendChild(checkbox);
+            heading.appendChild(branchName);
+
+            dropDownTool.appendChild(heading);
+
         });
+
+        updateSelectedBranchesCount();
+        
     }
 });
 
 function deletePreviousGraph() {
 
-    const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
-    mainGraphArea.innerHTML = "";
-}
-
-
-function buildGraph() {
-    const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
-    if (!mainGraphArea) return;
-
-    mainGraphArea.innerHTML = "";
-
-    const horizontalLineWrapper = document.createElement("div");
-    horizontalLineWrapper.style.display = "flex";
-    horizontalLineWrapper.style.flexDirection = "column";
-    horizontalLineWrapper.style.height = "100%";
-    horizontalLineWrapper.style.justifyContent = "space-evenly";
-    horizontalLineWrapper.style.width = "100%";
-
-    workspaceBranches.filter(branch => selectedBranch === "all" || branch === selectedBranch).forEach((branch, index) => {
-        const hue = Math.floor((index * 137.5 + 150) % 360);
-        const branchColor = `hsl(${hue}, 70%, 80%)`;
-
-        const horizontalPath = document.createElement("div");
-        horizontalPath.style.display = "flex";
-        horizontalPath.style.alignItems = "center";
-        horizontalPath.style.paddingLeft = "12px";
-        horizontalPath.style.width = "100%";
-
-        const horizontalLine = document.createElement("div");
-        horizontalLine.style.position = "relative";
-        horizontalLine.dataset.branch = branch;
-        horizontalLine.style.flex = "1";
-        horizontalLine.style.height = "2px";
-        horizontalLine.style.background = branchColor;
-
-        horizontalPath.appendChild(horizontalLine);
-        horizontalLineWrapper.appendChild(horizontalPath);
-    });
-
-    mainGraphArea.appendChild(horizontalLineWrapper);
-
-    const xAxisTimeStamp = document.createElement("div");
-    xAxisTimeStamp.id = "timestamp-on-x-axis";
-    xAxisTimeStamp.style.position = "relative";
-    xAxisTimeStamp.style.height = "18px";
-    xAxisTimeStamp.style.fontSize = "11px";
-    xAxisTimeStamp.style.padding = "4px 12px";
-    xAxisTimeStamp.style.color = "var(--secondary-text)";
-    xAxisTimeStamp.style.marginTop = "6px";
-    xAxisTimeStamp.style.width = "100%";
-
-    mainGraphArea.appendChild(xAxisTimeStamp);
-}
-
-function deleteBranches() {
     const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
     mainGraphArea.innerHTML = "";
 }
@@ -310,9 +316,7 @@ function drawGraphs() {
             referenceStrip.style.visibility = "visible";
         }
 
-        if (workspaceBranches.length > 0) {
-            drawCandleStickTimelineGraph();
-        }
+        drawCandleStickTimelineGraph();
 
     }
     else {
@@ -320,7 +324,6 @@ function drawGraphs() {
             referenceStrip.style.visibility = "hidden";
         }
 
-        deleteBranches();
         drawCumulativeGraph();
     }
 }
@@ -390,7 +393,7 @@ function drawCumulativeGraph() {
 
     Object.keys(cumulativeGraphData).forEach(branch => {
 
-        if(selectedBranch !== "all" && branch !== selectedBranch){
+        if(!selectedBranches.has(branch)){
             return;
         }
 
@@ -523,16 +526,20 @@ timelineGraphButton.addEventListener("click", () => {
 
 
 function drawCandleStickTimelineGraph(){
+    if (selectedBranches.size === 0) {
+        return;
+    }
     const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
     
     if (!mainGraphArea || !pendingCommitDots) return;
-    mainGraphArea.innerHTML = "";
     
     const allCommits = [];
 
     Object.keys(pendingCommitDots).forEach(branch => {
 
-        if (selectedBranch !== "all" && branch !== selectedBranch) return;
+        if(!selectedBranches.has(branch)) {
+            return;
+        }
 
         let cumulativeTotal = 0;
 
@@ -746,4 +753,18 @@ function enableDynamicSizeChanger() {
     dynamicSizeChanger.observe(mainGraphArea);
 
 
+}
+
+function updateSelectedBranchesCount(){
+    const branchCount = selectedBranches.size;
+
+    if(branchCount === 0){
+        displaySelectedBranchesCount.textContent = "No branches selected";
+    }
+    else if(branchCount === workspaceBranches.length){
+        displaySelectedBranchesCount.textContent = "All branches selected";
+    }
+    else {
+        displaySelectedBranchesCount.textContent = `${branchCount} branch${branchCount > 1 ? "es" : ""} selected`;
+    }
 }
