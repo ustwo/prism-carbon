@@ -16,10 +16,9 @@ const modelPattern = /(?<= \| success \| )\S*/g; //gets all the models used in t
 //regex to capture Claude model tokens with datetime
 const dateRegex = /\d*-\d*-\d* \d*:\d*:\d*.\d*/g; //returns all the dates
 const claudePattern = /\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)"stop_reason":"end_turn")|(?<=stop_reason":null(.*)"cache_creation_input_tokens":)(\d+)|(?<=stop_reason":null(.*)"cache_read_input_tokens":)(\d+)|(?<=stop_reason":null(.*)"input_tokens":)(\d+)|(?<=stop_reason":"end_turn"(.*)"output_tokens":)(\d+)|(?<=stop_reason":"end_turn",(.*))}}/g;
-const GPTPattern =/(?<={"input_tokens":)\d*|(?<=,"input_tokens_details":{"cached_tokens":)\d*|(?<=},"output_tokens":)\d*|(?<=,"output_tokens_details":{"reasoning_tokens":)\d*|\d*-\d*-\d* \d*:\d*:\d*.\d*(?= \[info\].*gpt-5)|shouldContinue=false/g; 
-// /(?<=usage":{.*tokens":)\d*|shouldContinue=false|\d*-\d*-\d* \d*:\d*:\d*.\d*(?= \[info\] \[ToolCallingLoop\] Stop hook result: shouldContinue=false)/g;
-//ToolCallingLoop] Stop hook result: shouldContinue=false, reasons=undefined
-//this may be a better ending bit for the call
+const GPTPattern =/(?<= gpt-5.*\| \d+ms \| \[.*\]\s*\d*-\d*-\d* \d*:\d*:\d*.\d* \[info\] \[ToolCallingLoop\] Stop hook result: )shouldContinue=false|(?<={"input_tokens":)\d*|(?<=,"input_tokens_details":{"cached_tokens":)\d*|(?<=},"output_tokens":)\d*|(?<=,"output_tokens_details":{"reasoning_tokens":)\d*|(?<= gpt-5.*\| \d+ms \| \[.*\]\s*)\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)shouldContinue=false)/g; 
+//should continue = false is the line in the log files for when a call is done
+//this collects all the tokens from GPT models past 5 and the timestamp 
 
 //gets the tokens used in claude calls
 //this is the same no matter the purpose
@@ -111,6 +110,7 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
         for(var i = 0; i<results.length;i++){
             if (results[i] !== -1) { 
                 activeCall.Model = allModels[i];
+                console.log("MODEL:   "+ activeCall.Model);
                 activeCall.Emissions = Number(convert.calculateEmission(activeCall.Model, results[i]).toFixed(4));
                 // converts current call's token count to emissions 
                 activeCall.DateTime = times[i]; //apply appropriate time stamp
@@ -127,24 +127,34 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
 }
 
 
-function findModel(log: string,pattern : RegExp,splitString : String): [number[], number[]] {
+function findModel(log: string,pattern : RegExp,splitString : string): [number[], number[]] {
+    
     var match = log.match(pattern); //matches the claude regex to the log file
     var timeIndex:number = 0; 
- 
-    if (match!==null){
+    console.log("matches:"+match);
+    if (match!==null && match.includes(splitString)){
         var result:number[] = [];
         var timestamp:number[] = [];
         var j = 0;
         var flag:boolean = false;
+        var timeFlag:boolean = false;
         for (let i = 0; i < match.length; i++) { //loops through all the matches (all types of tokens and appropriate time stamps)
             if (match[i] === splitString){ //built into the regex to grab this at the end of every claude call so multiple calls don't get merged into one
                 j++;
                 flag = false;
+                timeFlag = false;
             }
             else{
                 if (match[i].match(dateRegex) !== null){ //if match we are currently looking at is a date make it the timestamp
-                    timestamp.push(new Date(match[i]).getTime());
-                    if (match[timeIndex] === '0') {timestamp.push(new Date().getTime());}
+                    if (!timeFlag){
+                        timestamp.push(new Date(match[i]).getTime());
+                        timeFlag = true;
+                    }
+                    else{
+                        timestamp[i] = new Date(match[i]).getTime();
+                    }
+                    //add here what to do if flag is off and such
+                    
                 } 
                 else{          
                     if (!flag){ //if its the first token in the match set add a new value to the results array
