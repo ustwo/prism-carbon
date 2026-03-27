@@ -533,7 +533,7 @@ function drawCandleStickTimelineGraph(){
     
     if (!mainGraphArea || !pendingCommitDots) return;
     
-    const allCommits = [];
+    const allCommitsMap = new Map();
 
     Object.keys(pendingCommitDots).forEach(branch => {
 
@@ -541,23 +541,40 @@ function drawCandleStickTimelineGraph(){
             return;
         }
 
-        let cumulativeTotal = 0;
-
         pendingCommitDots[branch].forEach(commit => {
-            cumulativeTotal = cumulativeTotal + commit.carbon;
-            allCommits.push({
-                branch: branch,
-                carbon: commit.carbon,
-                cumulative: cumulativeTotal,
-                time: new Date(commit.timeStamp).getTime(),
-                timeStamp: commit.timeStamp
-            });
+            const time = new Date(commit.timeStamp).getTime();
+            const match = branch + "_" + time;
+
+            if(!allCommitsMap.has(match)){
+                allCommitsMap.set(match, {
+                    branch: branch,
+                    carbon: 0,
+                    time: time,
+                    timeStamp: commit.timeStamp
+                });
+            }
+            const findMatch = allCommitsMap.get(match);
+            findMatch.carbon = findMatch.carbon + commit.carbon;
         });
 
     });
-    if (allCommits.length === 0) return;
+
+    const allCommits = Array.from(allCommitsMap.values());
 
     allCommits.sort((a,b) => a.time - b.time);
+
+    const branchTotals = {};
+
+    allCommits.forEach(commit => {
+        if (!branchTotals[commit.branch]) {
+            branchTotals[commit.branch] = 0;
+        }
+        
+        branchTotals[commit.branch] = branchTotals[commit.branch] + commit.carbon;
+        commit.cumulative = branchTotals[commit.branch];
+    });
+
+    if (allCommits.length === 0) return;
 
     let minTime = Infinity;
     let maxTime = -Infinity;
