@@ -284,13 +284,16 @@ backgroundColor(c) {
 
 
     function generateColors(count) {
-        const colors = [];
-        for (let i = 0; i < count; i++) {
-            const hue = Math.floor(i * (360 / count));
-            colors.push('hsl(' + hue + ', 70%, 50%)');
-        }
-        return colors;
+    const colors = [];
+    for (let i = 0; i < count; i++) {
+        // This drops the opacity gradually for each new slice
+        // Starting at solid neon green (1.0) and fading down to slightly transparent (0.2)
+        const alpha = 1 - (i * (0.8 / Math.max(count - 1, 1)));
+        colors.push(`rgba(0, 255, 0, ${alpha.toFixed(2)})`);
+
     }
+    return colors;
+}
 
     const commonOptions = {
         responsive: true,
@@ -305,7 +308,9 @@ backgroundColor(c) {
             labels: [],
             datasets: [{
                 data: [],
-                backgroundColor: generateColors(0)
+                backgroundColor: generateColors(0),
+                borderColor:'0d0d0d',
+                borderWidth:1
             }]
         },
         options: {
@@ -343,6 +348,8 @@ backgroundColor(c) {
                 modelEmissionsChart.data.labels = message.modelLabels;
                 modelEmissionsChart.data.datasets[0].data = message.modelEmissions;
                 modelEmissionsChart.data.datasets[0].backgroundColor = generateColors(message.modelLabels.length);
+                modelEmissionsChart.data.datasets[0].borderColor = '#0d0d0d';
+                modelEmissionsChart.data.datasets[0].borderWidth = 1;
                 modelEmissionsChart.update();
 
                 //budget prgess bar update logic
