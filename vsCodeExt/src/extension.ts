@@ -17,6 +17,7 @@ import { state } from './state';
 import { InterceptorProxy } from './proxyServer';
 import { privateEncrypt } from 'crypto';
 import { getSystemErrorMap } from 'util';
+import { LastHopEncrypted } from 'mockttp/dist/util/socket-extensions';
 
 export let tree: MyTreeDataProvider;
 export let bar: statusBarManager;
@@ -478,9 +479,14 @@ export async function getLogs(context: vscode.ExtensionContext) {
 
         // reads file and outputs lines to console one at a time
         const content = fs.readFileSync(logUri, 'utf-8');
-        const lDate = new Date(lastAccess);
-
-        const regex: RegExp = new RegExp(lDate.toLocaleString());
+        var lDate:string[] = (new Date(lastAccess).toLocaleString('us-GB', { 
+                        hour12: false
+                    })).split(",");
+        
+        console.log(lDate);
+        var dateSec = (lDate[0].split('/').join('-'));
+        var timeSplit = dateSec+lDate[1];
+        const regex: RegExp = new RegExp(timeSplit);
         const splitting = content.split(regex);
         var input: string = content;
 
@@ -488,7 +494,7 @@ export async function getLogs(context: vscode.ExtensionContext) {
         const sortedModels = models.sort((a: budget.Call, b: budget.Call) => {
             return a.DateTime - b.DateTime;
         });
-        console.log("CALLS: ", sortedModels);
+
         for (let index = 0; index < sortedModels.length; index++) {
             if (sortedModels[index].DateTime > lastAccess) {
                 console.log("updating tree");
@@ -497,7 +503,7 @@ export async function getLogs(context: vscode.ExtensionContext) {
             }
         }
 
-        if (sortedModels.length !== 0) {lastAccess = sortedModels[sortedModels.length-1].DateTime}
+        if (sortedModels.length !== 0) {lastAccess = sortedModels[sortedModels.length-1].DateTime;}
 
         //vscode.window.showInformationMessage("Copilot log files refreshed.");
     }
