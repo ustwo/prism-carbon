@@ -483,13 +483,27 @@ export async function getLogs(context: vscode.ExtensionContext) {
                         hour12: false
                     })).split(",");
         
-        console.log(lDate);
-        var dateSec = (lDate[0].split('/').join('-'));
+        // var temp:string[] = (lDate[0].split('/'));
+        // var year:string[] =temp.slice(-1);
+        // for (var i =temp.length; i>1;i--){
+        //     temp[i] = temp[i-1];
+        // }
+        // temp[0] = year[0];
+        var dateSec = new Date(lastAccess).toISOString().slice(0, 10).split('/').join('-');
         var timeSplit = dateSec+lDate[1];
+        console.log(timeSplit);
         const regex: RegExp = new RegExp(timeSplit);
-        const splitting = content.split(regex);
-        var input: string = content;
-
+        const splitting:string[] = content.split(regex);
+        var input: string;
+        console.log("before any splitting");
+        if (splitting.length < 2){
+            input= content;
+        }
+        else{
+            console.log("Split it");
+            input = splitting[splitting.length-1];
+        }
+        
         const models: budget.Call[] = await logCap.identifyModel(input);
         const sortedModels = models.sort((a: budget.Call, b: budget.Call) => {
             return a.DateTime - b.DateTime;
