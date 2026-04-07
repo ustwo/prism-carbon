@@ -483,25 +483,17 @@ export async function getLogs(context: vscode.ExtensionContext) {
                         hour12: false
                     })).split(",");
         
-        // var temp:string[] = (lDate[0].split('/'));
-        // var year:string[] =temp.slice(-1);
-        // for (var i =temp.length; i>1;i--){
-        //     temp[i] = temp[i-1];
-        // }
-        // temp[0] = year[0];
-        var dateSec = new Date(lastAccess).toISOString().slice(0, 10).split('/').join('-');
+
+        var dateSec = new Date(lastAccess).toISOString().slice(0, 10).split('/').join('-'); //formats the date in accordance to the log files
         var timeSplit = dateSec+lDate[1];
-        console.log(timeSplit);
         const regex: RegExp = new RegExp(timeSplit);
-        const splitting:string[] = content.split(regex);
+        const splitting:string[] = content.split(regex);//splits the time stamp
         var input: string;
-        console.log("before any splitting");
-        if (splitting.length < 2){
+        if (splitting.length < 2){//uses the entire log file if nothing can be found the timestamp
             input= content;
         }
         else{
-            console.log("Split it");
-            input = splitting[splitting.length-1];
+            input = splitting[splitting.length-1];//incase multiple lines of the log file are at the same second look past the last one
         }
         
         const models: budget.Call[] = await logCap.identifyModel(input);
