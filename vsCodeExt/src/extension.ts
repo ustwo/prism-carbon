@@ -381,12 +381,12 @@ class MyTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
             message,
             vscode.TreeItemCollapsibleState.None
         ));
-        this._onDidChangeTreeData.fire(); //refreshes the sidebar
+        this._onDidChangeTreeData.fire(undefined); //refreshes the sidebar
 
     }
     clearTree() {
         this.items = [];
-        this._onDidChangeTreeData.fire();
+        this._onDidChangeTreeData.fire(undefined);
     }
 
     // UstwoBristolEstimatingCarbon

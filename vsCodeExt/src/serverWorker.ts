@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { RawBodyIncludesMatcher } from 'mockttp/dist/rules/matchers';
 import * as convert from './convert';
+import { json } from 'stream/consumers';
 
 // Clean Environment: Ensure this process ignores the VS Code proxy settings
 // process.env.HTTP_PROXY = '';
@@ -170,8 +171,8 @@ function getJsonTokenCount(body: string) {
         (jsonBody.usage && jsonBody.model) //|| // basic text
         // (jsonBody.usage && jsonBody.quality && jsonBody.size && jsonBody.output_format) // image models
     ) {
-        inputTokens = jsonBody.usage.input_tokens;
-        outputTokens = jsonBody.usage.output_tokens;
+        inputTokens = jsonBody.usage.input_tokens??jsonBody.usage.prompt_tokens??0;
+        outputTokens = jsonBody.usage.output_tokens??jsonBody.usage.completion_tokens??0;
         // totalTokens = jsonBody.usage.total_tokens;
         totalTokens = inputTokens + outputTokens;
         console.log(`input tokens: ${inputTokens}, output tokens: ${outputTokens}, total tokens: ${jsonBody.usage.total_tokens}`);

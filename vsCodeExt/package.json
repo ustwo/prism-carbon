@@ -154,25 +154,29 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "^25.2.3",
     "@types/sinon": "^21.0.0",
-    "@types/vscode": "^1.109.0",
+    "@types/vscode": "^1.110.0",
     "@typescript-eslint/eslint-plugin": "^8.56.0",
     "@typescript-eslint/parser": "^8.56.0",
-    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
     "esbuild": "^0.27.3",
     "eslint": "^10.0.2",
+    "mocha": "^11.3.0",
     "npm-run-all": "^4.1.5",
     "semantic-release": "^25.0.3",
     "sinon": "^21.0.1",
-    "typescript": "^5.9.3",
-    "vscode": "^1.1.37"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "@vscode/codicons": "^0.0.44",
     "axios": "^1.13.5",
     "http-proxy": "^1.18.1",
-    "mocha": "^11.7.5",
     "mockttp": "^4.2.1",
     "tiktoken": "^1.0.22"
+  },
+  "overrides": {
+    "mocha": {
+      "serialize-javascript": "^6.0.2"
+    }
   }
 }
