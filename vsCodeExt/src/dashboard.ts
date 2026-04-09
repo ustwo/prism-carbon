@@ -11,7 +11,8 @@ export class CarbonDashboardPanel {
     private readonly _panel: vscode.WebviewPanel;
     private _disposables: vscode.Disposable[] = [];
     private readonly _extensionUri: vscode.Uri;
-    private _selectedBranch: string = 'all';
+    // 4. CHANGE THIS:
+    private _selectedBranches: string[] | null = null;
 
 
     private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
@@ -67,7 +68,7 @@ export class CarbonDashboardPanel {
                         return;
 
                         case 'filterByBranch':
-                            this._selectedBranch = message.branch;
+                            this._selectedBranches = message.branches;
                             this._sendData(); // Update the dashboard with the new branch filter
                             return;
                 }
@@ -116,9 +117,9 @@ export class CarbonDashboardPanel {
         const allCalls = require('./extension').wrappedGetCall();
 
         // Filter calls based on the selected branch for the dashboard widgets
-        const calls = this._selectedBranch === 'all'
+        const calls = this._selectedBranches === null
             ? allCalls
-            : allCalls.filter((c: any) => (c.Branch || "Unknown Branch") === this._selectedBranch);
+            : allCalls.filter((c: any) => this._selectedBranches!.includes(c.Branch || "Unknown Branch"));
 
         // calculate mean average of all calls
         const totalEmissions = calls.reduce((sum: number, call: any) => sum + call.Emissions, 0);
