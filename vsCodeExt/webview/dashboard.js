@@ -80,35 +80,24 @@ const getChartTextColor = () => getComputedStyle(document.body).getPropertyValue
            // --- Replace the existing backgroundColor(c) block with this ---
 backgroundColor(c) {
     const value = c.dataset.data[c.dataIndex]?.v || 0;
-    if (value === 0) { return 'rgba(200, 200, 200, 0.1)'; }
+    if (value === 0) { return 'rgba(200, 200, 200, 0.05)'; }
 
-    // Tier 1: 0 to 400 (Green Gradient)
+    
     if (value <= 400) {
-        // Map 0-400 to a range of 0-1
         const p = value / 400; 
-        // Transition from Bright Green (0,255,0) to Deep Forest (0,80,0)
-        const r = 0;
-        const g = Math.round(255 - (p * 175));
-        const b = 0;
-        return `rgb(${r}, ${g}, ${b})`;
+        const g = Math.round(120 + (p * 135));
+        return `rgb(0, ${g}, 0)`;
     }
-
-    // Tier 2: 400 to 2000 (Yellow/Gold Gradient)
     if (value <= 2000) {
-        // Map 400-2000 to a range of 0-1
         const p = (value - 400) / 1600;
-        // Transition from Bright Yellow (255,255,0) to Dark Gold (150,130,0)
-        const r = Math.round(255 - (p * 105));
-        const g = Math.round(255 - (p * 125));
-        const b = 0;
-        return `rgb(${r}, ${g}, ${b})`;
+        const r = Math.round(180 + (p * 75));
+        const g = Math.round(150 + (p * 105));
+        return `rgb(${r}, ${g}, 0)`;
     }
 
-    // Tier 3: 2000+ (Red Gradient)
-    // Cap the "darkness" at 5000 so it doesn't turn black
+    
     const p = Math.min((value - 2000) / 3000, 1);
-    // Transition from Bright Red (255,0,0) to Deep Maroon (100,0,0)
-    const r = Math.round(255 - (p * 155));
+    const r = Math.round(180 + (p * 75));
     return `rgb(${r}, 0, 0)`;
 },
             borderColor: '#39FF14',
@@ -196,7 +185,7 @@ backgroundColor(c) {
             maintainAspectRatio: false,
             layout:{
                 padding:{
-                    top: 10,
+                    top: 15,
                 }
             },
             scales: scales,
