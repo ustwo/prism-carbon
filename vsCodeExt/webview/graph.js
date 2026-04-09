@@ -13,6 +13,10 @@ let dynamicSizeChanger;
 const branchSelectorTool = document.getElementById("branch-selector-tool");
 let dropDownTool;
 let displaySelectedBranchesCount;
+let zoom = 1;
+const zoomGap = 1.5;
+const minZoom = 0.5;
+const maxZoom = 10;
 
 const ref = document.getElementById("branchGraph");
 
@@ -83,6 +87,37 @@ if (ref) {
     toggleButtonContainer.style.cursor = "pointer";
     toggleButtonContainer.style.position = "relative";
 
+    const zoomButtonControls = document.createElement("div");
+    zoomButtonControls.style.display = "flex";
+    zoomButtonControls.style.gap = "6px";
+
+    function makeZoomButton(symbol){
+        const button = document.createElement("div");
+        button.textContent = symbol;
+        button.style.padding = "4px 10px";
+        button.style.cursor = "pointer";
+        button.style.border = "1px solid var(--secondary-text)";
+        button.style.borderRadius = "6px";
+        button.style.userSelect = "none";
+        return button;
+    }
+
+    const zoomInButton = makeZoomButton("+");
+    const zoomOutButton = makeZoomButton("−");
+
+    zoomInButton.onclick = () => {
+        zoom = Math.min(zoom * zoomGap, maxZoom);
+        drawGraphs();
+    }
+
+    zoomOutButton.onclick = () => {
+        zoom = Math.max(zoom / zoomGap, minZoom);
+        drawGraphs();
+    }
+
+    zoomButtonControls.appendChild(zoomOutButton);
+    zoomButtonControls.appendChild(zoomInButton);
+
     slider = document.createElement("div");
     slider.style.position = "absolute";
     slider.style.inset = "3px";
@@ -128,6 +163,7 @@ if (ref) {
     toggleButtonContainer.appendChild(cumulativeGraphButton);
 
     references.appendChild(title);
+    references.appendChild(zoomButtonControls);
 
     branchSelector = document.createElement("div");
     branchSelector.style.position = "relative";
@@ -304,6 +340,17 @@ function deletePreviousGraph() {
 }
 
 function drawGraphs() {
+    const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
+    const currentScroll = mainGraphArea.querySelector("div");
+
+    let scrollRatio = 1;
+
+    if(currentScroll){
+        const maxScroll = currentScroll.scrollWidth - currentScroll.clientWidth;
+        if(maxScroll > 0){
+            scrollRatio = currentScroll.scrollLeft / maxScroll;
+        }
+    }
 
     deletePreviousGraph();
 
@@ -316,7 +363,7 @@ function drawGraphs() {
             referenceStrip.style.visibility = "visible";
         }
 
-        drawCandleStickTimelineGraph();
+        drawCandleStickTimelineGraph(scrollRatio);
 
     }
     else {
@@ -324,7 +371,7 @@ function drawGraphs() {
             referenceStrip.style.visibility = "hidden";
         }
 
-        drawCumulativeGraph();
+        drawCumulativeGraph(scrollRatio);
     }
 }
 
@@ -352,14 +399,14 @@ function getCumulativeGraphData() {
 
 }
 
-function drawCumulativeGraph() {
+function drawCumulativeGraph(scrollRatio = 1) {
     const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     const height = mainGraphArea.clientHeight;
     const margin = { top: 20, right: 40, bottom: 40, left: 60 };
     let maxTime = 0;
     let maxCarbon = 0;
-    const timeScale = 40;
+    const timeScale = 40 * zoom;
 
     const cumulativeGraphData = getCumulativeGraphData();
 
@@ -477,6 +524,11 @@ function drawCumulativeGraph() {
 
     horizontalScrollContainer.appendChild(svg);
     mainGraphArea.appendChild(horizontalScrollContainer);
+
+    setTimeout(() => {
+        const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+        scrollContainer.scrollLeft = maxScroll * scrollRatio;
+    }, 10);
 }
 
 function getCColor(carbon) {
@@ -525,7 +577,7 @@ timelineGraphButton.addEventListener("click", () => {
 });
 
 
-function drawCandleStickTimelineGraph(){
+function drawCandleStickTimelineGraph(scrollRatio = 1){
     if (selectedBranches.size === 0) {
         return;
     }
@@ -602,7 +654,7 @@ function drawCandleStickTimelineGraph(){
 
     const margin = { top: 20, right: 60, bottom: 50, left: 60 };
 
-    const pixelsPerHour = 60;
+    const pixelsPerHour = 60 * zoom;
 
     const totalHours = (maxTime - minTime) / (1000 * 60 * 60);
 
@@ -763,7 +815,8 @@ function drawCandleStickTimelineGraph(){
     mainGraphArea.appendChild(scrollContainer);
 
     setTimeout(() => {
-        scrollContainer.scrollLeft = scrollContainer.scrollWidth;
+        const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+        scrollContainer.scrollLeft = maxScroll * scrollRatio;
     }, 10);
 }
 
