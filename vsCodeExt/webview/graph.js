@@ -480,7 +480,7 @@ function drawCumulativeGraph() {
 }
 
 function getCColor(carbon) {
-    if (carbon < 15) {
+    if (carbon < 30) {
         return "var(--low-carbon)";
     }
     if (carbon < 40) {
