@@ -5,6 +5,20 @@ import * as extension from './extension';
 import { domainToASCII } from 'url';
 
 
+// created interface for comparison data to be used in the comparisons 
+// widget of the dashboard when implemented - 
+// this will hold equivalent carbon data for different activities 
+// to help users contextualize their emissions
+
+interface comparisonData {
+        milesDriven: number;
+        hoursOfStreaming: number;
+        flightDistance: number;
+        phoneCharges: number;
+        treeYearlyAbsorbtion: number;
+    }
+
+
 
 export class CarbonDashboardPanel {
     public static currentPanel: CarbonDashboardPanel | undefined;
@@ -108,6 +122,17 @@ export class CarbonDashboardPanel {
         if (CarbonDashboardPanel.currentPanel) {
             CarbonDashboardPanel.currentPanel._sendData();
         }
+    }
+
+
+    public static createComparisons(totalEmissions: number) : comparisonData {
+        return {
+            milesDriven: totalEmissions/205, // average grams of C02e per mile in EU/UK
+            hoursOfStreaming: 0,
+            flightDistance: 0,
+            phoneCharges: totalEmissions/8.187864, // average grams of CO2e per full iphone 17 charge (using 3692mah battery, 2 hour charge time and 40w charger accounting for 15% heat loss)
+            treeYearlyAbsorbtion: totalEmissions/22000 // average grams of CO2 absorbed by a mature oak tree per year (taken as an average across its life)
+    }
     }
 
     private _sendData() {

@@ -237,7 +237,7 @@ header .chartBox {
 
 /* Following CSS is a recoloured version of https://uiverse.io/yeisonordonez/wonderful-squid-39 */
 .container {
-  position: absolute;
+  position: relative;
   width: 380px;
   height: 380px;
   margin: auto;
@@ -369,7 +369,7 @@ header .chartBox {
   top: -5px;
   border-radius: 5px 0px 0px 10px;
   box-shadow:
-    inset -5px -8px rgba(0, 0, 0, 0.409),
+    inset -5px -8px rgba(1, 1, 1, 0.409),
     inset -5px 3px rgba(255, 255, 255, 0.324);
 }
 
@@ -377,11 +377,11 @@ header .chartBox {
   position: absolute;
   width: 100px;
   height: 46px;
-  background-color: black;
+  background-color: #010101;
   left: 40px;
   top: 234px;
   clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
-  box-shadow: 100px 0px;
+  box-shadow: 100px 0px #010101;
 }
 
 .wheel-container2 {
@@ -463,7 +463,7 @@ header .chartBox {
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  background-color: rgb(0, 0, 0);
+  background-color: rgb(1, 1, 1);
   top: 3.5px;
   left: 3.5px;
   border: 4px solid rgb(90, 100, 134);
@@ -473,7 +473,7 @@ header .chartBox {
   width: 55px;
   height: 40px;
   position: absolute;
-  background-color: black;
+  background-color: #010101;
   top: 160px;
   left: 45px;
   transform: skew(-5deg);
@@ -486,7 +486,7 @@ header .chartBox {
   width: 48px;
   height: 40px;
   position: absolute;
-  background-color: black;
+  background-color: #010101;
   top: 0px;
   left: 72px;
   border-radius: 6px;
@@ -498,7 +498,7 @@ header .chartBox {
   width: 30px;
   height: 40px;
   position: absolute;
-  background-color: black;
+  background-color: #010101;
   top: 0px;
   left: 132px;
   border-radius: 6px 6px 0px 6px;
@@ -511,7 +511,7 @@ header .chartBox {
   width: 53px;
   height: 20px;
   position: absolute;
-  background-color: black;
+  background-color: #010101;
   top: 180px;
   left: 180px;
   border-radius: 0% 100% 10% 0% / 0% 80% 10% 4%;
@@ -523,7 +523,7 @@ header .chartBox {
   position: absolute;
   width: 15px;
   height: 42px;
-  background-color: black;
+  background-color: #010101;
   top: -18px;
   right: 11px;
   transform: rotate(-37deg);
@@ -563,7 +563,7 @@ header .chartBox {
   width: 3px;
   height: 55px;
   position: absolute;
-  background-color: black;
+  background-color: #010101;
   top: -22px;
   left: 42px;
 }
@@ -572,10 +572,10 @@ header .chartBox {
   position: absolute;
   width: 60px;
   height: 4px;
-  background-color: black;
+  background-color: #010101;
   top: 220px;
   left: 40px;
-  box-shadow: 150px 0px;
+  box-shadow: 150px 0px #010101;
 }
 
 .details::before {
@@ -583,7 +583,7 @@ header .chartBox {
   position: absolute;
   width: 50px;
   height: 4px;
-  background-color: black;
+  background-color: #010101;
   top: 0px;
   right: -70px;
   box-shadow:
@@ -592,8 +592,8 @@ header .chartBox {
     50px 45px 0px 0px #6f6f6f,
     20px 50px 0px 1px #3b3b3b,
     66px 50px 0px 1px #3b3b3b,
-    20px 50px 0px 5px,
-    66px 50px 0px 5px;
+    20px 50px 0px 5px #010101,
+    66px 50px 0px 5px#010101;
 }
 
 .details::after {
@@ -601,7 +601,7 @@ header .chartBox {
   position: absolute;
   width: 70px;
   height: 4px;
-  background-color: black;
+  background-color: #010101;
   right: -230px;
   transform: rotate(5deg);
   bottom: -3px;
@@ -679,7 +679,7 @@ header .chartBox {
   position: absolute;
   width: 20px;
   height: 15px;
-  background-color: black;
+  background-color: #010101;
   bottom: 175px;
   right: 146px;
   box-shadow:
@@ -694,10 +694,10 @@ header .chartBox {
   content: "";
   width: 10px;
   height: 4px;
-  background-color: rgba(0, 0, 0, 0.858);
+  background-color: rgba(1, 1, 1, 0.858);
   left: -41px;
   top: 30px;
-  box-shadow: -67px 0px;
+  box-shadow: -67px 0px #010101;
 }
 
 .details3::after {
@@ -715,7 +715,7 @@ header .chartBox {
   position: absolute;
   width: 20px;
   height: 35px;
-  background-color: black;
+  background-color: #010101;
   bottom: 100px;
   right: 23px;
   border-radius: 0% 20% 20% 0%;
@@ -777,7 +777,7 @@ header .chartBox {
   transform: rotate(5deg);
   box-shadow:
     inset 0px -3px rgba(255, 255, 255, 0.24),
-    0px 40px 0px 1px black;
+    0px 40px 0px 1px #010101;
 }
 
 .details5::after {
@@ -785,10 +785,10 @@ header .chartBox {
   position: absolute;
   width: 170px;
   height: 1px;
-  background-color: rgb(0, 0, 0);
+  background-color: rgb(1, 1, 1);
   top: -120px;
   left: -98px;
-  box-shadow: 0px -2px 0px 1px;
+  box-shadow: 0px -2px 0px 1px #010101;
 }
 
 .wheel-logo {
@@ -796,7 +796,7 @@ header .chartBox {
   height: 0;
   border-style: solid;
   border-width: 0 1px 4px 1px;
-  border-color: transparent transparent white transparent;
+  border-color: transparent transparent #fefefe transparent;
   z-index: 1;
   transform: scale(1);
 }
@@ -808,7 +808,7 @@ header .chartBox {
   height: 0;
   border-style: solid;
   border-width: 0 1px 4px 1px;
-  border-color: transparent transparent white transparent;
+  border-color: transparent transparent #fefefe transparent;
   transform: rotate(-65deg);
   right: 1px;
 }
@@ -820,7 +820,7 @@ header .chartBox {
   height: 0;
   border-style: solid;
   border-width: 0 1px 4px 1px;
-  border-color: transparent transparent white transparent;
+  border-color: transparent transparent #fefefe transparent;
   transform: rotate(65deg);
   left: 1px;
 }
@@ -908,12 +908,12 @@ header .chartBox {
   top: -22px;
   left: 190px;
   rotate: 8deg;
-  box-shadow: 0px -3px rgba(0, 0, 0, 0.349);
+  box-shadow: 0px -3px rgba(1, 1, 1, 0.349);
 }
 
 .extra-lighting-details2 {
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.226);
+  background-color: rgba(1, 1, 1, 0.226);
   height: 12px;
   width: 10px;
   bottom: 165px;
@@ -924,7 +924,7 @@ header .chartBox {
 .extra-lighting-details2::before {
   content: "";
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.308);
+  background-color: rgba(1, 1, 1, 0.308);
   height: 8px;
   width: 10px;
   bottom: 5px;
@@ -970,7 +970,7 @@ header .chartBox {
   position: absolute;
   width: 100%;
   height: 4px;
-  background-color: black;
+  background-color: #4d4848;
   bottom: 62px;
 }
 
@@ -978,7 +978,7 @@ header .chartBox {
   position: absolute;
   width: 20px;
   height: 15px;
-  background-color: black;
+  background-color: #4d4848;
   border-radius: 40% 40% 0% 0%;
   bottom: 60px;
   left: 110%;
@@ -990,20 +990,20 @@ header .chartBox {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  left: 10px;
-  top: 10px;
+  left: 4px;
+  top: 4px;
   border: 6px solid rgb(34, 34, 34);
   box-shadow:
     0px 0px 0px 4px rgb(63, 63, 63),
-    inset 0px 0px 0px 2px rgb(0, 0, 0);
+    inset 0px 0px 0px 2px rgb(1, 1, 1);
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .wheel-ring2 {
-  left: 10px;
-  top: 10px;
+  left: 4px;
+  top: 4px;
 }
 
 .container-wheel2 {
@@ -1027,11 +1027,11 @@ header .chartBox {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background-color: rgb(255, 255, 255);
+  background-color: #fefefe;
   box-shadow:
-    inset 0px 0px 0px 5px,
+    inset 0px 0px 0px 5px #010101,
     inset 0px 0px 0px 6px rgb(191, 191, 191),
-    inset 0px 0px 0px 12px black;
+    inset 0px 0px 0px 12px #010101;
 }
 
 .wheel-center2 {
@@ -1040,52 +1040,54 @@ header .chartBox {
   height: 50px;
   border-radius: 50%;
   z-index: 1;
-  border: 1px solid white;
+  border: 1px solid #fefefe;
 }
 
 .wheel-ring-stick {
   position: absolute;
   width: 4px;
-  height: 18px;
-  background-color: black;
-  top: 32px;
-  left: 19px;
-  transform: rotate(15deg);
+  height: 28px;
+  background-color: #010101;
+  top: 30px;
+  left: 28px;
+  transform-origin: top center;
+  transform: rotate(0deg);
 }
 
 .wheel-ring-stick::before {
-  content: "";
+  /* content: "";
   position: absolute;
   width: 4px;
   height: 18px;
-  background-color: black;
+  background-color: #010101;
   top: -2px;
   left: 8px;
-  transform: rotate(-20deg);
+  transform: rotate(-20deg); */
+  display: none;
 }
 
 .wheel-ring-stick2 {
-  transform: rotate(82deg);
-  left: 8px;
-  top: 16px;
+  transform: rotate(72deg);
+  left: 28px;
+  top: 30px;
 }
 
 .wheel-ring-stick3 {
-  left: 34px;
-  top: 25px;
-  transform: rotate(-55deg);
+  left: 28px;
+  top: 30px;
+  transform: rotate(144deg);
 }
 
 .wheel-ring-stick4 {
-  top: 2px;
-  left: 17px;
-  transform: rotate(155deg);
+  top: 30px;
+  left: 28px;
+  transform: rotate(216deg);
 }
 
 .wheel-ring-stick5 {
-  top: 7px;
-  left: 36px;
-  transform: rotate(225deg);
+  top: 30px;
+  left: 28px;
+  transform: rotate(288deg);
 }
 
 /*end of wheel*/
