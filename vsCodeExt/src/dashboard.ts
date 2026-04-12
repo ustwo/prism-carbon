@@ -382,7 +382,7 @@ export class CarbonDashboardPanel {
     <script src="${graphUri}"></script>
     <script src="${darkModeUri}"></script>
 
-
+    <!-- From Uiverse.io by yeisonordonez -->
     <div class="container">
         <div class="car-container">
             <div class="car"></div>
@@ -443,6 +443,9 @@ export class CarbonDashboardPanel {
             <div class="obstacles"></div>
         </div>
     </div>
+
+    <!-- From Uiverse.io by santhoshsj-dev --> 
+    <div class="loader"></div>
 
 
 
