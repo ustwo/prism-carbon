@@ -1,7 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 
-import * as devTok from './devTokens';
 import * as vscode from 'vscode';
 import * as https from 'https';
 import * as budget from './budget';
@@ -33,8 +32,6 @@ const PROXY_PORT = 3024;
 var budg: budget.budget;
 
 export async function activate(context: vscode.ExtensionContext) {
-
-
     const copilotChat = vscode.extensions.getExtension('github.copilot-chat');
     if (!copilotChat) {
         vscode.window.showWarningMessage('GitHub Copilot Chat is not installed. Carbon emissions will not be tracked during development time!');
@@ -488,14 +485,19 @@ export async function getLogs(context: vscode.ExtensionContext) {
         var input: string = content;
 
         const models: budget.Call[] = await logCap.identifyModel(input);
-        console.log("CALLS: ", models);
-        for (let index = 0; index < models.length; index++) {
-
-            if (models[index].DateTime > lastAccess) {
-                updateTree(models[index]);
+        const sortedModels = models.sort((a: budget.Call, b: budget.Call) => {
+            return a.DateTime - b.DateTime;
+        });
+        console.log("CALLS: ", sortedModels);
+        for (let index = 0; index < sortedModels.length; index++) {
+            if (sortedModels[index].DateTime > lastAccess) {
+                console.log("updating tree");
+                updateTree(sortedModels[index]);//updates side bar with all calls returned
+                 //plan to only give identify model and such the log file after the last access to make it quicker
             }
         }
-        lastAccess = new Date().getTime();
+
+        if (sortedModels.length !== 0) {lastAccess = sortedModels[sortedModels.length-1].DateTime}
 
         //vscode.window.showInformationMessage("Copilot log files refreshed.");
     }

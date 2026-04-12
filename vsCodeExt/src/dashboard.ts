@@ -249,102 +249,180 @@ export class CarbonDashboardPanel {
         const graphUri = webview.asWebviewUri(vscode.Uri.file(path.join(this._extensionUri.fsPath, 'webview', 'graph.js')));
         const darkModeUri = webview.asWebviewUri(vscode.Uri.file(path.join(this._extensionUri.fsPath, 'webview', 'darkmode.js')));
         return `<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Carbon Dashboard</title>
-    
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@3.0.0/dist/chartjs-chart-matrix.min.js"></script>
-        <link href="${styleUri}" rel="stylesheet">
+<html lang="en">
 
-        
-    
-        </head>
-    <body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Dashboard</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@3.0.0/dist/chartjs-chart-matrix.min.js"></script>
+    <link href="${styleUri}" rel="stylesheet">
+
+
+
+</head>
+
+<body>
     <!-- icon picture link -->
 
-  <button id="theme-switch">
-    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Z"/></svg>
-    <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24"><path d="M480-280q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Z"/></svg>
-  </button>
-  <header id="header">
-  <h1>Carbon Analysis Dashboard</h1>
-  <p> Carbon impact based on each file will be depicted below: </p>
-  <div id="dashboard-preferences-selector">
-  <h3> Preferences: </h3>
-  <div id = "branch-selector-tool"></div>
-  </div>
-  </header>
+    <button id="theme-switch">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+            <path
+                d="M480-120q-150 0-255-105T120-480q0-150 105-255t255-105q14 0 27.5 1t26.5 3q-41 29-65.5 75.5T444-660q0 90 63 153t153 63q55 0 101-24.5t75-65.5q2 13 3 26.5t1 27.5q0 150-105 255T480-120Z" />
+        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+            <path
+                d="M480-280q-83 0-141.5-58.5T280-480q0-83 58.5-141.5T480-680q83 0 141.5 58.5T680-480q0 83-58.5 141.5T480-280ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Z" />
+        </svg>
+    </button>
+    <header id="header">
+        <h1>Carbon Analysis Dashboard</h1>
+        <p> Carbon impact based on each file will be depicted below: </p>
+        <div id="dashboard-preferences-selector">
+            <h3> Preferences: </h3>
+            <div id="branch-selector-tool"></div>
+        </div>
+    </header>
 
-        <div id="branchGraph" style="width:100%; height:350px;"></div>
+    <div id="branchGraph" style="width:100%; height:350px;"></div>
 
-        <div class="dashboard-grid">
-    
-            
+    <div class="dashboard-grid">
 
-            <div class="chart-wrapper">
-                <h2>Emissions by model</h2>
-                <div class="chart-container">
-                    <canvas id="modelEmissionsChart"></canvas>
-                </div>
-                <p id="model-empty-msg" style="text-align:center; margin-top:12px;">No calls recorded yet.</p>
+
+
+        <div class="chart-wrapper">
+            <h2>Emissions by model</h2>
+            <div class="chart-container">
+                <canvas id="modelEmissionsChart"></canvas>
             </div>
-            
-            </div>
-    
+            <p id="model-empty-msg" style="text-align:center; margin-top:12px;">No calls recorded yet.</p>
+        </div>
 
-        <section id="main-view"> 
-            <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
-                
-                <div class="budget-tracker-container">
-                    <div class="budget-header">
-                        <h2>Session Budget</h2>
-                    </div>
-                    <div class="progress-bar-bg">
-                        <div class="progress-bar-fill" id="session-progress-fill"></div>
-                    </div>
-                    <div class="budget-footer">
-                        <span id="session-percent-used" class="budget-percent">0% used</span>
-                        <span id="session-text-right" class="budget-detail">0g / 0g</span>
-                    </div>
-                    <div class="budget-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; margin-top: 15px;">
-                        <button id="set-budget-btn" style="padding: 5px 10px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 10px;">Set Budget</button>
-                        <button id="reset-btn" style="padding: 5px 10px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Reset</button>
-                    </div>
+    </div>
+
+
+    <section id="main-view">
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+
+            <div class="budget-tracker-container">
+                <div class="budget-header">
+                    <h2>Session Budget</h2>
                 </div>
-
-                <div class="budget-tracker-container">
-                    <div class="budget-header">
-                        <h2>Average Request Cost</h2>
-                    </div>
-                    <div style="text-align: center; margin-top: 20px;">
-                        <span id="average-cost-display" style="font-size: 2.2rem; font-weight: bold; color: var(--text-color);">0.0000 g</span>
-                        <span style="color: var(--secondary-text); font-size: 1.2rem;"> CO₂e</span>
-                    </div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="session-progress-fill"></div>
                 </div>
-
-            </div>
-
-            <div style="margin-top:60px;">
-                <h2 style="text-align:center;">Heat Map</h2>
-                <div style="max-width:900px; margin:0 auto;">
-                    <div class="chart-container" style="height:220px;">
-                        <canvas id="myChart"></canvas>
-                    </div>
+                <div class="budget-footer">
+                    <span id="session-percent-used" class="budget-percent">0% used</span>
+                    <span id="session-text-right" class="budget-detail">0g / 0g</span>
+                </div>
+                <div class="budget-header"
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; margin-top: 15px;">
+                    <button id="set-budget-btn"
+                        style="padding: 5px 10px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 10px;">Set
+                        Budget</button>
+                    <button id="reset-btn"
+                        style="padding: 5px 10px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Reset</button>
                 </div>
             </div>
-        </section>
-    
 
-        <script src="${scriptUri}"></script>
-        <script src="${graphUri}"></script>
-        <script src="${darkModeUri}"></script>
-    
-    
-    </body>
-    </html>`;
+            <div class="budget-tracker-container">
+                <div class="budget-header">
+                    <h2>Average Request Cost</h2>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <span id="average-cost-display"
+                        style="font-size: 2.2rem; font-weight: bold; color: var(--text-color);">0.0000 g</span>
+                    <span style="color: var(--secondary-text); font-size: 1.2rem;"> CO₂e</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div style="margin-top:60px;">
+            <h2 style="text-align:center;">Heat Map</h2>
+            <div style="max-width:900px; margin:0 auto;">
+                <div class="chart-container" style="height:220px;">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <script src="${scriptUri}"></script>
+    <script src="${graphUri}"></script>
+    <script src="${darkModeUri}"></script>
+
+
+    <div class="container">
+        <div class="car-container">
+            <div class="car"></div>
+            <div class="front-part"></div>
+            <div class="front-part2"></div>
+            <div class="front-part3"></div>
+            <div class="bottom-part"></div>
+            <div class="wheel-container wheel-container1"></div>
+            <div class="wheel-container wheel-container2"></div>
+            <div class="wheel-back"></div>
+            <div class="window"></div>
+            <div class="window2"></div>
+            <div class="window3"></div>
+            <div class="details"></div>
+            <div class="details2"></div>
+            <div class="details3"></div>
+            <div class="details4"></div>
+            <div class="details5"></div>
+            <div class="bumper"></div>
+            <div class="bumper2"></div>
+            <div class="head-lights"></div>
+            <div class="tail-lights"></div>
+            <div class="extra-lighting-details"></div>
+            <div class="extra-lighting-details2"></div>
+            <div class="extra-lighting-details3"></div>
+        </div>
+
+        <div class="container-wheel1">
+            <div class="wheel-break"></div>
+            <div class="wheel-ring wheel-ring1">
+                <div class="wheel-center"></div>
+                <div class="wheel-center2"></div>
+                <div class="wheel-ring-stick"></div>
+                <div class="wheel-ring-stick wheel-ring-stick2"></div>
+                <div class="wheel-ring-stick wheel-ring-stick3"></div>
+                <div class="wheel-ring-stick wheel-ring-stick4"></div>
+                <div class="wheel-ring-stick wheel-ring-stick5"></div>
+                <div class="wheel-logo"></div>
+            </div>
+        </div>
+
+        <div class="container-wheel2">
+            <div class="wheel-break2"></div>
+            <div class="wheel-ring2 wheel-ring">
+                <div class="wheel-center"></div>
+                <div class="wheel-center2"></div>
+                <div class="wheel-ring-stick"></div>
+                <div class="wheel-ring-stick wheel-ring-stick2"></div>
+                <div class="wheel-ring-stick wheel-ring-stick3"></div>
+                <div class="wheel-ring-stick wheel-ring-stick4"></div>
+                <div class="wheel-ring-stick wheel-ring-stick5"></div>
+                <div class="wheel-logo"></div>
+            </div>
+        </div>
+
+        <div class="street">
+            <div class="line"></div>
+            <div class="obstacles"></div>
+        </div>
+    </div>
+
+
+
+</body>
+
+</html>`;
     }
 }

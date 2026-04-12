@@ -7,7 +7,8 @@ interface EnvironmentalImpact {
     water: number; // in ml
 }
 
-let carbonIntensityGrid = 207; // gco2e/kwh
+let carbonIntensityGrid = 471; // gco2e/kwh -- global average
+// reference: https://ember-energy.org/data/electricity-data-explorer/?data=co2_intensity&fuel=total&chart=single_year
 
 abstract class LLMModel {
     abstract calculate(tokens: number): number; // change number to EnvironmentalImpact for output when adding water
@@ -63,6 +64,24 @@ export const modelRegistry: Record<string, TieredModel> = {
 
 // references - (1) https://tokenomy.ai/tools?tab=energy
 
+// reference for SCI formula: https://sci.greensoftware.foundation/
+
+// SCI = ((E * I)+M) per R
+
+// E = energy consumed (kWh)
+// I = carbon intensity of the energy source (gCO2e/kWh)
+// M = manufacturing emissions (gCO2e)
+    // M = TE * (TiR/EL) * (RR/ToR)
+    // Where:
+
+    // TiR = Time Reserved; the length of time the hardware is reserved for use by the software.
+    // EL = Expected Lifespan; the anticipated time that the equipment will be installed.
+    // RR = Resources Reserved; the number of resources reserved for use by the software.
+    // ToR = Total Resources; the total number of resources available.
+// R = number of tokens processed
+
+// so our SCI = ((Energy of model tokens * global average carbon intensity) + manufacturing emissions per R tokens) / R = gCO2e per token
+
 export function getModel(inputString: string): TieredModel | null {
     const lowerModel = inputString.toLowerCase();
     if (modelRegistry[lowerModel]) { return modelRegistry[inputString]; }
@@ -70,14 +89,17 @@ export function getModel(inputString: string): TieredModel | null {
     return key ? modelRegistry[key] : null;
 }
 
-export function calculateEmission(energy: number, gridCarbonIntensity: number) {
-    return energy * gridCarbonIntensity; // returns carbon in grams
+export function calculateEmission(modelName: string, numTokens: number) {
+    const energy = getEnergy(modelName, numTokens); // energy in kwh from call using tokens
+    const gridCarbonIntensity = carbonIntensityGrid; // gco2e/kwh from configuration or default
+    // + M
+    return energy * gridCarbonIntensity; // returns carbon in grams for this call
 }
 
 
-export function getEnergy(model: string, tokens: number, energyPerToken: number): number {
-    if (tokens < 0) { return 0; }
-    const chosenModel = getModel(model);
-    const energy = chosenModel?.calculate(tokens) ?? 0;
+export function getEnergy(modelName: string, numTokens: number): number {
+    if (numTokens < 0) { return 0; }
+    const chosenModel = getModel(modelName);
+    const energy = chosenModel?.calculate(numTokens) ?? 0;
     return energy;
 }
