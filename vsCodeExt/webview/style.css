@@ -235,9 +235,114 @@ header .chartBox {
     color: var(--secondary-text);
 }
 
+.dashboard-grid {
+  display: grid;
+  /* This creates 3 columns of exactly equal width */
+  grid-template-columns: repeat(3, 1fr); 
+  
+  /* Adds a 20px space between your 3 elements */
+  gap: 20px; 
+  
+  width: 100%; /* Take up full width of the dashboard */
+  min-height: 400px; /* Give it enough height to fit your car */
+
+  /* Centers the items nicely inside their respective grid cells */
+  align-items: center; 
+  justify-items: center; 
+}
+
+/* Optional: Make sure the children don't overflow */
+.grid-item {
+  width: 100%;
+  aspect-ratio: 1/1;
+  display: flex;
+  justify-content: center;
+  background-color: #111111; 
+  border: 1px solid #333;
+  border-radius: 12px;
+  align-items: center;
+}
+.container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* From Uiverse.io by NlghtM4re  */
+
+.tree {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  transform-style: preserve-3d;
+  transform: rotateX(-20deg) rotateY(30deg);
+  animation: treeAnimate 5s linear infinite;
+}
+
+@keyframes treeAnimate {
+  0% {
+    transform: rotateX(-20deg) rotateY(360deg);
+  }
+
+  100% {
+    transform: rotateX(-20deg) rotateY(0deg);
+  }
+}
+
+.tree div {
+  position: absolute;
+  top: -50px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transform: translateY(calc(25px * var(--x))) translateZ(0px);
+}
+
+.tree div.branch span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #69c069, #77dd77);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  border-bottom: 5px solid #00000019;
+  transform-origin: bottom;
+  transform: rotateY(calc(90deg * var(--i))) rotateX(30deg) translateZ(28.5px);
+}
+
+.tree div.stem span {
+  position: absolute;
+  top: 110px;
+ /* updated top value */
+  left: calc(50% - 7.5px);
+  width: 15px;
+  height: 50%;
+  background: linear-gradient(90deg, #bb4622, #df7214);
+  border-bottom: 5px solid #00000019;
+  transform-origin: bottom;
+  transform: rotateY(calc(90deg * var(--i))) translateZ(7.5px);
+}
+
+.shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  filter: blur(20px);
+  transform-style: preserve-3d;
+  transform: rotateX(90deg) translateZ(-65px);
+}
+
 /* Following CSS is a recoloured version of https://uiverse.io/yeisonordonez/wonderful-squid-39 */
+
 .container {
   position: relative;
+  max-width: 100%;
+  max-height: 100%;
   width: 380px;
   height: 380px;
   margin: auto;
@@ -1188,8 +1293,8 @@ header .chartBox {
   }
 }
 
-
 /* From Uiverse.io by santhoshsj-dev */ 
+
 .loader {
   position: relative;
   width: 92px;
@@ -1280,4 +1385,3 @@ header .chartBox {
     top: 180px;
   }
 }
-  

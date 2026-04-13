@@ -382,72 +382,122 @@ export class CarbonDashboardPanel {
     <script src="${graphUri}"></script>
     <script src="${darkModeUri}"></script>
 
-    <!-- From Uiverse.io by yeisonordonez -->
-    <div class="container">
-        <div class="car-container">
-            <div class="car"></div>
-            <div class="front-part"></div>
-            <div class="front-part2"></div>
-            <div class="front-part3"></div>
-            <div class="bottom-part"></div>
-            <div class="wheel-container wheel-container1"></div>
-            <div class="wheel-container wheel-container2"></div>
-            <div class="wheel-back"></div>
-            <div class="window"></div>
-            <div class="window2"></div>
-            <div class="window3"></div>
-            <div class="details"></div>
-            <div class="details2"></div>
-            <div class="details3"></div>
-            <div class="details4"></div>
-            <div class="details5"></div>
-            <div class="bumper"></div>
-            <div class="bumper2"></div>
-            <div class="head-lights"></div>
-            <div class="tail-lights"></div>
-            <div class="extra-lighting-details"></div>
-            <div class="extra-lighting-details2"></div>
-            <div class="extra-lighting-details3"></div>
-        </div>
-
-        <div class="container-wheel1">
-            <div class="wheel-break"></div>
-            <div class="wheel-ring wheel-ring1">
-                <div class="wheel-center"></div>
-                <div class="wheel-center2"></div>
-                <div class="wheel-ring-stick"></div>
-                <div class="wheel-ring-stick wheel-ring-stick2"></div>
-                <div class="wheel-ring-stick wheel-ring-stick3"></div>
-                <div class="wheel-ring-stick wheel-ring-stick4"></div>
-                <div class="wheel-ring-stick wheel-ring-stick5"></div>
-                <div class="wheel-logo"></div>
-            </div>
-        </div>
-
-        <div class="container-wheel2">
-            <div class="wheel-break2"></div>
-            <div class="wheel-ring2 wheel-ring">
-                <div class="wheel-center"></div>
-                <div class="wheel-center2"></div>
-                <div class="wheel-ring-stick"></div>
-                <div class="wheel-ring-stick wheel-ring-stick2"></div>
-                <div class="wheel-ring-stick wheel-ring-stick3"></div>
-                <div class="wheel-ring-stick wheel-ring-stick4"></div>
-                <div class="wheel-ring-stick wheel-ring-stick5"></div>
-                <div class="wheel-logo"></div>
-            </div>
-        </div>
-
-        <div class="street">
-            <div class="line"></div>
-            <div class="obstacles"></div>
-        </div>
+    <div class="dashboard-grid">
+    <div class="grid-item">
+        <div class="phone-element">
+        <!-- From Uiverse.io by santhoshsj-dev --> 
+        <div class="loader"></div>
+        </div> 
     </div>
 
-    <!-- From Uiverse.io by santhoshsj-dev --> 
-    <div class="loader"></div>
+    <div class="grid-item">
+        <div class="car-element"> 
+        <!-- From Uiverse.io by yeisonordonez -->
 
+        <div class="container">
+            <div class="car-container">
+                <div class="car"></div>
+                <div class="front-part"></div>
+                <div class="front-part2"></div>
+                <div class="front-part3"></div>
+                <div class="bottom-part"></div>
+                <div class="wheel-container wheel-container1"></div>
+                <div class="wheel-container wheel-container2"></div>
+                <div class="wheel-back"></div>
+                <div class="window"></div>
+                <div class="window2"></div>
+                <div class="window3"></div>
+                <div class="details"></div>
+                <div class="details2"></div>
+                <div class="details3"></div>
+                <div class="details4"></div>
+                <div class="details5"></div>
+                <div class="bumper"></div>
+                <div class="bumper2"></div>
+                <div class="head-lights"></div>
+                <div class="tail-lights"></div>
+                <div class="extra-lighting-details"></div>
+                <div class="extra-lighting-details2"></div>
+                <div class="extra-lighting-details3"></div>
+            </div>
 
+            <div class="container-wheel1">
+                <div class="wheel-break"></div>
+                <div class="wheel-ring wheel-ring1">
+                    <div class="wheel-center"></div>
+                    <div class="wheel-center2"></div>
+                    <div class="wheel-ring-stick"></div>
+                    <div class="wheel-ring-stick wheel-ring-stick2"></div>
+                    <div class="wheel-ring-stick wheel-ring-stick3"></div>
+                    <div class="wheel-ring-stick wheel-ring-stick4"></div>
+                    <div class="wheel-ring-stick wheel-ring-stick5"></div>
+                    <div class="wheel-logo"></div>
+                </div>
+            </div>
+
+            <div class="container-wheel2">
+                <div class="wheel-break2"></div>
+                <div class="wheel-ring2 wheel-ring">
+                    <div class="wheel-center"></div>
+                    <div class="wheel-center2"></div>
+                    <div class="wheel-ring-stick"></div>
+                    <div class="wheel-ring-stick wheel-ring-stick2"></div>
+                    <div class="wheel-ring-stick wheel-ring-stick3"></div>
+                    <div class="wheel-ring-stick wheel-ring-stick4"></div>
+                    <div class="wheel-ring-stick wheel-ring-stick5"></div>
+                    <div class="wheel-logo"></div>
+                </div>
+            </div>
+
+            <div class="street">
+                <div class="line"></div>
+                <div class="obstacles"></div>
+            </div>
+        </div></div>
+    </div>
+
+    <div class="grid-item">
+        <div class="tree-element">
+        <!-- From Uiverse.io by NlghtM4re --> 
+
+        <div class="container">
+        <div class="tree">
+            <div class="branch" style="--x:0">
+            <span style="--i:0;"></span>
+            <span style="--i:1;"></span>
+            <span style="--i:2;"></span>
+            <span style="--i:3;"></span>
+            </div>
+            <div class="branch" style="--x:1">
+            <span style="--i:0;"></span>
+            <span style="--i:1;"></span>
+            <span style="--i:2;"></span>
+            <span style="--i:3;"></span>
+            </div>
+            <div class="branch" style="--x:2">
+            <span style="--i:0;"></span>
+            <span style="--i:1;"></span>
+            <span style="--i:2;"></span>
+            <span style="--i:3;"></span>
+            </div>
+            <div class="branch" style="--x:3">
+            <span style="--i:0;"></span>
+            <span style="--i:1;"></span>
+            <span style="--i:2;"></span>
+            <span style="--i:3;"></span>
+            </div>
+            <div class="stem">
+            <span style="--i:0;"></span>
+            <span style="--i:1;"></span>
+            <span style="--i:2;"></span>
+            <span style="--i:3;"></span>
+            </div>
+            <span class="shadow"></span>
+        </div>
+        </div>
+        </div>
+    </div>
+    </div>
 
 </body>
 
