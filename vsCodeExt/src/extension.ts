@@ -17,7 +17,6 @@ import { state } from './state';
 import { InterceptorProxy } from './proxyServer';
 import { privateEncrypt } from 'crypto';
 import { getSystemErrorMap } from 'util';
-import { LastHopEncrypted } from 'mockttp/dist/util/socket-extensions';
 
 export let tree: MyTreeDataProvider;
 export let bar: statusBarManager;
