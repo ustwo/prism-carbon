@@ -257,10 +257,11 @@ header .chartBox {
   aspect-ratio: 1/1;
   display: flex;
   justify-content: center;
-  background-color: #111111; 
-  border: 1px solid #333;
+  background-color: var(--base-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
   border-radius: 12px;
   align-items: center;
+  z-index: 200;
 }
 .container {
   width: 100%;
@@ -1073,10 +1074,13 @@ header .chartBox {
 
 .line {
   position: absolute;
-  width: 100%;
+  width: 60%;
   height: 4px;
   background-color: #4d4848;
-  bottom: 62px;
+  bottom: 58px;
+  right: 125px;
+  justify-content: center;
+  align-items: center;  
 }
 
 .obstacles {
@@ -1281,7 +1285,7 @@ header .chartBox {
 /*obstacle*/
 
 .obstacles {
-  animation: displacement 3s linear infinite;
+  animation: displacement 3s linear infinite, obstacle-visibility 3s linear infinite;
 }
 
 @keyframes displacement {
@@ -1293,6 +1297,18 @@ header .chartBox {
   }
 }
 
+@keyframes obstacle-visibility {
+  0%, 23% {
+    opacity: 0;
+  }
+  23.01%, 61.5%{
+    opacity: 1;
+  }
+  61.51%, 100% {
+    opacity: 0;
+  }
+}
+
 /* From Uiverse.io by santhoshsj-dev */ 
 
 .loader {
@@ -1301,7 +1317,7 @@ header .chartBox {
   height: 180px;
   border-radius: 8px;
   transform: translateY(-30px);
-  background-color: #000;
+  background-color: #09631b;
   background-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 0%,rgba(0,0,0,1) 4%,rgba(81,81,81,1) 14%,rgba(44,44,44,1) 26%,rgba(2,2,2,1) 53%,rgba(2,2,2,1) 65%,rgba(2,2,2,0) 66%),
     linear-gradient(#111, #111);
   background-repeat: no-repeat;
@@ -1318,9 +1334,9 @@ header .chartBox {
   transform: translateX(-50%);
   width: 32px;
   height: 75px;
-  background-image: linear-gradient(#fff, #fff),
-  linear-gradient(#bbb, #bbb),
-  linear-gradient(#fff, #fff);
+  background-image: linear-gradient(#9f9b9b, #9f9b9b),
+  linear-gradient(#777373, #777373),
+  linear-gradient(#b0abab, #b0abab);
   background-repeat: no-repeat;
   background-position: center 4px , center top, center 5px;
   background-size: 11px 11px , 7px 4px ,  2px 100%;
