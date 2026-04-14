@@ -510,7 +510,7 @@ export async function getLogs(context: vscode.ExtensionContext) {
 
         if (sortedModels.length !== 0) {lastAccess = sortedModels[sortedModels.length-1].DateTime;}
 
-        //vscode.window.showInformationMessage("Copilot log files refreshed.");
+        
     }
     catch (error) {
         console.log(error);
