@@ -4,6 +4,7 @@ import { resolve } from 'path';
 import * as budget from './budget';
 import * as vscode from 'vscode';
 import * as convert from './convert';
+import { getPreEmitDiagnostics } from 'typescript';
 
 
 const splitPattern= /(?<=\[info\].*copilotmd \| success \| .* \| \d+ms \| \[.*)]/g;
@@ -31,9 +32,11 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
     var matches: budget.Call[] = [];
     var claudeFlag: boolean = false; //flag used to tell us if we need to use our claude regex
     var newGPTFlag: boolean = false;
+    var geminiFlag: boolean = false;
     var activeCall: budget.Call = { Emissions: 0, Model: "TEST", DateTime: 0 };
     var claudes: string[] = [];
     var GPTs: string[] = [];
+    var geminis: string[] = [];
 
     var models = rawLog.match(modelPattern); //creates an array of all models used in the log file provided
     if (models!==null){
@@ -46,6 +49,8 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
                 GPTs.push(model);
                 newGPTFlag = true;
             };
+
+            
 
             switch (model) {
                 case 'claude-haiku-4.5': //adds the specifc claude model to an array of claude models
@@ -78,7 +83,10 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
                     claudes.push(model);
                     claudeFlag = true;
                     break;
-   
+
+                case 'gemini-2.5-pro':
+                    geminis.push(model);
+                    geminiFlag = true;
                 default:
                     console.log("Functionality coming soon!");
                     break;
@@ -86,7 +94,7 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
         } 
     }
     console.log("GPT flag",newGPTFlag);
-    if (claudeFlag || newGPTFlag){
+    if (claudeFlag || newGPTFlag || geminiFlag){
         var times:number[] = [];
         var results:number[] = [];
         var allModels:string[] = claudes.concat(GPTs);
@@ -102,6 +110,10 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
             const [timesG,resultsG] = findModel(rawLog,GPTPattern,"shouldContinue=false");
             results = results.concat(resultsG);
             times = times.concat(timesG);
+        }
+
+        if(geminiFlag) {
+            console.log("Extracting gemini text......")
         }
         //var totalResults = [resultsC,resultsG];
         
@@ -128,7 +140,6 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
 
 
 function findModel(log: string,pattern : RegExp,splitString : string): [number[], number[]] {
-    
     var match = log.match(pattern); //matches the claude regex to the log file
     var timeIndex:number = 0; 
     console.log("matches:"+match);
@@ -174,3 +185,9 @@ function findModel(log: string,pattern : RegExp,splitString : string): [number[]
 
     return [[0], [-1]];
     }
+
+
+function findOutputText(){
+
+
+}
