@@ -358,7 +358,9 @@ backgroundColor(c) {
 
                 //budget prgess bar update logic
                 // calculate total session emissions by summing the array
-                const totalEmissions = message.modelEmissions.reduce((sum, current) => sum + current, 0);
+                const totalEmissions = message.totalRepoEmissions !== undefined
+                    ? message.totalRepoEmissions
+                    : message.modelEmissions.reduce((sum, current) => sum + current, 0);
 
                 // Hardcoding a budget limit for testing  
 

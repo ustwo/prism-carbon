@@ -112,9 +112,12 @@ export class CarbonDashboardPanel {
     }
 
     private _sendData() {
+
+        
         // Aggregate emissions by model from stored calls
         const sessionBudget = require('./extension').wrappedGetBudget();
         const allCalls = require('./extension').wrappedGetCall();
+        const totalRepoEmissions = allCalls.reduce((sum: number, call: any) => sum + call.Emissions, 0);
 
         // Filter calls based on the selected branch for the dashboard widgets
         const calls = this._selectedBranches === null
@@ -184,7 +187,9 @@ export class CarbonDashboardPanel {
             modelEmissions,
             heatMapData,
             sessionBudget,
-            averageEmission // this is the average emission value calculated from all calls, sent to the frontend to be displayed on the dashboard
+            averageEmission, // this is the average emission value calculated from all calls, sent to the frontend to be displayed on the dashboard
+            totalRepoEmissions // this is the total emissions from all calls, sent to the frontend to be displayed on the dashboard
+        
         });
 
         const branchMap: Record<string, any[]> = {};
