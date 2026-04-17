@@ -21,6 +21,15 @@ const GPTPattern =/(?<= gpt-5.*\| \d+ms \| \[.*\]\s*\d*-\d*-\d* \d*:\d*:\d*.\d* 
 //should continue = false is the line in the log files for when a call is done
 //this collects all the tokens from GPT models past 5 and the timestamp 
 
+//gets Gemini's internal reasoning text
+const geminiReasoningPattern = /(?<=(reasoning_text":"))(.*)(?=}})/g;
+
+//gets Gemini text output 
+const geminiTextPattern = /(?<=content":")(.*)(?=","role)/g;
+
+//gets Gemini dates
+const geminiDatePattern = /\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*){"finish_reason":"stop")/g;
+
 //gets the tokens used in claude calls
 //this is the same no matter the purpose
 
