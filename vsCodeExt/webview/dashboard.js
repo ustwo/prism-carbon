@@ -85,26 +85,34 @@ const getChartTextColor = () => getComputedStyle(document.body).getPropertyValue
         //heat map color logic that changes 
         //the brighter the color the higher the emissions
 backgroundColor(c) {
-    const value = c.dataset.data[c.dataIndex]?.v || 0;
-    if (value === 0) { return 'rgba(200, 200, 200, 0.05)'; }
+    const dataset = c.dataset.data;
+    const value = dataset[c.dataIndex]?.v || 0;
 
-    //from 0-400 is green
-    if (value <= 400) {
-        const p = value / 400; 
+    if (value === 0) {
+        return 'rgba(200, 200, 200, 0.05)';
+    }
+
+    // compute thresholds dynamically
+    const { p50, p75 } = getPercentileThresholds(dataset);
+
+    // GREEN (bottom 50%)
+    if (value <= p50) {
+        const p = value / p50 || 0;
         const g = Math.round(120 + (p * 135));
         return `rgb(0, ${g}, 0)`;
     }
 
-    //from 400-2000 is yellow
-    if (value <= 2000) {
-        const p = (value - 400) / 1600;
+    // YELLOW (50%–75%)
+    if (value <= p75) {
+        const p = (value - p50) / (p75 - p50 || 1);
         const r = Math.round(180 + (p * 75));
         const g = Math.round(150 + (p * 105));
         return `rgb(${r}, ${g}, 0)`;
     }
 
-    //above 2000 is red with increasing up to 5000 where it caps at rbg(255,0,0)
-    const p = Math.min((value - 2000) / 3000, 1);
+    // RED (top 25%)
+    const max = Math.max(...dataset.map(d => d.v));
+    const p = (value - p75) / (max - p75 || 1);
     const r = Math.round(180 + (p * 75));
     return `rgb(${r}, 0, 0)`;
 },
@@ -187,6 +195,24 @@ backgroundColor(c) {
     border: { display: false }
 }
     };
+
+    function getPercentileThresholds(data) {
+    const values = data
+        .map(d => d.v)
+        .sort((a, b) => a - b);
+
+    if (values.length === 0) {
+        return { p50: 0, p75: 0 };
+    }
+
+    const p50Index = Math.floor(values.length * 0.5);
+    const p75Index = Math.floor(values.length * 0.75);
+
+    return {
+        p50: values[p50Index],
+        p75: values[p75Index]
+    };
+}
 
     // config
     const config = {
