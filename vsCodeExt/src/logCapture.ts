@@ -22,7 +22,7 @@ const GPTPattern =/(?<= gpt-5.*\| \d+ms \| \[.*\]\s*\d*-\d*-\d* \d*:\d*:\d*.\d* 
 //this collects all the tokens from GPT models past 5 and the timestamp 
 
 //gets Gemini's internal reasoning text
-const geminiReasoningPattern = /(?<=(reasoning_text":"))(.*)(?=}})/g;
+const geminiReasoningPattern = /(?<=(reasoning_text":"))(.*)(?="}})/g;
 
 //gets Gemini text output 
 const geminiTextPattern = /(?<=content":")(.*)(?=","role)/g;
@@ -122,7 +122,12 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
         }
 
         if(geminiFlag) {
-            console.log("Extracting gemini text......")
+            console.log("Extracting gemini text......");
+            const outputText = findOutputText(rawLog, geminiTextPattern);
+            const reasoningText = findOutputText(rawLog, geminiReasoningPattern);
+            const time = findOutputText(rawLog, geminiDatePattern);
+            console.log("OUTPUT:\n\n", outputText);
+            console.log("REASONING:\n\n", reasoningText);
         }
         //var totalResults = [resultsC,resultsG];
         
@@ -196,7 +201,17 @@ function findModel(log: string,pattern : RegExp,splitString : string): [number[]
     }
 
 
-function findOutputText(){
-
-
+// gets output and reasoning text for models that do not expose tokens
+function findOutputText(log: string, pattern: RegExp): string{
+    var match = log.match(pattern);
+    
+    console.log(match);
+    var output: string;
+    if (match !== null) {
+        output = match.join('');
+    } else {
+        output = "";
+    }
+    return output;
 }
+
