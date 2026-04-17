@@ -120,14 +120,13 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
         }
 
         if(geminiFlag) {
-            console.log("Extracting gemini text......");
             const enc = geminiser.fromPreTrained();
             const outputText = findOutputText(rawLog, geminiTextPattern);
             const outputTokens = enc.encode(outputText).length;
             console.log("\n\nOUTPUT TOKENS: ", outputTokens);
             const reasoningText = findOutputText(rawLog, geminiReasoningPattern);
             const reasoningTokens = enc.encode(reasoningText).length;
-            console.log("\n\nOUTPUT TOKENS: ", outputTokens);
+            console.log("\n\nREASONING TOKENS: ", reasoningTokens);
             const time = findOutputText(rawLog, geminiDatePattern);
             console.log("OUTPUT:\n\n", outputText);
             console.log("REASONING:\n\n", reasoningText);
@@ -207,8 +206,6 @@ function findModel(log: string,pattern : RegExp,splitString : string): [number[]
 // gets output and reasoning text for models that do not expose tokens
 function findOutputText(log: string, pattern: RegExp): string{
     var match = log.match(pattern);
-    
-    console.log(match);
     var output: string;
     if (match !== null) {
         output = match.join('');
