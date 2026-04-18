@@ -163,7 +163,7 @@
     "test": "vscode-test",
     "release": "vsce package",
     "setup": "npm install && npm run compile"
-    },
+  },
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/exec": "^7.1.0",
@@ -189,6 +189,7 @@
   "dependencies": {
     "@vscode/codicons": "^0.0.44",
     "axios": "^1.13.5",
+    "chart.js": "^4.5.1",
     "http-proxy": "^1.18.1",
     "mocha": "^11.7.5",
     "mockttp": "^4.2.1",

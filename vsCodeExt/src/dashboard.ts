@@ -3,6 +3,10 @@ import * as path from 'path';
 import * as budget from './budget';
 import * as extension from './extension';
 import { domainToASCII } from 'url';
+// import {RadarController,
+// LineElement,
+// PointElement} from 'chart.js';
+
 
 
 // created interface for comparison data to be used in the comparisons 
@@ -15,7 +19,7 @@ interface comparisonData {
         hoursOfStreaming: number;
         flightDistance: number;
         phoneCharges: number;
-        treeYearlyAbsorbtion: number;
+        treeYearlyAbsorption: number;
     }
 
 
@@ -131,8 +135,8 @@ export class CarbonDashboardPanel {
             hoursOfStreaming: 0,
             flightDistance: 0,
             phoneCharges: totalEmissions/8.187864, // average grams of CO2e per full iphone 17 charge (using 3692mah battery, 2 hour charge time and 40w charger accounting for 15% heat loss)
-            treeYearlyAbsorbtion: totalEmissions/22000 // average grams of CO2 absorbed by a mature oak tree per year (taken as an average across its life)
-    }
+            treeYearlyAbsorption: totalEmissions/22000 // average grams of CO2 absorbed by a mature oak tree per year (taken as an average across its life)
+        };
     }
 
     private _sendData() {
@@ -180,6 +184,8 @@ export class CarbonDashboardPanel {
             dailyEmissions[subDate] = (dailyEmissions[subDate] || 0) + call.Emissions;
         }
 
+        const conversionData = CarbonDashboardPanel.createComparisons(totalEmissions);
+
 
         const heatMapData = [];
         const endToday = new Date();
@@ -199,6 +205,24 @@ export class CarbonDashboardPanel {
             myDateTime = new Date(myDateTime.setDate(myDateTime.getDate() + 1));
         }
 
+        // radar chart data collection
+        const modelList = Array.from(new Set(allCalls.map((call: any) => call.Model || 'Unknown Model')));
+        const branchList = Array.from(new Set(allCalls.map((call: any) => call.Branch || 'Unknown Branch')));
+        
+        const radarDataSets = branchList.map(branch => {
+            const branchCalls = allCalls.filter((call: any) => (call.Branch || 'Unknown Branch') === branch);
+            const modelEmissionsForBranch = modelList.map(model => {
+                return branchCalls
+                    .filter((call: any) => (call.Model || 'Unknown Model') === model)
+                    .reduce((sum: number, call: any) => sum + call.Emissions, 0);
+            });
+            return {
+                label: branch,
+                data: modelEmissionsForBranch};
+        });    
+        
+
+
         console.log("BACKEND: Sending updateData command.");
         console.log("BACKEND: HeatMap payload length:", heatMapData.length, "Sample:", heatMapData[heatMapData.length - 1]);
 
@@ -208,7 +232,12 @@ export class CarbonDashboardPanel {
             modelEmissions,
             heatMapData,
             sessionBudget,
-            averageEmission // this is the average emission value calculated from all calls, sent to the frontend to be displayed on the dashboard
+            averageEmission, // this is the average emission value calculated from all calls, sent to the frontend to be displayed on the dashboard
+            conversionData,
+            radarData: {
+                labels: modelList,
+                datasets: radarDataSets
+            }
         });
 
         const branchMap: Record<string, any[]> = {};
@@ -315,18 +344,25 @@ export class CarbonDashboardPanel {
 
     <div id="branchGraph" style="width:100%; height:350px;"></div>
 
-    <div class="dashboard-grid">
+    <div class="dashboard-double-grid">
 
 
 
-        <div class="chart-wrapper">
+        <div class="budget-tracker-container">
             <h2>Emissions by model</h2>
-            <div class="chart-container">
+            <div class="grid-item">
                 <canvas id="modelEmissionsChart"></canvas>
             </div>
             <p id="model-empty-msg" style="text-align:center; margin-top:12px;">No calls recorded yet.</p>
         </div>
 
+        <div class = "budget-tracker-container">
+            <h2>Branch Emissions</h2>
+            <div class="grid-item">
+                <canvas id="radarChart"></canvas>
+            </div>
+            <p id="radar-empty-msg" style="text-align:center; margin-top:12px;">No calls recorded yet.</p>
+        </div>
     </div>
 
 
@@ -378,17 +414,16 @@ export class CarbonDashboardPanel {
     </section>
 
 
-    <script src="${scriptUri}"></script>
-    <script src="${graphUri}"></script>
-    <script src="${darkModeUri}"></script>
+    
 
-    <div class="dashboard-grid">
-    <div class="grid-item">
+    <div class="dashboard-triple-grid">
+      <div class="grid-item">
         <div class="phone-element">
         <!-- From Uiverse.io by santhoshsj-dev --> 
-        <div class="loader"></div>
-        </div> 
-    </div>
+          <div class="loader"></div>
+        </div>
+        <p id="phone-empty-msg" style="text-align:center; margin-top:12px;">Equivalent to charging 0 iphone 17s.</p>
+      </div>
 
     <div class="grid-item">
         <div class="car-element"> 
@@ -454,6 +489,7 @@ export class CarbonDashboardPanel {
                 <div class="obstacles"></div>
             </div>
         </div></div>
+        <p id="car-empty-msg" style="text-align:center; margin-top:12px;">Equivalent to 0 miles driven.</p>
     </div>
 
     <div class="grid-item">
@@ -496,9 +532,13 @@ export class CarbonDashboardPanel {
         </div>
         </div>
         </div>
-    </div>
-    </div>
+        <p id="tree-empty-msg" style="text-align:center; margin-top:12px;">Equivalent to the carbon absorption of 0 trees.</p>
 
+    </div>
+    </div>
+    <script src="${scriptUri}"></script>
+    <script src="${graphUri}"></script>
+    <script src="${darkModeUri}"></script>
 </body>
 
 </html>`;

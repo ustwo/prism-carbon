@@ -40,10 +40,10 @@
 
     function isoDayOfWeek(dt) {
         let wd = dt.getDay(); // 0...6 from sunday to saturday
-        wd = (wd + 6) % 7 + 1 // 1...7 starting week monday
+        wd = (wd + 6) % 7 + 1; // 1...7 starting week monday
         return '' + wd;// get parsed
 
-    };
+    }
 
    function generateEmptyData() {
     const today = new Date();
@@ -290,7 +290,6 @@ backgroundColor(c) {
         // Starting at solid neon green (1.0) and fading down to slightly transparent (0.2)
         const alpha = 1 - (i * (0.8 / Math.max(count - 1, 1)));
         colors.push(`rgba(0, 255, 0, ${alpha.toFixed(2)})`);
-
     }
     return colors;
 }
@@ -330,6 +329,105 @@ backgroundColor(c) {
         }
     });
 
+    // radar chart config
+
+    const radarElement = document.getElementById('radarChart');
+    let radarChart;
+    if (radarElement) {
+        radarChart = new Chart(radarElement, {
+            type: 'radar',
+            data: {
+                labels: [],
+                datasets: []},
+            options: {
+                ...commonOptions,
+                scales: {
+                    r: {
+                        ticks: {display: false},
+                        grid: {color: getGridColor()},
+                        pointLabels: {color: getChartTextColor()},
+                        angleLines: {color: getGridColor()}
+                    }
+                },
+                plugins: {
+                    ...commonOptions.plugins,
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                const value = context.raw || 0;
+                                return context.dataset.label + value.toFixed(4) + ' g CO₂e';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // const radarData = {
+    //     baseColour: generateColors(0),
+    //     labels: [],
+    //     datasets: [{
+    //         data: [],
+    //         // backgroundColor: baseColour + '0x51',
+    //         // borderColor: baseColour,
+    //         // pointBackgroundColor: baseColour + '0x51',
+    //         // pointBorderColor: '#fff',
+    //         // pointHoverBackgroundColor: '#fff',
+    //         // pointHoverBorderColor: baseColour + '0x51',
+    //         backgroundColor: 'rgba(255, 99, 132, 0.2)',
+    //         borderColor: 'rgb(255, 99, 132)',
+    //         pointBackgroundColor: 'rgb(255, 99, 132)',
+    //         pointBorderColor: '#fff',
+    //         pointHoverBackgroundColor: '#fff',
+    //         pointHoverBorderColor: 'rgb(255, 99, 132)',
+    //         fill: true,
+    //         // borderColor:'0d0d0d',
+    //         }],
+    //     // datasets: [{
+    //     //     label: 'My First Dataset',
+    //     //     data: [65, 59, 90, 81, 56, 55, 40],
+    //     //     fill: true,
+    //     //     backgroundColor: 'rgba(255, 99, 132, 0.2)',
+    //     //     borderColor: 'rgb(255, 99, 132)',
+    //     //     pointBackgroundColor: 'rgb(255, 99, 132)',
+    //     //     pointBorderColor: '#fff',
+    //     //     pointHoverBackgroundColor: '#fff',
+    //     //     pointHoverBorderColor: 'rgb(255, 99, 132)'
+    //     // }, {
+    //     //     label: 'My Second Dataset',
+    //     //     data: [28, 48, 40, 19, 96, 27, 100],
+    //     //     fill: true,
+    //     //     backgroundColor: 'rgba(54, 162, 235, 0.2)',
+    //     //     borderColor: 'rgb(54, 162, 235)',
+    //     //     pointBackgroundColor: 'rgb(54, 162, 235)',
+    //     //     pointBorderColor: '#fff',
+    //     //     pointHoverBackgroundColor: '#fff',
+    //     //     pointHoverBorderColor: 'rgb(54, 162, 235)'
+    //     // }]
+    // };
+
+
+    // const radarConfig = {
+    //     type: 'radar',
+    //     data: radarData,
+    //     options: {
+    //         elements: {
+    //         line: {
+    //             borderWidth: 3
+    //         }
+    //         }
+    //     },
+    // };
+
+    
+
+    // let newRadarChart;
+    // const renderedRadar = document.getElementById('RadarChart');
+    // if (renderedRadar) {
+    //     newRadarChart = new Chart(renderedRadar, radarConfig);
+    // }
+
 
     window.addEventListener('message', event => {
         const message = event.data;
@@ -339,6 +437,30 @@ backgroundColor(c) {
             if (message.heatMapData && heatChart) {
                 heatChart.data.datasets[0].data = message.heatMapData;
                 heatChart.update();
+            }
+            if (message.radarData && radarChart) {
+                const hasData = message.radarData.labels.length > 0;
+                const emptyMsg = document.getElementById('radar-empty-msg');
+                if (emptyMsg) { emptyMsg.style.display = hasData ? 'none' : 'block'; }
+
+                radarChart.data.labels = message.radarData.labels;
+                message.radarData.datasets.forEach((ds, index) => {
+                    const hue = Math.floor((index * 137.5) % 360);
+                    ds.backgroundColor = `hsl(${hue}, 70%, 50%, 0.2)`;
+                    ds.borderColor = `hsl(${hue}, 70%, 50%)`;
+                    ds.pointBackgroundColor = `hsl(${hue}, 70%, 50%, 0.2)`;
+                    ds.borderWidth = 1.5;
+                });
+                radarChart.data.datasets = message.radarData.datasets;
+                radarChart.update();
+            }
+            if (message.conversionData){
+                const carEmptyMsg = document.getElementById('car-empty-msg');
+                const phoneEmptyMsg = document.getElementById('phone-empty-msg');
+                const treeEmptyMsg = document.getElementById('tree-empty-msg');
+                if (carEmptyMsg) { carEmptyMsg.innerText = message.conversionData.carMiles === 0 ? "Equivalent to 0 miles driven" : `Equivalent to ${message.conversionData.milesDriven.toFixed(2)} miles driven`; }
+                if (phoneEmptyMsg) { phoneEmptyMsg.innerText = message.conversionData.phoneCharges === 0 ? "Equivalent to charging 0 iPhone 17s" : `Equivalent to charging ${message.conversionData.phoneCharges.toFixed(2)} iPhone 17s`; }
+                if (treeEmptyMsg) { treeEmptyMsg.innerText = message.conversionData.treeAbsorption === 0 ? "Equivalent to the carbon absorption of 0 trees" : `Equivalent to the carbon absorption of ${message.conversionData.treeYearlyAbsorption.toFixed(2)} trees`; }
             }
             if (message.modelLabels && message.modelEmissions) {
                 const hasData = message.modelLabels.length > 0;
@@ -351,6 +473,26 @@ backgroundColor(c) {
                 modelEmissionsChart.data.datasets[0].borderColor = '#0d0d0d';
                 modelEmissionsChart.data.datasets[0].borderWidth = 1;
                 modelEmissionsChart.update();
+
+                // // radar updating logic
+                // const dynamicColours = generateColors(message.modelLabels.length);
+                // const fadedDynamicColours = dynamicColours.map(color => color.replace(/[\d.]+\)$/, '0.2)'));                newRadarChart.data.labels = message.modelLabels;
+                // // for (let i = 0; i < message.modelLabels.length; i++) {
+                // newRadarChart.data.datasets[0].data = message.modelEmissions;
+                // radarConfig.baseColour = dynamicColours;
+
+                // newRadarChart.data.datasets[0].backgroundColor = fadedDynamicColours;
+                // newRadarChart.data.datasets[0].borderColor = dynamicColours;
+                // newRadarChart.data.datasets[0].pointBackgroundColor = fadedDynamicColours;
+                // newRadarChart.data.datasets[0].pointHoverBorderColor = fadedDynamicColours;
+                // // newRadarChart.data.datasets[0].backgroundColor = 'rgba(50, 205, 50, 0.2)'; // Adding transparency to the base color
+                // // newRadarChart.data.datasets[0].borderColor = 'rgba(50, 205, 50, 1)';
+                // // newRadarChart.data.datasets[0].pointBackgroundColor = 'rgba(50, 205, 50, 0.2)';
+                // // newRadarChart.data.datasets[0].pointHoverBorderColor = 'rgba(50, 205, 50, 0.2)';
+                
+                // newRadarChart.update();
+            // }
+
 
                 //budget prgess bar update logic
                 // calculate total session emissions by summing the array
@@ -402,5 +544,31 @@ backgroundColor(c) {
             }
         }
     });
+
+    const observer = new ResizeObserver(entries => {
+        for (let entry of entries) {
+            const parent = entry.target;
+            const currentWidth = entry.contentRect.width;
+            const safeSpace = currentWidth * 0.85;
+
+            const car = parent.querySelector('.car-element');
+            if (car) { 
+                car.style.transform = `scale(${safeSpace / 450})`; 
+            }
+
+            const tree = parent.querySelector('.tree-element');
+            if (tree) { 
+                tree.style.transform = `scale(${safeSpace / 450})`; 
+            }
+
+            const phone = parent.querySelector('.phone-element');
+            if (phone) { 
+                phone.style.transform = `scale(${safeSpace / 400})`; 
+            }
+        }
+    });
+
+    const gridItems = document.querySelectorAll('.grid-item');
+    gridItems.forEach(item => observer.observe(item));
     vscode.postMessage({ command: 'frontEndReady' });
 })();

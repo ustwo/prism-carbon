@@ -100,12 +100,13 @@ export async function activate(context: vscode.ExtensionContext) {
     const reset = vscode.commands.registerCommand('ecode.clearStore', () => {
         budg.resetBudget();
         treeDataProvider.clearTree();
-        barManager.updateLimit(0);
+        barManager.updateBar(0);
+        // barManager.constructor();
+
         //vscode.window.showInformationMessage('Past calls cleared.');
         // state.runningInterceptor = true;
 
         CarbonDashboardPanel.sendData();
-
     });
 
     // }));
@@ -402,7 +403,7 @@ class statusBarManager {
 
     updateLimit(input: number) {
         this.mainItem.text = 'Last Request: 0 g CO₂e';
-        this.newColour = "statusBarItem.activeBackground";
+        this.newColour = "statusBarItem.background";
     }
     //this method updates the status bar item with the carbon emissions of the latest request and changes its colour based on predefined thresholds to provide real-time feedback on the environmental impact of development activities
     updateBar(input: number) { 

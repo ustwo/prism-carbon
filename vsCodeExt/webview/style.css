@@ -109,7 +109,7 @@ p{
             min-width: 300px;
             max-width: 500px;
             }
-            .dashboard-grid{
+            .dashboard-triple-grid{
             display: flex;
             flex-wrap:wrap;
             justify-content: space-around;
@@ -235,33 +235,40 @@ header .chartBox {
     color: var(--secondary-text);
 }
 
-.dashboard-grid {
+.dashboard-triple-grid {
   display: grid;
-  /* This creates 3 columns of exactly equal width */
   grid-template-columns: repeat(3, 1fr); 
-  
-  /* Adds a 20px space between your 3 elements */
   gap: 20px; 
-  
-  width: 100%; /* Take up full width of the dashboard */
-  min-height: 400px; /* Give it enough height to fit your car */
-
-  /* Centers the items nicely inside their respective grid cells */
+  width: 100%;
+  min-height: 400px;
   align-items: center; 
   justify-items: center; 
 }
 
-/* Optional: Make sure the children don't overflow */
+.dashboard-double-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 20px; 
+  width: 100%;
+  min-height: 400px;
+  align-items: center; 
+  justify-items: center; 
+}
+
 .grid-item {
   width: 100%;
   aspect-ratio: 1/1;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   background-color: var(--base-color);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
   border-radius: 12px;
   align-items: center;
   z-index: 200;
+  flex-direction: column;
+  overflow:hidden;
+  container-type: inline-size;
+  position: relative;
 }
 .container {
   width: 100%;
@@ -1316,7 +1323,7 @@ header .chartBox {
   width: 92px;
   height: 180px;
   border-radius: 8px;
-  transform: translateY(-30px);
+  transform: translateY(-10px);
   background-color: #09631b;
   background-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 0%,rgba(0,0,0,1) 4%,rgba(81,81,81,1) 14%,rgba(44,44,44,1) 26%,rgba(2,2,2,1) 53%,rgba(2,2,2,1) 65%,rgba(2,2,2,0) 66%),
     linear-gradient(#111, #111);
@@ -1389,7 +1396,6 @@ header .chartBox {
       linear-gradient(#DDD, #DDD);
   }
 }
-
 @keyframes plugin {
   0% , 25% {
     top: 190px;
@@ -1400,4 +1406,44 @@ header .chartBox {
     background-position: center 0 , center top, center 5px;
     top: 180px;
   }
+}
+
+.phone-element, .car-element, .tree-element {
+  position: absolute;
+/*   top: 0%;
+  left: 0%; */
+  transform-origin: center center;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+/*   position: relative; */
+  margin-bottom: 10px;
+}
+
+.car-element {
+  width: 450px;
+  height: 380px;
+  /* transform: scale(0.8); */
+  /* transform: translate(-50%, -50%); */
+}
+
+.tree-element {
+  width: 250px;
+  height: 450px;
+  /* transform: scale(1.35);
+  margin-top: -40px;
+  transform-origin: center center; */
+  /* transform: translate(-50%, -50%); */
+
+}
+
+.phone-element {
+  width: 200px;
+  height: 300px;
+  /* transform: translate(-50%, -50%); */
+/*   transform: translate(-50%, -50%) scale(calc(100cqi / 200)); */
+  /* transform: scale(calc(100cqi / 200));
+  transform-origin: center center; */
 }
