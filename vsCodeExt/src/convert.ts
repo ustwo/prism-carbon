@@ -43,38 +43,40 @@ export function setCalculationData(vscode: any): void {
 const veryLarge = Number.MAX_SAFE_INTEGER;
 
 
-// energy values used are in kwh per token based on the tool from the paper 
+// energy values used are in wh per token based on the tool from the paper 
 // "How Hungry is AI? Benchmarking Energy, Water, and Carbon Footprint of LLM Inference" by Jegham et al. 2025
 
 //https://app.powerbi.com/view?r=eyJrIjoiZjVmOTI0MmMtY2U2Mi00ZTE2LTk2MGYtY2ZjNDMzODZkMjlmIiwidCI6IjQyNmQyYThkLTljY2QtNDI1NS04OTNkLTA2ODZhMzJjMTY4ZCIsImMiOjF9
 
 export const modelRegistry: Record<string, TieredModel> = {
-    "o3-pro": new TieredModel("OpenAI o3 Pro", [{limit: 2000, energyPerToken: 32.36/2000}, { limit: 11500, energyPerToken: 36.08/11500 }]),
-    "o3": new TieredModel("OpenAI o3", [{limit: 2000, energyPerToken: 4.32/2000}, { limit: 11500, energyPerToken: 5.73/11500 }]),
     "o4-mini-high": new TieredModel("OpenAI o4-mini (high)", [{limit: 2000, energyPerToken: 6.13/2000}, { limit: 11500, energyPerToken: 5.66/11500 }]),
-
-
-    "gpt-5-high": new TieredModel("OpenAI GPT 5 (high)", [{limit: 2000, energyPerToken: 22.16/2000}, { limit: 11500, energyPerToken: 21.83/11500 }]),
-    "gpt-5-medium": new TieredModel("OpenAI GPT 5 (medium)", [{limit: 2000, energyPerToken: 11.89/2000}, { limit: 11500, energyPerToken: 10.59/11500 }]),
-    "gpt-5-low": new TieredModel("OpenAI GPT 5 (low)", [{limit: 2000, energyPerToken: 5.01/2000}, { limit: 11500, energyPerToken: 6.47/11500 }]),
-
-    "gpt-4-turbo": new TieredModel("OpenAI GPT 4 turbo", [{limit: 2000, energyPerToken: 7.01/2000}, { limit: 11500, energyPerToken: 10.93/11500 }]),
-    "gpt-4.1": new TieredModel("OpenAI GPT 4.1", [{limit: 2000, energyPerToken: 1.85/2000}, { limit: 11500, energyPerToken: 2.94/11500 }]),
-
-    "gpt-4o-mini": new TieredModel("OpenAI GPT 4o mini", [{limit: 2000, energyPerToken: 1.65/2000}, { limit: 11500, energyPerToken: 3.85/11500 }]),
-    "o3-mini-high": new TieredModel("OpenAI o3 Mini High", [{ limit: 2000, energyPerToken: 5.04/2000 }, { limit: 11500, energyPerToken: 8.47/11500 }]),
+    "o3-pro": new TieredModel("OpenAI o3 Pro", [{limit: 2000, energyPerToken: 32.36/2000}, { limit: 11500, energyPerToken: 36.08/11500 }]),
+    "o3-mini-high": new TieredModel("OpenAI o3 Mini (high)", [{ limit: 2000, energyPerToken: 5.04/2000 }, { limit: 11500, energyPerToken: 8.47/11500 }]),
     "o3-mini": new TieredModel("OpenAI o3 Mini", [{ limit: 2000, energyPerToken: 1.72/2000 }, { limit: 11500, energyPerToken: 2.7/11500 }]),
+    "o3": new TieredModel("OpenAI o3", [{limit: 2000, energyPerToken: 4.32/2000}, { limit: 11500, energyPerToken: 5.73/11500 }]),
     "o1": new TieredModel("OpenAI o1", [{ limit: 2000, energyPerToken: 6.44/2000 }, { limit: 11500, energyPerToken: 15.31/11500 }]),
-    "gpt-5-mini-high": new TieredModel("GPT5 Mini High", [{ limit: 2000, energyPerToken: 14.86/2000 }, { limit: 11500, energyPerToken: 13.37/11500 }]),
-    "gpt-5-nano-high": new TieredModel("GPT5 Nano High", [{ limit: 2000, energyPerToken: 6.65/2000 }, { limit: 11500, energyPerToken: 6.45/11500 }]),
-    "gpt-5-nano-medium": new TieredModel("GPT5 Nano Medium", [{ limit: 2000, energyPerToken: 3.87/2000 }, { limit: 11500, energyPerToken: 3.14/11500 }]),
-    "gpt-5-nano-minimal": new TieredModel("GPT5 Nano Minimal", [{ limit: 2000, energyPerToken: 0.5/2000 }, { limit: 11500, energyPerToken: 0.65/11500 }]),
-    "gpt-5-minimal": new TieredModel("GPT5 Minimal", [{ limit: 2000, energyPerToken: 3.00/2000 }, { limit: 11500, energyPerToken: 4.72/11500 }]),
-    "gpt-5-mini-medium": new TieredModel("GPT5 Mini Medium", [{ limit: 2000, energyPerToken: 4.3/2000 }, { limit: 11500, energyPerToken: 3.52/11500 }]),
+
+
+    "gpt-5-high": new TieredModel("GPT5 (high)", [{limit: 2000, energyPerToken: 22.16/2000}, { limit: 11500, energyPerToken: 21.83/11500 }]),
+    "gpt-5-medium": new TieredModel("GPT5 (medium)", [{limit: 2000, energyPerToken: 11.89/2000}, { limit: 11500, energyPerToken: 10.59/11500 }]),
+    "gpt-5-low": new TieredModel("GPT5 (low)", [{limit: 2000, energyPerToken: 5.01/2000}, { limit: 11500, energyPerToken: 6.47/11500 }]),
+    "gpt-5": new TieredModel("GPT5 (medium)", [{limit: 2000, energyPerToken: 11.89/2000}, { limit: 11500, energyPerToken: 10.59/11500 }]),
+
+
+    "gpt-5-mini-high": new TieredModel("GPT5 Mini (high)", [{ limit: 2000, energyPerToken: 14.86/2000 }, { limit: 11500, energyPerToken: 13.37/11500 }]),
+    "gpt-5-mini-medium": new TieredModel("GPT5 Mini (medium)", [{ limit: 2000, energyPerToken: 4.3/2000 }, { limit: 11500, energyPerToken: 3.52/11500 }]),
+    "gpt-5-nano-high": new TieredModel("GPT5 Nano (high)", [{ limit: 2000, energyPerToken: 6.65/2000 }, { limit: 11500, energyPerToken: 6.45/11500 }]),
+    "gpt-5-nano-medium": new TieredModel("GPT5 Nano (medium)", [{ limit: 2000, energyPerToken: 3.87/2000 }, { limit: 11500, energyPerToken: 3.14/11500 }]),
+    "gpt-5-nano-minimal": new TieredModel("GPT5 Nano (minimal)", [{ limit: 2000, energyPerToken: 0.5/2000 }, { limit: 11500, energyPerToken: 0.65/11500 }]),
+    "gpt-5-minimal": new TieredModel("GPT5 (minimal)", [{ limit: 2000, energyPerToken: 3.00/2000 }, { limit: 11500, energyPerToken: 4.72/11500 }]),
+    
+
+    "gpt-4-turbo": new TieredModel("GPT4 Turbo", [{limit: 2000, energyPerToken: 7.01/2000}, { limit: 11500, energyPerToken: 10.93/11500 }]),
+    "gpt-4.1-nano": new TieredModel("GPT4.1 Nano", [{ limit: 2000, energyPerToken: 0.36/2000 }, { limit: 11500, energyPerToken: 0.57/11500 }]),
+    "gpt-4.1": new TieredModel("GPT4.1", [{limit: 2000, energyPerToken: 1.85/2000}, { limit: 11500, energyPerToken: 2.94/11500 }]),
     "gpt-4o-2024-11": new TieredModel("GPT4o November", [{ limit: 2000, energyPerToken: 1.33/2000 }, { limit: 11500, energyPerToken: 2.74/11500 }]),
     "gpt-4o-2024-08": new TieredModel("GPT4o August", [{ limit: 2000, energyPerToken: 1.63/2000 }, { limit: 11500, energyPerToken: 2.24/11500 }]),
-    "gpt-4.1-nano": new TieredModel("GPT4.1 Nano", [{ limit: 2000, energyPerToken: 0.36/2000 }, { limit: 11500, energyPerToken: 0.57/11500 }]),
-
+    "gpt-4o-mini": new TieredModel("GPT4o mini", [{limit: 2000, energyPerToken: 1.65/2000}, { limit: 11500, energyPerToken: 3.85/11500 }])
     
     
     // OLD DATA FROM BEFORE - IMPLEMENT NEW TIERS ABOVE
