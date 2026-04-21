@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import * as budget from './budget';
 import * as vscode from 'vscode';
 import * as convert from './convert';
-import * as tiktoken from '@dqbd/tiktoken';
+import * as tiktoken from 'tiktoken';
 import * as geminiser from '@lenml/tokenizer-gemini';
 import { getPreEmitDiagnostics } from 'typescript';
 
@@ -32,7 +32,10 @@ const geminiTextPattern = /(?<=content":")(.*)(?=","role)/g;
 //gets Gemini dates
 const geminiDatePattern = /\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*){"finish_reason":"stop")/g;
 
+//gets older GPT dates
 const gptDatePattern = /\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)success)/g;
+
+//gets older GPT text
 const gptTextPattern = /(?<=\[trace\] choice {"delta":{"content":")[^"]+/g;
 
 //gets the tokens used in claude calls
@@ -70,23 +73,19 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
                     console.log("claude-haiku-4.5 found");
                     claudes.push(model);
                     claudeFlag = true;
-                    break;
-                    
+                    break;              
                 case 'claude-opus-4.5':
                     claudes.push(model);
                     claudeFlag = true;
                     break;
-
                 case 'claude-opus-4.6':
                     claudes.push(model);
                     claudeFlag = true;
                     break;
-
                 case 'claude-sonnet-4':
                     claudes.push(model);
                     claudeFlag = true;
                     break;
-
                 case 'claude-sonnet-4.5':
                     claudes.push(model);
                     claudeFlag = true;

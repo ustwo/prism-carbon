@@ -168,7 +168,6 @@
     "vscode": "^1.1.34"
   },
   "dependencies": {
-    "@dqbd/tiktoken": "^1.0.22",
     "@lenml/tokenizer-gemini": "^3.7.2",
     "@vscode/codicons": "^0.0.44",
     "http-proxy": "^1.18.1",
