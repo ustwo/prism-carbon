@@ -50,7 +50,23 @@ const veryLarge = Number.MAX_SAFE_INTEGER;
 
 export const modelRegistry: Record<string, TieredModel> = {
     "o3-pro": new TieredModel("OpenAI o3 Pro", [{limit: 2000, energyPerToken: 32.36/2000}, { limit: 11500, energyPerToken: 36.08/11500 }]),
-    "": new TieredModel("", [{ limit: 2000, energyPerToken: 0 }, { limit: 11500, energyPerToken: 0 }]), // generic model for testing and fallback
+    "o3-mini-high": new TieredModel("OpenAI o3 Mini High", [{ limit: 2000, energyPerToken: 5.04/2000 }, { limit: 11500, energyPerToken: 8.47/11500 }]),
+    "o3-mini": new TieredModel("OpenAI o3 Mini", [{ limit: 2000, energyPerToken: 1.72/2000 }, { limit: 11500, energyPerToken: 2.7/11500 }]),
+    "o1": new TieredModel("OpenAI o1", [{ limit: 2000, energyPerToken: 6.44/2000 }, { limit: 11500, energyPerToken: 15.31/11500 }]),
+    "gpt-5-mini-high": new TieredModel("GPT5 Mini High", [{ limit: 2000, energyPerToken: 14.86/2000 }, { limit: 11500, energyPerToken: 13.37/11500 }]),
+    "gpt-5-medium": new TieredModel("GPT5 Medium", [{ limit: 2000, energyPerToken: 11.89/2000 }, { limit: 11500, energyPerToken: 13.32/11500 }]),
+    "gpt-5-nano-high": new TieredModel("GPT5 Nano High", [{ limit: 2000, energyPerToken: 6.65/2000 }, { limit: 11500, energyPerToken: 6.45/11500 }]),
+    "gpt-5-nano-medium": new TieredModel("GPT5 Nano Medium", [{ limit: 2000, energyPerToken: 3.87/2000 }, { limit: 11500, energyPerToken: 3.14/11500 }]),
+    "gpt-5-nano-minimal": new TieredModel("GPT5 Nano Minimal", [{ limit: 2000, energyPerToken: 0.5/2000 }, { limit: 11500, energyPerToken: 0.65/11500 }]),
+    "gpt-5-minimal": new TieredModel("GPT5 Minimal", [{ limit: 2000, energyPerToken: 3.00/2000 }, { limit: 11500, energyPerToken: 4.72/11500 }]),
+    "gpt-5-mini-medium": new TieredModel("GPT5 Mini Medium", [{ limit: 2000, energyPerToken: 4.3/2000 }, { limit: 11500, energyPerToken: 3.52/11500 }]),
+    "gpt-4o-2024-11": new TieredModel("GPT4o November", [{ limit: 2000, energyPerToken: 1.33/2000 }, { limit: 11500, energyPerToken: 2.74/11500 }]),
+    "gpt-4o-2024-08": new TieredModel("GPT4o August", [{ limit: 2000, energyPerToken: 1.63/2000 }, { limit: 11500, energyPerToken: 2.24/11500 }]),
+    "gpt-4.1-nano": new TieredModel("GPT4.1 Nano", [{ limit: 2000, energyPerToken: 0.36/2000 }, { limit: 11500, energyPerToken: 0.57/11500 }]),
+
+
+    "": new TieredModel("", [{ limit: 2000, energyPerToken: /2000 }, { limit: 11500, energyPerToken: /11500 }]),
+
     
     
     // OLD DATA FROM BEFORE - IMPLEMENT NEW TIERS ABOVE
