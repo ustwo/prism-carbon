@@ -54,21 +54,18 @@ export const modelRegistry: Record<string, TieredModel> = {
     "o4-mini-high": new TieredModel("OpenAI o4-mini (high)", [{limit: 2000, energyPerToken: 6.13/2000}, { limit: 11500, energyPerToken: 5.66/11500 }]),
 
 
-    "GPT-5-high": new TieredModel("OpenAI GPT 5 (high)", [{limit: 2000, energyPerToken: 22.16/2000}, { limit: 11500, energyPerToken: 21.83/11500 }]),
-    "GPT-5-medium": new TieredModel("OpenAI GPT 5 (medium)", [{limit: 2000, energyPerToken: 11.89/2000}, { limit: 11500, energyPerToken: 10.59/11500 }]),
-    "GPT-5-low": new TieredModel("OpenAI GPT 5 (low)", [{limit: 2000, energyPerToken: 5.01/2000}, { limit: 11500, energyPerToken: 6.47/11500 }]),
-    "GPT-5-minimal": new TieredModel("OpenAI GPT 5 (minimal)", [{limit: 2000, energyPerToken: 3.00/2000}, { limit: 11500, energyPerToken: 10.59/11500 }]),
+    "gpt-5-high": new TieredModel("OpenAI GPT 5 (high)", [{limit: 2000, energyPerToken: 22.16/2000}, { limit: 11500, energyPerToken: 21.83/11500 }]),
+    "gpt-5-medium": new TieredModel("OpenAI GPT 5 (medium)", [{limit: 2000, energyPerToken: 11.89/2000}, { limit: 11500, energyPerToken: 10.59/11500 }]),
+    "gpt-5-low": new TieredModel("OpenAI GPT 5 (low)", [{limit: 2000, energyPerToken: 5.01/2000}, { limit: 11500, energyPerToken: 6.47/11500 }]),
 
-    "GPT-5-nano-high": new TieredModel("OpenAI GPT 5 nano (high)", [{limit: 2000, energyPerToken: 6.65/2000}, { limit: 11500, energyPerToken: 6.45/11500 }]),
-    "GPT-4-turbo": new TieredModel("OpenAI GPT 4 turbo", [{limit: 2000, energyPerToken: 7.01/2000}, { limit: 11500, energyPerToken: 10.93/11500 }]),
-    "GPT-4.1": new TieredModel("OpenAI GPT 4.1", [{limit: 2000, energyPerToken: 1.85/2000}, { limit: 11500, energyPerToken: 2.94/11500 }]),
+    "gpt-4-turbo": new TieredModel("OpenAI GPT 4 turbo", [{limit: 2000, energyPerToken: 7.01/2000}, { limit: 11500, energyPerToken: 10.93/11500 }]),
+    "gpt-4.1": new TieredModel("OpenAI GPT 4.1", [{limit: 2000, energyPerToken: 1.85/2000}, { limit: 11500, energyPerToken: 2.94/11500 }]),
 
-    "GPT-4o-mini": new TieredModel("OpenAI GPT 4o mini", [{limit: 2000, energyPerToken: 1.65/2000}, { limit: 11500, energyPerToken: 3.85/11500 }]),
+    "gpt-4o-mini": new TieredModel("OpenAI GPT 4o mini", [{limit: 2000, energyPerToken: 1.65/2000}, { limit: 11500, energyPerToken: 3.85/11500 }]),
     "o3-mini-high": new TieredModel("OpenAI o3 Mini High", [{ limit: 2000, energyPerToken: 5.04/2000 }, { limit: 11500, energyPerToken: 8.47/11500 }]),
     "o3-mini": new TieredModel("OpenAI o3 Mini", [{ limit: 2000, energyPerToken: 1.72/2000 }, { limit: 11500, energyPerToken: 2.7/11500 }]),
     "o1": new TieredModel("OpenAI o1", [{ limit: 2000, energyPerToken: 6.44/2000 }, { limit: 11500, energyPerToken: 15.31/11500 }]),
     "gpt-5-mini-high": new TieredModel("GPT5 Mini High", [{ limit: 2000, energyPerToken: 14.86/2000 }, { limit: 11500, energyPerToken: 13.37/11500 }]),
-    "gpt-5-medium": new TieredModel("GPT5 Medium", [{ limit: 2000, energyPerToken: 11.89/2000 }, { limit: 11500, energyPerToken: 13.32/11500 }]),
     "gpt-5-nano-high": new TieredModel("GPT5 Nano High", [{ limit: 2000, energyPerToken: 6.65/2000 }, { limit: 11500, energyPerToken: 6.45/11500 }]),
     "gpt-5-nano-medium": new TieredModel("GPT5 Nano Medium", [{ limit: 2000, energyPerToken: 3.87/2000 }, { limit: 11500, energyPerToken: 3.14/11500 }]),
     "gpt-5-nano-minimal": new TieredModel("GPT5 Nano Minimal", [{ limit: 2000, energyPerToken: 0.5/2000 }, { limit: 11500, energyPerToken: 0.65/11500 }]),
