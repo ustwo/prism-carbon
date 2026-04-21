@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as budget from './budget';
 import * as extension from './extension';
 import { domainToASCII } from 'url';
+import { all } from 'axios';
 
 
 
@@ -11,8 +12,12 @@ export class CarbonDashboardPanel {
     private readonly _panel: vscode.WebviewPanel;
     private _disposables: vscode.Disposable[] = [];
     private readonly _extensionUri: vscode.Uri;
-    // 4. CHANGE THIS:
+    
     private _selectedBranches: string[] | null = null;
+    // state variables to hold the selected date range as timestamps
+
+    private _startDate: number | null = null;
+    private _endDate: number | null = null;
 
 
     private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
@@ -51,18 +56,12 @@ export class CarbonDashboardPanel {
                     case 'frontEndReady':
                         this._sendData();
                         return;
-                    case 'triggerReset':
-                        vscode.window.showWarningMessage(
-                            "Are you sure you want to reset your session budget and calls? This will shift the analysis start point to now. This cannot be undone.",
-                            {modal: true},
-                            "Yes, Reset"
-                        ).then(selection =>{
-                            if (selection === "Yes, Reset") {
-                                vscode.commands.executeCommand('ecode.clearStore');
-                            }
-    
-                        });
-    
+                   
+                    case 'setDateRange':
+                        // Captures the dates sent from the frontend and trigger a UI refresh
+                        this._startDate = message.startDate;
+                        this._endDate = message.endDate;
+                        this._sendData(); 
                         return;
                     case 'setBudget':
                         vscode.window.showInputBox({
@@ -126,21 +125,29 @@ export class CarbonDashboardPanel {
         // Aggregate emissions by model from stored calls
         const sessionBudget = require('./extension').wrappedGetBudget();
         const allCalls = require('./extension').wrappedGetCall();
-        const budgetWindowStart = require('./extension').wrappedGetBudgetWindowStart();
+        
+
+        const calls = allCalls.filter((c: any) => {
+            if (this._selectedBranches !== null && !this._selectedBranches.includes(c.Branch || "Unknown Branch")) {
+                return false; // Skip calls that are not in the selected branches
+            }   
+
 
         // Filter calls based on the selected branch for the dashboard widgets
-        const calls = this._selectedBranches === null
+        const call = this._selectedBranches === null
             ? allCalls
             : allCalls.filter((c: any) => this._selectedBranches!.includes(c.Branch || "Unknown Branch"));
 
 
-        // windowed calls is only those after the budget window start
-        // Used for budget progress bar so it tracks from the reset point.
-        const windowedCalls = allCalls.filter((c: any) => {
-            const callTime = new Date(c.DateTime).getTime();
-            return callTime >= budgetWindowStart;
+        // Check Date Range
+        const callTime = new Date(c.DateTime).getTime();
+        if (this._startDate !== null && callTime < this._startDate) return false;
+        if (this._endDate !== null && callTime > this._endDate) return false;
+        
+        return true;
         });
-        const totalRepoEmissions = windowedCalls.reduce(
+
+        const totalRepoEmissions = calls.reduce(
             (sum: number, call: any) => sum + call.Emissions, 0
         );
         
@@ -159,7 +166,7 @@ export class CarbonDashboardPanel {
         const modelEmissions = modelLabels.map(k => modelMap[k]);
 
         const dailyEmissions: Record<string, number> = {};
-        for (const call of calls) {
+        for (const call of allCalls) {
             let subDate = "";
 
             let callDate = new Date(call.DateTime);
@@ -338,11 +345,17 @@ export class CarbonDashboardPanel {
                         <span id="session-percent-used" class="budget-percent">0% used</span>
                         <span id="session-text-right" class="budget-detail">0g / 0g</span>
                     </div>
-                    <div class="budget-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; margin-top: 15px;">
-                        <button id="set-budget-btn" style="padding: 5px 10px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 10px;">Set Budget</button>
-                        <button id="reset-btn" style="padding: 5px 10px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Reset</button>
+                    <div class="budget-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; margin-top: 15px; flex-wrap: wrap; gap: 10px;">
+                        <button id="set-budget-btn" style="padding: 5px 10px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Set Budget</button>
+                        
+                        <div style="display: flex; gap: 10px; align-items: center; font-size: 0.9rem;">
+                            <label for="start-date" style="color: var(--text-color);">Start:</label>
+                            <input type="date" id="start-date" style="padding: 4px; border-radius: 4px; border: 1px solid var(--secondary-text); background: var(--base-variant); color: var(--text-color);">
+                            
+                            <label for="end-date" style="color: var(--text-color);">End:</label>
+                            <input type="date" id="end-date" style="padding: 4px; border-radius: 4px; border: 1px solid var(--secondary-text); background: var(--base-variant); color: var(--text-color);">
+                        </div>
                     </div>
-                </div>
 
                 <div class="budget-tracker-container">
                     <div class="budget-header">
