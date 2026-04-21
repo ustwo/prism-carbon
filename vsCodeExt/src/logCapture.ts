@@ -35,9 +35,9 @@ const geminiDatePattern = /\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*){"finish_reason":"s
 //gets the tokens used in claude calls
 //this is the same no matter the purpose
 
-export function getLogFilePath(context: vscode.ExtensionContext) {
-    return context.logUri.fsPath;
-} // function to get log file location
+export function getLogFilePath(context: vscode.ExtensionContext) { // function to get log file location
+    return context.logPath;
+} 
 
 export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
     var matches: budget.Call[] = [];

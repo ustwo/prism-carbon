@@ -479,17 +479,28 @@ export async function getLogs(context: vscode.ExtensionContext) {
 
         // reads file and outputs lines to console one at a time
         const content = fs.readFileSync(logUri, 'utf-8');
-        const lDate = new Date(lastAccess);
+        var lDate:string[] = (new Date(lastAccess).toLocaleString('us-GB', { 
+                        hour12: false
+                    })).split(",");
+        
 
-        const regex: RegExp = new RegExp(lDate.toLocaleString());
-        const splitting = content.split(regex);
-        var input: string = content;
-
+        var dateSec = new Date(lastAccess).toISOString().slice(0, 10).split('/').join('-'); //formats the date in accordance to the log files
+        var timeSplit = dateSec+lDate[1];
+        const regex: RegExp = new RegExp(timeSplit);
+        const splitting:string[] = content.split(regex);//splits the time stamp
+        var input: string;
+        if (splitting.length < 2){//uses the entire log file if nothing can be found the timestamp
+            input= content;
+        }
+        else{
+            input = splitting[splitting.length-1];//incase multiple lines of the log file are at the same second look past the last one
+        }
+        
         const models: budget.Call[] = await logCap.identifyModel(input);
         const sortedModels = models.sort((a: budget.Call, b: budget.Call) => {
             return a.DateTime - b.DateTime;
         });
-        console.log("CALLS: ", sortedModels);
+
         for (let index = 0; index < sortedModels.length; index++) {
             if (sortedModels[index].DateTime > lastAccess) {
                 console.log("updating tree");
@@ -498,9 +509,9 @@ export async function getLogs(context: vscode.ExtensionContext) {
             }
         }
 
-        if (sortedModels.length !== 0) {lastAccess = sortedModels[sortedModels.length-1].DateTime}
+        if (sortedModels.length !== 0) {lastAccess = sortedModels[sortedModels.length-1].DateTime;}
 
-        //vscode.window.showInformationMessage("Copilot log files refreshed.");
+        
     }
     catch (error) {
         console.log(error);
