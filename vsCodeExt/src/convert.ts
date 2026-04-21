@@ -50,7 +50,7 @@ const veryLarge = Number.MAX_SAFE_INTEGER;
 
 export const modelRegistry: Record<string, TieredModel> = {
     "o3-pro": new TieredModel("OpenAI o3 Pro", [{limit: 2000, energyPerToken: 32.36/2000}, { limit: 11500, energyPerToken: 36.08/11500 }]),
-    
+    "": new TieredModel("", [{ limit: 2000, energyPerToken: 0 }, { limit: 11500, energyPerToken: 0 }]), // generic model for testing and fallback
     
     
     // OLD DATA FROM BEFORE - IMPLEMENT NEW TIERS ABOVE
