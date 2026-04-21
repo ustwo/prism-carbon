@@ -168,11 +168,11 @@
     "vscode": "^1.1.37"
   },
   "dependencies": {
+    "@dqbd/tiktoken": "^1.0.22",
+    "@lenml/tokenizer-gemini": "^3.7.2",
     "@vscode/codicons": "^0.0.44",
-    "axios": "^1.13.5",
     "http-proxy": "^1.18.1",
     "mocha": "^11.7.5",
-    "mockttp": "^4.2.1",
-    "tiktoken": "^1.0.22"
+    "mockttp": "^4.2.1"
   }
 }

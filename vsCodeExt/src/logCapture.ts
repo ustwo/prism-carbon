@@ -4,6 +4,9 @@ import { resolve } from 'path';
 import * as budget from './budget';
 import * as vscode from 'vscode';
 import * as convert from './convert';
+import * as tiktoken from '@dqbd/tiktoken';
+import * as geminiser from '@lenml/tokenizer-gemini';
+import { getPreEmitDiagnostics } from 'typescript';
 
 
 const splitPattern= /(?<=\[info\].*copilotmd \| success \| .* \| \d+ms \| \[.*)]/g;
@@ -20,6 +23,15 @@ const GPTPattern =/(?<= gpt-5.*\| \d+ms \| \[.*\]\s*\d*-\d*-\d* \d*:\d*:\d*.\d* 
 //should continue = false is the line in the log files for when a call is done
 //this collects all the tokens from GPT models past 5 and the timestamp 
 
+//gets Gemini's internal reasoning text
+const geminiReasoningPattern = /(?<=(reasoning_text":"))(.*)(?="}})/g;
+
+//gets Gemini text output 
+const geminiTextPattern = /(?<=content":")(.*)(?=","role)/g;
+
+//gets Gemini dates
+const geminiDatePattern = /\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*){"finish_reason":"stop")/g;
+
 //gets the tokens used in claude calls
 //this is the same no matter the purpose
 
@@ -31,9 +43,11 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
     var matches: budget.Call[] = [];
     var claudeFlag: boolean = false; //flag used to tell us if we need to use our claude regex
     var newGPTFlag: boolean = false;
+    var geminiFlag: boolean = false;
     var activeCall: budget.Call = { Emissions: 0, Model: "TEST", DateTime: 0 };
     var claudes: string[] = [];
     var GPTs: string[] = [];
+    var geminis: string[] = [];
 
     var models = rawLog.match(modelPattern); //creates an array of all models used in the log file provided
     if (models!==null){
@@ -73,12 +87,13 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
                     claudes.push(model);
                     claudeFlag = true;
                     break;
-         
                 case 'claude-sonnet-4.6':
                     claudes.push(model);
                     claudeFlag = true;
                     break;
-   
+                case 'gemini-2.5-pro':
+                    geminis.push(model);
+                    geminiFlag = true;
                 default:
                     console.log("Functionality coming soon!");
                     break;
@@ -86,7 +101,7 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
         } 
     }
     console.log("GPT flag",newGPTFlag);
-    if (claudeFlag || newGPTFlag){
+    if (claudeFlag || newGPTFlag || geminiFlag){
         var times:number[] = [];
         var results:number[] = [];
         var allModels:string[] = claudes.concat(GPTs);
@@ -102,6 +117,19 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
             const [timesG,resultsG] = findModel(rawLog,GPTPattern,"shouldContinue=false");
             results = results.concat(resultsG);
             times = times.concat(timesG);
+        }
+
+        if(geminiFlag) {
+            const enc = geminiser.fromPreTrained();
+            const outputText = findOutputText(rawLog, geminiTextPattern);
+            const outputTokens = enc.encode(outputText).length;
+            console.log("\n\nOUTPUT TOKENS: ", outputTokens);
+            const reasoningText = findOutputText(rawLog, geminiReasoningPattern);
+            const reasoningTokens = enc.encode(reasoningText).length;
+            console.log("\n\nREASONING TOKENS: ", reasoningTokens);
+            const time = findOutputText(rawLog, geminiDatePattern);
+            console.log("OUTPUT:\n\n", outputText);
+            console.log("REASONING:\n\n", reasoningText);
         }
         //var totalResults = [resultsC,resultsG];
         
@@ -128,7 +156,6 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
 
 
 function findModel(log: string,pattern : RegExp,splitString : string): [number[], number[]] {
-    
     var match = log.match(pattern); //matches the claude regex to the log file
     var timeIndex:number = 0; 
     console.log("matches:"+match);
@@ -174,3 +201,17 @@ function findModel(log: string,pattern : RegExp,splitString : string): [number[]
 
     return [[0], [-1]];
     }
+
+
+// gets output and reasoning text for models that do not expose tokens
+function findOutputText(log: string, pattern: RegExp): string{
+    var match = log.match(pattern);
+    var output: string;
+    if (match !== null) {
+        output = match.join('');
+    } else {
+        output = "";
+    }
+    return output;
+}
+
