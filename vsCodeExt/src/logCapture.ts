@@ -98,6 +98,8 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
                 case 'gemini-2.5-pro':
                     geminis.push(model);
                     geminiFlag = true;
+                case 'gpt-4o':
+                    oldGPTFlag = true;
                 default:
                     console.log("Functionality coming soon!");
                     break;
@@ -105,7 +107,7 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
         } 
     }
     console.log("GPT flag",newGPTFlag);
-    if (claudeFlag || newGPTFlag || geminiFlag){
+    if (claudeFlag || newGPTFlag || geminiFlag || oldGPTFlag){
         var times:number[] = [];
         var results:number[] = [];
         var allModels:string[] = claudes.concat(GPTs);
@@ -137,7 +139,12 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
         }
 
         if(oldGPTFlag) {
-
+            const enc = tiktoken.get_encoding('o200k_base');
+            const outputText = findOutputText(rawLog, gptTextPattern);
+            const outputTokens = enc.encode(outputText).length;
+            console.log("\n\nOUTPUT TOKENS: ", outputTokens);
+            const time = findOutputText(rawLog, gptDatePattern);
+            console.log("OUTPUT:\n\n", outputText);
 
         }
 
