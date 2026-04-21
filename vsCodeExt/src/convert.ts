@@ -85,6 +85,14 @@ export const modelRegistry: Record<string, TieredModel> = {
     "claude-sonnet-4": new TieredModel("ClaudeSonnet4", [{ limit: 2000, energyPerToken: 5.63/2000 }, { limit: 11500, energyPerToken: 10.02/11500 }]),
     "claude-opus-4": new TieredModel("ClaudeOpus4", [{ limit: 2000, energyPerToken: 5.62/2000 }, { limit: 11500, energyPerToken: 10.73/11500 }]),
     "claude-haiku-3": new TieredModel("ClaudeHaiku3", [{ limit: 2000, energyPerToken: 1.77/2000 }, { limit: 11500, energyPerToken: 2.74/11500 }]),
+
+
+    "gemini-2.5-pro": new TieredModel("Gemini2.5Pro", [{ limit: 2000, energyPerToken: 2.29/2000 }, { limit: 11500, energyPerToken: 2.54/11500 }]),
+    "gemini-2.5-flash": new TieredModel("Gemini2.5Flash", [{ limit: 2000, energyPerToken: 1.24/2000 }, { limit: 11500, energyPerToken: 2.51/11500 }]),
+    "gemini-3.1-pro": new TieredModel("Gemini3.1Pro", [{ limit: 2000, energyPerToken: 1.44/2000 }, { limit: 11500, energyPerToken: 10.33/11500 }]),
+    "gemini-3-flash": new TieredModel("Gemini3Flash", [{ limit: 2000, energyPerToken: 0.57/2000 }, { limit: 11500, energyPerToken: 4.14/11500 }]),
+
+    
     
     
     // OLD DATA FROM BEFORE - IMPLEMENT NEW TIERS ABOVE
