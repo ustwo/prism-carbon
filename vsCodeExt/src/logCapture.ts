@@ -32,6 +32,9 @@ const geminiTextPattern = /(?<=content":")(.*)(?=","role)/g;
 //gets Gemini dates
 const geminiDatePattern = /\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*){"finish_reason":"stop")/g;
 
+const gptDatePattern = /\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)success)/g;
+const gptTextPattern = /(?<=\[trace\] choice {"delta":{"content":")[^"]+/g;
+
 //gets the tokens used in claude calls
 //this is the same no matter the purpose
 
@@ -135,7 +138,7 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
 
         if(oldGPTFlag) {
 
-            
+
         }
 
 
