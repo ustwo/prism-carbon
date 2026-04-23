@@ -387,7 +387,29 @@ backgroundColor(c) {
                 }
             }
         });
+        const radarContainer = document.getElementById('radar-container');
+        const radarFullscreenBtn = document.getElementById('radar-fullscreen-btn');
+
+        // fullscreen time 
+        if (radarContainer && radarFullscreenBtn) {
+            radarFullscreenBtn.addEventListener('click', () => {
+                radarContainer.classList.toggle('radar-fullscreen-mode');
+
+                const isFullscreen = radarContainer.classList.contains('radar-fullscreen-mode');
+                
+                if (isFullscreen) {
+                    radarFullscreenBtn.innerHTML = '✖ Exit Fullscreen';
+                } else {
+                    radarFullscreenBtn.innerHTML = '⛶ Fullscreen';
+                }
+
+                if (radarChart) {
+                    radarChart.resize();
+                }
+            });
+        }
     }
+    
 
     // const radarData = {
     //     baseColour: generateColors(0),

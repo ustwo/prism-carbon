@@ -357,9 +357,10 @@ export class CarbonDashboardPanel {
             <p id="model-empty-msg" style="text-align:center; margin-top:12px;">No calls recorded yet.</p>
         </div>
 
-        <div class = "budget-tracker-container">
+        <div class = "budget-tracker-container" id="radar-container">
             <h2>Branch Emissions</h2>
             <div class="grid-item">
+                <button id="radar-fullscreen-btn" style="position: absolute; top: 10px; right: 10px; z-index: 10;">⛶ Fullscreen</button>
                 <canvas id="radarChart"></canvas>
             </div>
             <p id="radar-empty-msg" style="text-align:center; margin-top:12px;">No calls recorded yet.</p>

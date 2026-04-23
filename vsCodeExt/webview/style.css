@@ -1515,3 +1515,46 @@ header .chartBox {
   /* transform: scale(calc(100cqi / 200));
   transform-origin: center center; */
 }
+
+
+.fullscreen-toggle {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 10;
+  padding: 8px 12px;
+  background-color: #12293f;
+  border: 1px solid #767779;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  color: var(--text-color);
+  transition: all 0.2s ease;
+}
+
+.fullscreen-toggle:hover {
+  background-color: #e2e8f0;
+}
+
+:fullscreen .chart-wrapper {
+  width: 100vw !important;
+  height: 100vh !important;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.radar-fullscreen-mode {
+    position: fixed !important;
+    top: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 9999 !important;
+    background-color: var(--vscode-editor-background) !important; 
+    padding: 30px !important;
+    box-sizing: border-box !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
