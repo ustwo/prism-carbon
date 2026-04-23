@@ -65,21 +65,20 @@ export const modelRegistry: Record<string, TieredModel> = {
     "gpt-5-nano-medium": new TieredModel("GPT5 Nano (medium)", [{ limit: 2000, energyPerToken: 3.87/2000 }, { limit: veryLarge, energyPerToken: 3.14/11500 }]),
     "gpt-5-nano-minimal": new TieredModel("GPT5 Nano (minimal)", [{ limit: 2000, energyPerToken: 0.5/2000 }, { limit: veryLarge, energyPerToken: 0.65/11500 }]),
     "gpt-5-minimal": new TieredModel("GPT5 (minimal)", [{ limit: 2000, energyPerToken: 3.00/2000 }, { limit: veryLarge, energyPerToken: 4.72/11500 }]),
-    "gpt-5-mini": new TieredModel("GPT5 Mini", [{ limit: 2000, energyPerToken: 4.30/2000 }, { limit: veryLarge, energyPerToken: 3.52/11500}]),
-
     "gpt-5-high": new TieredModel("GPT5 (high)", [{limit: 2000, energyPerToken: 22.16/2000}, { limit: veryLarge, energyPerToken: 21.83/11500 }]),
     "gpt-5-medium": new TieredModel("GPT5 (medium)", [{limit: 2000, energyPerToken: 11.89/2000}, { limit: veryLarge, energyPerToken: 10.59/11500 }]),
     "gpt-5-low": new TieredModel("GPT5 (low)", [{limit: 2000, energyPerToken: 5.01/2000}, { limit: veryLarge, energyPerToken: 6.47/11500 }]),
+    "gpt-5-mini": new TieredModel("GPT5 Mini", [{ limit: 2000, energyPerToken: 4.30/2000 }, { limit: veryLarge, energyPerToken: 3.52/11500}]),
     "gpt-5": new TieredModel("GPT5 (medium)", [{limit: 2000, energyPerToken: 11.89/2000}, { limit: veryLarge, energyPerToken: 10.59/11500 }]),
 
 
     "gpt-4-turbo": new TieredModel("GPT4 Turbo", [{limit: 2000, energyPerToken: 7.01/2000}, { limit: veryLarge, energyPerToken: 10.93/11500 }]),
     "gpt-4.1-nano": new TieredModel("GPT4.1 Nano", [{ limit: 2000, energyPerToken: 0.36/2000 }, { limit: veryLarge, energyPerToken: 0.57/11500 }]),
+    "gpt-4.1-mini": new TieredModel("GPT4.1 Mini", [{ limit: 2000, energyPerToken: 1.4/2000 }, { limit: veryLarge, energyPerToken: 2.25/11500 }]),
     "gpt-4.1": new TieredModel("GPT4.1", [{limit: 2000, energyPerToken: 1.85/2000}, { limit: veryLarge, energyPerToken: 2.94/11500 }]),
-    "gpt-4o-2024-11": new TieredModel("GPT4o November", [{ limit: 2000, energyPerToken: 1.33/2000 }, { limit: veryLarge, energyPerToken: 3.19/11500 }]),
-    "gpt-4o-2024-08": new TieredModel("GPT4o August", [{ limit: 2000, energyPerToken: 1.63/2000 }, { limit: veryLarge, energyPerToken: 2.24/11500 }]),
-    "gpt-4o-2024-05": new TieredModel("GPT4o May", [{ limit: 2000, energyPerToken: 2.18/2000 }, { limit: veryLarge, energyPerToken: 3.89/11500}]),
-    "gpt-4o-2024-03": new TieredModel("GPT4o March", [{ limit: 2000, energyPerToken: 1.18/2000 }, { limit: veryLarge, energyPerToken: 5.81/11500}]),
+    "gpt-4o-2024-11-20": new TieredModel("GPT4o November", [{ limit: 2000, energyPerToken: 1.33/2000 }, { limit: veryLarge, energyPerToken: 3.19/11500 }]),
+    "gpt-4o-2024-08-06": new TieredModel("GPT4o August", [{ limit: 2000, energyPerToken: 1.63/2000 }, { limit: veryLarge, energyPerToken: 2.24/11500 }]),
+    "gpt-4o-2024-05-13": new TieredModel("GPT4o May", [{ limit: 2000, energyPerToken: 2.18/2000 }, { limit: veryLarge, energyPerToken: 3.89/11500}]),
     "gpt-4o-mini": new TieredModel("GPT4o mini", [{limit: 2000, energyPerToken: 1.65/2000}, { limit: veryLarge, energyPerToken: 3.85/11500 }]),
     "gpt-4o": new TieredModel("GPT4o", [{ limit: 2000, energyPerToken: 1.30/2000 }, { limit: veryLarge, energyPerToken: 3.47/11500}]),
     
@@ -148,22 +147,48 @@ export const modelRegistry: Record<string, TieredModel> = {
 // so our SCI = ((Energy of model tokens * global average carbon intensity) + manufacturing emissions per R tokens) / R = gCO2e per token
 
 export function getModel(inputString: string): TieredModel | null {
-    const normalizedInput = inputString.trim().toLowerCase();
-    if (!normalizedInput) {
+    const normalisedInput = inputString.trim().toLowerCase();
+    if (!normalisedInput) {
         return null;
     }
 
-    // Exact match (case-insensitive)
-    const exactKey = Object.keys(modelRegistry).find(k => k.toLowerCase() === normalizedInput);
+    const exactKey = Object.keys(modelRegistry).find(k => k.toLowerCase() === normalisedInput);
+    const defaultModelKey = Object.keys(modelRegistry).find(k => normalisedInput.includes(k.toLowerCase()));
+    const activeModelKey = (exactKey || defaultModelKey) ?? "Unknown Model";
+
+    let reasoningLevel
+    if (["gpt-5-mini", "gpt-5-nano", "gpt-5", "o3", "o4-mini", "o4", "o3-pro", "o3-mini", "o3", "o1"].some(item => activeModelKey.includes(item))) {
+        if (activeModelKey.includes("minimal")){
+            reasoningLevel = "minimal";}
+        else if (activeModelKey.includes("medium")){
+            reasoningLevel = "medium";}
+        else if (activeModelKey.includes("high")){
+            reasoningLevel = "high";}
+        else if (activeModelKey.includes("low")){
+            reasoningLevel = "low";}
+        else {reasoningLevel = "medium";}
+    }
     if (exactKey) {
         return modelRegistry[exactKey];
     }
-
-    // Substring match (case-insensitive). Prefer the longest key to avoid partial collisions.
-    const keysBySpecificity = Object.keys(modelRegistry).sort((a, b) => b.length - a.length);
-    const matchedKey = keysBySpecificity.find(k => normalizedInput.includes(k.toLowerCase()));
-    return matchedKey ? modelRegistry[matchedKey] : null;
+    else{
+        return defaultModelKey ? modelRegistry[defaultModelKey] : null;    }
+    
 }
+    
+    // if (exactKey) {
+    //     return modelRegistry[exactKey];
+    // }
+    // else{;
+    // }
+
+    // // Substring match (case-insensitive). Prefer the longest key to avoid partial collisions.
+    // const keysBySpecificity = Object.keys(modelRegistry).sort((a, b) => b.length - a.length);
+    // const matchedKey = keysBySpecificity.find(k => normalizedInput.includes(k.toLowerCase()));
+    // return matchedKey ? modelRegistry[matchedKey] : null;
+
+
+    
 
 export function calculateEmission(modelName: string, numTokens: number) {
     const energy = getEnergy(modelName, numTokens); // energy in kwh from call using tokens

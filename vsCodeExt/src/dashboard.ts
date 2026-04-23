@@ -403,14 +403,31 @@ export class CarbonDashboardPanel {
 
         </div>
 
-        <div style="margin-top:60px;">
-            <h2 style="text-align:center;">Heat Map</h2>
-            <div style="max-width:900px; margin:0 auto;">
-                <div class="chart-container" style="height:220px;">
-                    <canvas id="myChart"></canvas>
-                </div>
-            </div>
+        <div class="heatmap-section">
+
+         <h2 style="text-align:center; margin-top:60px; margin-bottom:15px;">
+    Heat Map
+</h2>
+    
+    <div style="max-width:900px; margin:40px auto 0 auto; display:block;">
+
+        <div class="chart-container" style="height:220px;">
+            <canvas id="myChart"></canvas>
         </div>
+
+        <!-- Legend INSIDE same container -->
+        <div class="heatmap-legend">
+            <span class="legend-label">Low</span>
+            
+            <div class="legend-bar">
+                <div class="legend-gradient"></div>
+            </div>
+            
+            <span class="legend-label">High</span>
+        </div>
+    </div>
+</div>
+            
     </section>
 
 

@@ -213,7 +213,7 @@ backgroundColor(c) {
             maintainAspectRatio: false,
             layout:{
                 padding:{
-                    top: 10,
+                    top: 15,
                 }
             },
             scales: scales,
