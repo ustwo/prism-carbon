@@ -74,6 +74,7 @@ p{
   right: 20px;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
 }
 
 #theme-switch svg{
@@ -233,4 +234,42 @@ header .chartBox {
 
 .budget-detail {
     color: var(--secondary-text);
+}
+
+.heatmap-legend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 15px;
+    font-size: 12px;
+    color: var(--text-color);
+}
+
+.legend-bar {
+    width: 300px;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.legend-gradient {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        rgb(0, 120, 0),     /* dark green (low) */
+        rgb(0, 255, 0),     /* bright green (400) */
+
+        rgb(180, 150, 0),   /* start yellow */
+        rgb(255, 255, 0),   /* bright yellow (2000) */
+
+        rgb(180, 0, 0),     /* start red */
+        rgb(255, 0, 0)      /* strong red (high) */
+    );
+}
+.legend-label {
+    min-width: 30px;
+    text-align: center;
 }

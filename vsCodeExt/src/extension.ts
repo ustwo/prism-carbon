@@ -1,7 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 
-import * as devTok from './devTokens';
 import * as vscode from 'vscode';
 import * as https from 'https';
 import * as budget from './budget';
@@ -11,6 +10,7 @@ import * as path from 'path';
 import { Memento } from 'vscode';
 import { stringify } from 'querystring';
 import * as childProcess from 'child_process';
+
 
 import { CarbonDashboardPanel } from './dashboard';
 import { state } from './state';
@@ -33,8 +33,6 @@ const PROXY_PORT = 3024;
 var budg: budget.budget;
 
 export async function activate(context: vscode.ExtensionContext) {
-
-
     const copilotChat = vscode.extensions.getExtension('github.copilot-chat');
     if (!copilotChat) {
         vscode.window.showWarningMessage('GitHub Copilot Chat is not installed. Carbon emissions will not be tracked during development time!');
@@ -139,27 +137,33 @@ export async function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(branchChangeListener);
 
-    const input = vscode.commands.registerCommand('ecode.inputdisplay', async () => {
-        //vscode.window.showInformationMessage('Hello World from EstimatingCarbon!');
-        const limit = await vscode.window.showInputBox({ //opens an input box currently representing the carbon footprint
-            prompt: 'Enter test call: ',
-            placeHolder: 'eg. 5',
-            ignoreFocusOut: true // keep input box open even if focus moves away from window
-        });
-
-        var num = Number(limit);
-        if (!Number.isNaN(num)) {
-            let now = new Date();
-            var newCall: budget.Call = { Emissions: num, Model: "TEST", DateTime: Number(now.getTime()) };
-            updateTree(newCall);
-        vscode.window.showInformationMessage(`Added ${num}g CO2e for today.`);
-        }
-        
-        else {
-            vscode.window.showInformationMessage('Error: NaN inputted.');
-        }
-
+   const input = vscode.commands.registerCommand('ecode.inputdisplay', async () => {
+    const limit = await vscode.window.showInputBox({
+        prompt: 'Enter test call: ',
+        placeHolder: 'eg. 5',
+        ignoreFocusOut: true 
     });
+
+    var num = Number(limit);
+    if (!Number.isNaN(num)) {
+        // Use a local date string to prevent timezone shifting
+        const now = new Date();
+        const bumpedTime = now.getTime() + (5 * 60 * 60 * 1000);
+       
+        
+        
+        var newCall: budget.Call = { 
+            Emissions: num, 
+            Model: "TEST", 
+            DateTime: bumpedTime
+        };
+        
+        updateTree(newCall);
+        vscode.window.showInformationMessage(`Added ${num}g CO2e for today.`);
+    }else {
+        vscode.window.showInformationMessage('Error: NaN inputted.');
+    }
+});
     context.subscriptions.push(input);
     context.subscriptions.push(dashboardCommand);
 
@@ -465,11 +469,12 @@ export function updateTree(call: budget.Call) {
     }
     budg.storeCall(call);
    
+    
+    console.log("BACKEND CHECK: Stored call value:", call.Emissions, "for date:", new Date(call.DateTime).toISOString());
+
     bar.updateBar(call.Emissions);
-    tree.addMessage("Emissions: " + call.Emissions + "g CO₂e - Model: " + call.Model + " - Date: " + new Date(call.DateTime).toLocaleString());
-
-    CarbonDashboardPanel.sendData();
-
+    CarbonDashboardPanel.sendData(); 
+    
 }
 
 export async function getLogs(context: vscode.ExtensionContext) {
@@ -481,23 +486,39 @@ export async function getLogs(context: vscode.ExtensionContext) {
 
         // reads file and outputs lines to console one at a time
         const content = fs.readFileSync(logUri, 'utf-8');
-        const lDate = new Date(lastAccess);
+        var lDate:string[] = (new Date(lastAccess).toLocaleString('us-GB', { 
+                        hour12: false
+                    })).split(",");
+        
 
-        const regex: RegExp = new RegExp(lDate.toLocaleString());
-        const splitting = content.split(regex);
-        var input: string = content;
-
+        var dateSec = new Date(lastAccess).toISOString().slice(0, 10).split('/').join('-'); //formats the date in accordance to the log files
+        var timeSplit = dateSec+lDate[1];
+        const regex: RegExp = new RegExp(timeSplit);
+        const splitting:string[] = content.split(regex);//splits the time stamp
+        var input: string;
+        if (splitting.length < 2){//uses the entire log file if nothing can be found the timestamp
+            input= content;
+        }
+        else{
+            input = splitting[splitting.length-1];//incase multiple lines of the log file are at the same second look past the last one
+        }
+        
         const models: budget.Call[] = await logCap.identifyModel(input);
-        console.log("CALLS: ", models);
-        for (let index = 0; index < models.length; index++) {
+        const sortedModels = models.sort((a: budget.Call, b: budget.Call) => {
+            return a.DateTime - b.DateTime;
+        });
 
-            if (models[index].DateTime > lastAccess) {
-                updateTree(models[index]);
+        for (let index = 0; index < sortedModels.length; index++) {
+            if (sortedModels[index].DateTime > lastAccess) {
+                console.log("updating tree");
+                updateTree(sortedModels[index]);//updates side bar with all calls returned
+                 //plan to only give identify model and such the log file after the last access to make it quicker
             }
         }
-        lastAccess = new Date().getTime();
 
-        //vscode.window.showInformationMessage("Copilot log files refreshed.");
+        if (sortedModels.length !== 0) {lastAccess = sortedModels[sortedModels.length-1].DateTime;}
+
+        
     }
     catch (error) {
         console.log(error);

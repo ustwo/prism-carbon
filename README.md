@@ -130,6 +130,9 @@ We aim to design a toolkit that:
     │   ├── serverWorker.ts # listens on proxyServer and handles parsing
     │   ├── proxyServer.ts # starts server, receives parsed information
     │   ├── logCapture.ts # handles collection and parsing of Copilot log files
+    │   ├── convert.ts # handles conversion of token data to carbon emissions
+    │   ├── dashboard.ts # main UI file
+    │   ├── state.ts # flag for runtime testing
     ├── tsconfig.json
     └── vsc-extension-quickstart.md
 

@@ -97,7 +97,7 @@ I used AI to review the release.yml file to ensure that it worked before merging
 <h2>Hao Ni</h2>
 <p> I, Hao Ni declare that this document is accurate to my AI usage throughout the course of SEP</p>
 
-<p>All models used have been  ChatGPT</p> <br>
+<p>All models used have been  ChatGPT and Gemini</p> <br>
 <h3>Development</h3>
 reseach into which papers to look into for carbon to emission formula
 
@@ -107,21 +107,35 @@ I was having problem finding relevent papers online, because most of the materia
 <h3>Debugging</h3>
 I use AI when my code can't run but I can't spot where's the problem
 
-> Prompt used - " I am suppose to the Dash board's color change to black now, why is it not working"
+> Prompt used - " I am suppose to make the Dash board's color change to black now, why is it not working"
 The problem occur when I finish the implementation of the mode toggle but the switch isn't working and I was having problem finding the bug. The reason is I can't put the .js file and the .css file outside Dashboard.ts and should keep all the js and css part inside getwebview.
+> "Why there's always a Sunday block on the Heat Map even if it's not Sunday?"
+The problem occur because I added a round:week in my code, it can helps round the data to the week, but I set the start of the week as Sunday so it will always show Sunday first.
 
 <h3>Review</h3>
 
 <h2>Morgan Parry</h2>
+<p> I, Morgan Parry, declare that this document is accurate to my AI usage throughout the course of SEP</p>
 
 <h3>Development</h3>
-<p>All models used have been  ChatGPT</p> <br>
+<p>All models used have been ChatGPT</p> <br>
+
 > Prompt used - "Give an overview of regexes and how they work, in particular how they can be formatted to exclude lines of text based on a phrase they contain."
+
 > Prompt used - "How can I use a regex to capture text between two characters?"
 
 When conducting research into how I can use a regex to exclude the lines I need from the captured log files in development time analysis, I used ChatGPT to research how I can use them for the specific task I need (excluding lines containing unneeded levels of Copilot logging). I did this after conducting my own research which left me unsure of how to achieve this. I did not copy any regexes directly from ChatGPT's response, but I used them to start playing around with more specific regexes using a [regex sandbox website](https://regexr.com/).
 
+> Prompt used - "How useful would the tiktoken library be for tokenising Gemini outputs? Is there a better option I can use in typescript if they are too dissimilar?"
+
+While adding support for Gemini in DevTime, I was unable to find any clear research into the inner workings of LLM tokenisers. I opted to use ChatGPT to research whether I could use the tiktoken liibrary, which I was already familiar with, to tokenise Gemini outputs. ChatGPT suggested using a rough mathematical calculation to tokenise the outputs. I initially planned on using this but was able to find a better [Gemini tokeniser](https://www.npmjs.com/package/@lenml/tokenizer-gemini) on the npm registry upon further research, so I ended up scrapping the AI solution.
+
 <h3>Debugging</h3>
+
+> Prompt used - "ESLint: 10.0.2 TypeError: util.styleText is not a function at util.styleText.validateStream - what causes this error?"
+
+I had a versioning error with ESLint when attempting to compile the project that I used ChatGPT to debug. No AI code was pasted as the error was simply me needing to upgrade Node.js.
+
 
 <h3>Review</h3>
 

@@ -23,6 +23,7 @@
         });
     }
 
+    //dark mode toggle listener
     const btn = document.getElementById('theme-switch');
     btn.addEventListener('click', () => { document.body.classList.toggle('darkmode'); 
 
@@ -35,7 +36,7 @@
         }
     });
 
-    // --- heat map here ---
+    //heat map start here 
 
     function isoDayOfWeek(dt) {
         let wd = dt.getDay(); // 0...6 from sunday to saturday
@@ -44,11 +45,12 @@
 
     };
 
+    //generate empty data for the past 365 days
    function generateEmptyData() {
     const today = new Date();
     const end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const start = new Date(end);
-    start.setDate(start.getDate() - 365);
+    start.setDate(start.getDate() - 364);
 
     const data2 = [];
     let dt = new Date(start);
@@ -68,7 +70,7 @@
     }
     return data2;
 }
-    //setup block
+    //get grid color from css
 const getGridColor = () => getComputedStyle(document.body).getPropertyValue('--grid-border').trim();
 const getChartTextColor = () => getComputedStyle(document.body).getPropertyValue('--chart-text').trim();
     const data = {
@@ -76,38 +78,42 @@ const getChartTextColor = () => getComputedStyle(document.body).getPropertyValue
             label: 'Heat Map',
             data: generateEmptyData(),
             anchor: 'start',
-           // --- Replace the existing backgroundColor(c) block with this ---
+
+
+
+        //heat map color logic that changes 
+        //the brighter the color the higher the emissions
 backgroundColor(c) {
-    const value = c.dataset.data[c.dataIndex]?.v || 0;
-    if (value === 0) { return 'rgba(200, 200, 200, 0.1)'; }
+    const dataset = c.dataset.data;
+    const value = dataset[c.dataIndex]?.v || 0;
+     if (value > 0) { console.log('[TEST 4] backgroundColor called with v:', value); } // ← ADD THIS
 
-    // Tier 1: 0 to 400 (Green Gradient)
-    if (value <= 400) {
-        // Map 0-400 to a range of 0-1
-        const p = value / 400; 
-        // Transition from Bright Green (0,255,0) to Deep Forest (0,80,0)
-        const r = 0;
-        const g = Math.round(255 - (p * 175));
-        const b = 0;
-        return `rgb(${r}, ${g}, ${b})`;
+    if (value === 0) {
+        return 'rgba(200, 200, 200, 0.05)';
     }
 
-    // Tier 2: 400 to 2000 (Yellow/Gold Gradient)
-    if (value <= 2000) {
-        // Map 400-2000 to a range of 0-1
-        const p = (value - 400) / 1600;
-        // Transition from Bright Yellow (255,255,0) to Dark Gold (150,130,0)
-        const r = Math.round(255 - (p * 105));
-        const g = Math.round(255 - (p * 125));
-        const b = 0;
-        return `rgb(${r}, ${g}, ${b})`;
+    const { p50, p75 } = cachedThresholds;
+
+    // GREEN (bottom 50%)
+    if (value < p50) {
+        const p = p50 > 0 ? value / p50 :0;
+        const g = Math.round(120 + (p * 135));
+        return `rgb(0, ${g}, 0)`;
     }
 
-    // Tier 3: 2000+ (Red Gradient)
-    // Cap the "darkness" at 5000 so it doesn't turn black
-    const p = Math.min((value - 2000) / 3000, 1);
-    // Transition from Bright Red (255,0,0) to Deep Maroon (100,0,0)
-    const r = Math.round(255 - (p * 155));
+    // YELLOW (50%–75%)
+    if (value < p75) {
+        const range = (p75 - p50);
+        const p = range > 0 ? (value - p50) / range : 0;
+        const r = Math.round(180 + (p * 75));
+        const g = Math.round(150 + (p * 105));
+        return `rgb(${r}, ${g}, 0)`;
+    }
+
+    // RED (top 25%)
+    const max = Math.max(...dataset.map(d => d.v));
+    const p = (value - p75) / (max - p75 || 1);
+    const r = Math.round(180 + (p * 75));
     return `rgb(${r}, 0, 0)`;
 },
             borderColor: '#39FF14',
@@ -130,6 +136,7 @@ backgroundColor(c) {
 
     //scales block
     const scales = {
+        //y axis
         y: {
             type: 'linear',
             position: 'right',
@@ -137,7 +144,7 @@ backgroundColor(c) {
             min: 1,
             max: 7,
             ticks: {
-                color:getChartTextColor(),
+                color: '#ffffff',
                 stepSize: 1,
                 callback: function (value) {
                     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -156,11 +163,12 @@ backgroundColor(c) {
                 display:false
             }
         },
+        //x axis
        x: {
     type: 'time',
     position: 'bottom',
-    offset: true, // This stops the skewing by giving columns room
-    bounds: 'ticks', // This stops the blocks from vanishing
+    offset: true, 
+    bounds: 'ticks', 
     time: {
         unit: 'week',
         round:'week',
@@ -169,8 +177,9 @@ backgroundColor(c) {
             week: 'MMM dd'
         }
     },
+    //ticks settings
     ticks: {
-        color:getChartTextColor(),
+        color: '#ffffff',
         source: 'auto', 
         maxRotation: 45,
         minRotation: 45,
@@ -187,6 +196,25 @@ backgroundColor(c) {
 }
     };
 
+    function getPercentileThresholds(data) {
+    const values = data
+        .map(d => d.v)
+        .filter(v => v >0)
+        .sort((a, b) => a - b);
+
+    if (values.length === 0) {
+        return { p50: 0, p75: 0 };
+    }
+
+    const p50Index = Math.floor(values.length * 0.5);
+    const p75Index = Math.floor(values.length * 0.75);
+
+    return {
+        p50: values[p50Index],
+        p75: values[p75Index]
+    };
+}
+
     // config
     const config = {
         type: 'matrix',
@@ -195,7 +223,7 @@ backgroundColor(c) {
             maintainAspectRatio: false,
             layout:{
                 padding:{
-                    top: 10,
+                    top: 15,
                 }
             },
             scales: scales,
@@ -221,8 +249,6 @@ backgroundColor(c) {
             }
         }
     };
-
-    // --- TO CONNECT THE BUTTON ---
     const testBtn = document.getElementById('testBtn');
     if (testBtn) {
         testBtn.addEventListener('click', function () {
@@ -230,55 +256,13 @@ backgroundColor(c) {
         });
     }
 
-
-    // const ctxTutorial = document.getElementById('myChart');
-    // if (ctxTutorial) {
-    //     // We pass your 'config' variable here so it knows about the data and scales
-    //     const myChart = new Chart(ctxTutorial, config);
-
-    //     // Now update your button so it actually talks to THIS chart
-    //     const testBtn = document.getElementById('testBtn');
-    //     if (testBtn) {
-    //         testBtn.addEventListener('click', function () {
-    //             myChart.data.datasets[0].data = generateData();
-    //             myChart.update();
-    //         });
-    //     }
-
-
-    //     /* --- COMMENT OUT FROM HERE ---
-    //     data: {
-    //         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    //         datasets: [{
-    //             label: 'Weekly Sales',
-    //             data: [18, 12, 6, 9, 12, 3, 9],
-    //             backgroundColor: 'rgba(54, 162, 235, 0.2)',
-    //             borderColor: 'rgba(54, 162, 235, 1)',
-    //             borderWidth: 1
-    //         }]
-    //     },
-    //     options: {
-    //         responsive: true,
-    //         maintainAspectRatio: false,
-    //         scales: {
-    //             y: { beginAtZero: true }
-    //         }
-    //     }
-
-    //     --- TO HERE --- */
-
-
-    //     // Update the version number in the header if you added the span
-    //     const versionTag = document.getElementById('chartVersion');
-    //     if (versionTag) { versionTag.innerText = Chart.version; }
-    // }
-    // --- NEW TUTORIAL CHART END ---
-
+    let cachedThresholds = { p50: 0, p75: 0 };
 
     let heatChart;
     const heatCtx = document.getElementById('myChart');
     if (heatCtx) {
         heatChart = new Chart(heatCtx, config);
+        console.log('[TEST 1] heatChart initialized:', heatChart ? 'OK' : 'FAILED');
     }
 
 
@@ -331,22 +315,96 @@ backgroundColor(c) {
 
 
     window.addEventListener('message', event => {
-        const message = event.data;
-        if (message.command === 'updateData') {
+    const message = event.data;
+    console.log('[TEST 7] Message received:', message.command); // ← ADD THIS
+    if (message.command === 'updateData') {
             const avgCostEl = document.getElementById('average-cost-display');
             if (avgCostEl && message.averageEmission !== undefined) {
                 avgCostEl.innerText = message.averageEmission.toFixed(4);
             }
 
-            // live emission by model data from backend
-            if (message.heatMapData && heatChart) {
-                heatChart.data.datasets[0].data = message.heatMapData;
-                heatChart.update();
+        if (message.heatMapData && heatChart) {
+            //Get Today's date in LOCAL YYYY-MM-DD format
+            const t = new Date();
+            const todayLocal = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
+
+            //Map the data while fixing the "shifting date" bug
+            const sanitizedData = message.heatMapData.map(point => {
+                // Instead of new Date(point.x), we split the string to keep it LOCAL
+                const parts = point.x.split('-');
+                const actualDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                const day = actualDate.getDay(); // 0=Sun, 1=Mon...
+                
+                return {
+                    ...point,
+                    y:(day === 0 ? 7 : day) // Matches your 1-7 Mon-Sun scale
+                };
+            });
+
+            // check if the backend send data for today?
+            const todayMatch = sanitizedData.find(d => d.x === todayLocal);
+            
+            if (todayMatch) {
+                console.log("SUCCESS: Found real data for today:", todayMatch);
+            } else {
+                // ONLY if today is missing, add a placeholder so the grid isn't empty
+                console.log("Adding placeholder for today:", todayLocal);
+                sanitizedData.push({
+                    x: todayLocal,
+                    y: parseInt(isoDayOfWeek(new Date())),
+                    d: todayLocal,
+                    v: 0
+                });
             }
-            if (message.modelLabels && message.modelEmissions) {
-                const hasData = message.modelLabels.length > 0;
-                const emptyMsg = document.getElementById('model-empty-msg');
-                if (emptyMsg) { emptyMsg.style.display = hasData ? 'none' : 'block'; }
+
+            // Update the chart
+            cachedThresholds = getPercentileThresholds(sanitizedData);
+
+// Pre-compute all colors BEFORE giving data to Chart.js
+const computedColors = sanitizedData.map(point => {
+    const value = point.v || 0;
+    if (value === 0) return 'rgba(200, 200, 200, 0.05)';
+
+    const { p50, p75 } = cachedThresholds;
+
+    if (value < p50) {
+        const p = p50 > 0 ? value / p50 : 0;
+        const g = Math.round(120 + (p * 135));
+        return `rgb(0, ${g}, 0)`;
+    }
+    if (value < p75) {
+        const range = p75 - p50;
+        const p = range > 0 ? (value - p50) / range : 0;
+        const r = Math.round(180 + (p * 75));
+        const g = Math.round(150 + (p * 105));
+        return `rgb(${r}, ${g}, 0)`;
+    }
+    const max = Math.max(...sanitizedData.map(d => d.v));
+    const p = (value - p75) / (max - p75 || 1);
+    const r = Math.round(180 + (p * 75));
+    return `rgb(${r}, 0, 0)`;
+});
+
+try {
+                console.log('[TEST 2] Non-zero data points:', sanitizedData.filter(d => d.v > 0).length);
+                console.log('[TEST 2] cachedThresholds:', cachedThresholds);
+                console.log('[TEST 2] computedColors sample:', computedColors.slice(0, 5));
+                heatChart.data.datasets[0].backgroundColor = computedColors;
+                heatChart.data.datasets[0].data = sanitizedData;
+                heatChart.update('none');
+                console.log('[TEST 2] heatChart.update() called');
+
+                console.log('[TEST 6] Non-zero points:', sanitizedData.filter(d => d.v > 0).map(d => ({ x: d.x, v: d.v, y: d.y })));
+            } catch(err) {
+                console.error('[TEST 5] CRASH:', err);
+            }
+        }
+
+        // --- Keep your Model Chart and Budget logic below as is ---
+        if (message.modelLabels && message.modelEmissions) {
+            const hasData = message.modelLabels.length > 0;
+            const emptyMsg = document.getElementById('model-empty-msg');
+            if (emptyMsg) { emptyMsg.style.display = hasData ? 'none' : 'block'; }
 
                 modelEmissionsChart.data.labels = message.modelLabels;
                 modelEmissionsChart.data.datasets[0].data = message.modelEmissions;
@@ -374,14 +432,13 @@ backgroundColor(c) {
                 // capping visual width at 100% for display purposes
                 const visualWidth = Math.min(percentUsed, 100);
 
-                // update the progress bar and text elements
-                const fillEl = document.getElementById('session-progress-fill');
-                const pctEl = document.getElementById('session-percent-used');
-                const rightEl = document.getElementById('session-text-right');
+            const fillEl = document.getElementById('session-progress-fill');
+            const pctEl = document.getElementById('session-percent-used');
+            const rightEl = document.getElementById('session-text-right');
 
-                fillEl.style.width = visualWidth + '%';
-                pctEl.innerText = percentUsed.toFixed(1) + '% used';
-                rightEl.innerText = totalEmissions.toFixed(5) + 'g / ' + SESSION_BUDGET + 'g CO₂e';
+            fillEl.style.width = visualWidth + '%';
+            pctEl.innerText = percentUsed.toFixed(1) + '% used';
+            rightEl.innerText = totalEmissions.toFixed(5) + 'g / ' + SESSION_BUDGET + 'g CO₂e';
 
                                 
                 fillEl.classList.remove('safe', 'warning', 'danger');
