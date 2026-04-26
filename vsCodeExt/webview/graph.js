@@ -555,8 +555,8 @@ function drawCumulativeGraph(scrollRatio = 1) {
     mainGraphArea.appendChild(horizontalScrollContainer);
 
     setTimeout(() => {
-        const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-        scrollContainer.scrollLeft = maxScroll * scrollRatio;
+        const maxScroll = horizontalScrollContainer.scrollWidth - horizontalScrollContainer.clientWidth;
+        horizontalScrollContainer.scrollLeft = maxScroll * scrollRatio;
     }, 10);
 }
 
@@ -742,46 +742,66 @@ function drawCandleStickTimelineGraph(scrollRatio = 1){
 
     svg.appendChild(xAxisLine);
 
-    let currentTime = new Date(minTime);
-    currentTime.setHours(0,0,0,0);
 
-    while (currentTime.getTime() <= maxTime) {
-        const xAxisPositions = [];
-        for (let hour = 0; hour < 24; hour = hour + 8) {
+    const millisecondsPerPixel = 1 / pixelsPerMilliseconds;
+    const millisecondsGap = 100 * millisecondsPerPixel;
 
-            const time = new Date(currentTime);
-            time.setHours(hour);
+    const intervals = [60 * 60 * 1000,
+        2 * 60 * 60 * 1000,
+        4 * 60 * 60 * 1000,
+        8 * 60 * 60 * 1000,
+        12 * 60 * 60 * 1000,
+        24 * 60 * 60 * 1000,
+    ];
 
-            const newTime = time.getTime();
+    let selectedInterval = intervals[intervals.length - 1];
 
-            if (newTime > maxTime || newTime < minTime) {
-                continue;
-            }
+    for (let interval of intervals) {
+        if (interval >= millisecondsGap) {
+            selectedInterval = interval;
+            break;
+        }
+    }
+    let currentTime = Math.ceil(minTime / selectedInterval) * selectedInterval;
 
-            const xMarkingsSpacing = margin.left + (newTime - minTime) * pixelsPerMilliseconds;
-            xAxisPositions.push(xMarkingsSpacing);
+    while (currentTime <= maxTime) {
+        const xMarkingsSpacing = margin.left + (currentTime - minTime) * pixelsPerMilliseconds;
 
-            const xAxisHeading = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            xAxisHeading.setAttribute("x", xMarkingsSpacing);
-            xAxisHeading.setAttribute("y", height - margin.bottom + 18);
-            xAxisHeading.setAttribute("text-anchor", "middle");
-            xAxisHeading.setAttribute("font-size", "10");
-            xAxisHeading.setAttribute("fill", "var(--secondary-text)");
+        const xAxisHeading = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        xAxisHeading.setAttribute("x", xMarkingsSpacing);
+        xAxisHeading.setAttribute("y", height - margin.bottom + 18);
+        xAxisHeading.setAttribute("text-anchor", "middle");
+        xAxisHeading.setAttribute("font-size", "10");
+        xAxisHeading.setAttribute("fill", "var(--secondary-text)");
 
-            xAxisHeading.textContent = new Date(newTime).toLocaleTimeString([], {
+        if(selectedInterval < 24 * 60 * 60 * 1000){
+            xAxisHeading.textContent = new Date(currentTime).toLocaleTimeString([], {
                 hour: "2-digit",
                 minute: "2-digit"
             });
-
-            svg.appendChild(xAxisHeading);
         }
+        else{
+            xAxisHeading.textContent = new Date(currentTime).toLocaleDateString([], {
+                day: "2-digit",
+                month: "short"
+            });
+        }
+        svg.appendChild(xAxisHeading);
 
-        if (xAxisPositions.length > 0) {
-            const originalXAxis = xAxisPositions[0];
-            const xAxisDifference = -60;
+        currentTime = currentTime + selectedInterval;
+    }
 
+    let lastDisplayedDay = null;
+    currentTime = Math.ceil(minTime / (24 * 60 * 60 * 1000)) * (24 * 60 * 60 * 1000);
+
+    while (currentTime <= maxTime) {
+        const date = new Date(currentTime);
+        const day = date.toDateString();
+        const xMarkingsSpacing = margin.left + (currentTime - minTime) * pixelsPerMilliseconds;
+
+        if (day !== lastDisplayedDay) {
             const dateHeading = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            dateHeading.setAttribute("x", originalXAxis + xAxisDifference);
+            dateHeading.setAttribute("x", xMarkingsSpacing);
             dateHeading.setAttribute("y", height - margin.bottom + 34);
             dateHeading.setAttribute("text-anchor", "start");
             dateHeading.setAttribute("font-size", "10");
@@ -789,15 +809,15 @@ function drawCandleStickTimelineGraph(scrollRatio = 1){
             dateHeading.setAttribute("font-weight", "500");
             dateHeading.style.opacity = "0.8";
 
-            dateHeading.textContent = new Date(currentTime).toLocaleDateString([], {
+            dateHeading.textContent = date.toLocaleDateString([], {
                 day: "2-digit",
                 month: "short"
             });
 
             svg.appendChild(dateHeading);
+            lastDisplayedDay = day;
         }
-
-        currentTime.setDate(currentTime.getDate() + 1);
+        currentTime = currentTime + (24 * 60 * 60 * 1000);
     }
 
     const yAxisLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
