@@ -170,6 +170,7 @@
   },
   "dependencies": {
     "@lenml/tokenizer-gemini": "^3.7.2",
+    "axios": "^1.13.5",
     "@vscode/codicons": "^0.0.44",
     "http-proxy": "^1.18.1",
     "mocha": "^11.7.5",
