@@ -30,6 +30,9 @@ if (ref) {
     container.style.borderRadius = "8px";
     container.style.background = "var(--base-variant)";
     container.style.color = "var(--text-color)";
+    container.style.display = "flex";
+    container.style.flexDirection = "column";
+    container.style.overflow = "hidden";
 
     const title = document.createElement("h3");
     referenceStrip = document.createElement("div");
@@ -164,8 +167,9 @@ if (ref) {
     const mainGraphArea = document.createElement("div");
     mainGraphArea.id = "carbon-usage-graph-main-area";
     mainGraphArea.style.width = "100%";
-    mainGraphArea.style.height = "240px";
+    mainGraphArea.style.height = "auto";
     mainGraphArea.style.position = "relative";
+    mainGraphArea.style.flex = "1";
 
     hoverFunctionality = document.createElement("div");
     hoverFunctionality.id = "hover-functionality";
