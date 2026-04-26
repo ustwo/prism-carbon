@@ -471,7 +471,7 @@ export function updateTree(call: budget.Call) {
    
     
     console.log("BACKEND CHECK: Stored call value:", call.Emissions, "for date:", new Date(call.DateTime).toISOString());
-
+    tree.addMessage("Emissions: " + call.Emissions + "g CO₂e - Model: " + call.Model + " - Date: " + new Date(call.DateTime).toLocaleString());
     bar.updateBar(call.Emissions);
     CarbonDashboardPanel.sendData(); 
     
