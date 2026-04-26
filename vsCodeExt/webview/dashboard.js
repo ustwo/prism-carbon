@@ -41,7 +41,6 @@
         });
     }
 
-    //dark mode toggle listener
     const btn = document.getElementById('theme-switch');
     btn.addEventListener('click', () => { document.body.classList.toggle('darkmode'); 
 
@@ -54,7 +53,7 @@
         }
     });
 
-    //heat map start here 
+    // --- heat map here ---
 
     function isoDayOfWeek(dt) {
         let wd = dt.getDay(); // 0...6 from sunday to saturday
@@ -63,12 +62,11 @@
 
     }
 
-    //generate empty data for the past 365 days
    function generateEmptyData() {
     const today = new Date();
     const end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const start = new Date(end);
-    start.setDate(start.getDate() - 364);
+    start.setDate(start.getDate() - 365);
 
     const data2 = [];
     let dt = new Date(start);
@@ -88,7 +86,7 @@
     }
     return data2;
 }
-    //get grid color from css
+    //setup block
 const getGridColor = () => getComputedStyle(document.body).getPropertyValue('--grid-border').trim();
 const getChartTextColor = () => getComputedStyle(document.body).getPropertyValue('--chart-text').trim();
     const data = {
@@ -96,43 +94,76 @@ const getChartTextColor = () => getComputedStyle(document.body).getPropertyValue
             label: 'Heat Map',
             data: generateEmptyData(),
             anchor: 'start',
+         
+         
+         
+   backgroundColor(c) {
+    function adjustColor(hex, factor) {
+    const num = parseInt(hex.replace('#', ''), 16);
 
+    let r = (num >> 16) + factor;
+    let g = ((num >> 8) & 0x00FF) + factor;
+    let b = (num & 0x0000FF) + factor;
 
+    r = Math.max(Math.min(255, r), 0);
+    g = Math.max(Math.min(255, g), 0);
+    b = Math.max(Math.min(255, b), 0);
 
-        //heat map color logic that changes 
-        //the brighter the color the higher the emissions
-backgroundColor(c) {
-    const dataset = c.dataset.data;
-    const value = dataset[c.dataIndex]?.v || 0;
-     if (value > 0) { console.log('[TEST 4] backgroundColor called with v:', value); } // ← ADD THIS
+    return `rgb(${r}, ${g}, ${b})`;
+}
+    const data = c.dataset.data;
+    const point = data[c.dataIndex];
 
-    if (value === 0) {
-        return 'rgba(200, 200, 200, 0.05)';
+    const currentDate = point?.d;
+   
+    // Get CSS variables 
+    const styles = getComputedStyle(document.body);
+    const low = styles.getPropertyValue('--low-carbon').trim();
+    const avg = styles.getPropertyValue('--avg-carbon').trim();
+    const high = styles.getPropertyValue('--high-carbon').trim();
+
+    //convert from hex to rgba
+    function hexToRgba(hex, alpha) {
+        const bigint = parseInt(hex.replace('#', ''), 16);
+        const r = (bigint >> 16) & 255;
+        const g = (bigint >> 8) & 255;
+        const b = bigint & 255;
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
 
-    const { p50, p75 } = cachedThresholds;
 
-    // GREEN (bottom 50%)
-    if (value < p50) {
-        const p = p50 > 0 ? value / p50 :0;
-        const g = Math.round(120 + (p * 135));
-        return `rgb(0, ${g}, 0)`;
+    // Calculate total for the day
+    const dayTotal = data
+        .filter(d => d.d === currentDate)
+        .reduce((sum, d) => sum + (d.v || 0), 0);
+
+    if (dayTotal === 0) {
+        return 'rgba(200, 200, 200, 0.1)';
     }
 
-    // YELLOW (50%–75%)
-    if (value < p75) {
-        const range = (p75 - p50);
-        const p = range > 0 ? (value - p50) / range : 0;
-        const r = Math.round(180 + (p * 75));
-        const g = Math.round(150 + (p * 105));
-        return `rgb(${r}, ${g}, 0)`;
-    }
+    const SESSION_BUDGET = window.sessionBudget || 5;
+    if (SESSION_BUDGET <= 0) return '#999';
 
-    // RED (top 25%)
-    const max = Math.max(...dataset.map(d => d.v));
-    const p = (value - p75) / (max - p75 || 1);
-    const r = Math.round(180 + (p * 75));
-    return `rgb(${r}, 0, 0)`;
+    const percent = (dayTotal / SESSION_BUDGET) * 100;
+
+    let alpha;
+
+    if (percent <= 1) {
+       alpha = 0.4 + (percent / 1) * 0.6;
+        return hexToRgba(low, alpha);
+    }   // green 
+    if (percent <= 5) {
+       const p = (percent - 1) / 4;
+        alpha = 0.4 + p * 0.6;
+        return hexToRgba(avg, alpha);
+    }    // orange 
+    
+    
+    const p = Math.min((percent - 5) / 15, 1);
+    alpha = 0.4 + p * 0.6;
+
+    return hexToRgba(high, alpha);   // red 
+                                      // they're all defined in the css
 },
             borderColor: '#39FF14',
             borderRadius: 1,
@@ -154,7 +185,6 @@ backgroundColor(c) {
 
     //scales block
     const scales = {
-        //y axis
         y: {
             type: 'linear',
             position: 'right',
@@ -162,7 +192,7 @@ backgroundColor(c) {
             min: 1,
             max: 7,
             ticks: {
-                color: '#ffffff',
+                color:'#ffffff',
                 stepSize: 1,
                 callback: function (value) {
                     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -181,12 +211,11 @@ backgroundColor(c) {
                 display:false
             }
         },
-        //x axis
        x: {
     type: 'time',
     position: 'bottom',
-    offset: true, 
-    bounds: 'ticks', 
+    offset: true, // This stops the skewing by giving columns room
+    bounds: 'ticks', // This stops the blocks from vanishing
     time: {
         unit: 'week',
         round:'week',
@@ -195,9 +224,8 @@ backgroundColor(c) {
             week: 'MMM dd'
         }
     },
-    //ticks settings
     ticks: {
-        color: '#ffffff',
+        color:'#ffffff',
         source: 'auto', 
         maxRotation: 45,
         minRotation: 45,
@@ -213,25 +241,6 @@ backgroundColor(c) {
     border: { display: false }
 }
     };
-
-    function getPercentileThresholds(data) {
-    const values = data
-        .map(d => d.v)
-        .filter(v => v >0)
-        .sort((a, b) => a - b);
-
-    if (values.length === 0) {
-        return { p50: 0, p75: 0 };
-    }
-
-    const p50Index = Math.floor(values.length * 0.5);
-    const p75Index = Math.floor(values.length * 0.75);
-
-    return {
-        p50: values[p50Index],
-        p75: values[p75Index]
-    };
-}
 
     // config
     const config = {
@@ -267,6 +276,8 @@ backgroundColor(c) {
             }
         }
     };
+
+    // --- TO CONNECT THE BUTTON ---
     const testBtn = document.getElementById('testBtn');
     if (testBtn) {
         testBtn.addEventListener('click', function () {
@@ -274,13 +285,12 @@ backgroundColor(c) {
         });
     }
 
-    let cachedThresholds = { p50: 0, p75: 0 };
 
+   
     let heatChart;
     const heatCtx = document.getElementById('myChart');
     if (heatCtx) {
         heatChart = new Chart(heatCtx, config);
-        console.log('[TEST 1] heatChart initialized:', heatChart ? 'OK' : 'FAILED');
     }
 
 
@@ -395,154 +405,19 @@ backgroundColor(c) {
     }
     
 
-    // const radarData = {
-    //     baseColour: generateColors(0),
-    //     labels: [],
-    //     datasets: [{
-    //         data: [],
-    //         // backgroundColor: baseColour + '0x51',
-    //         // borderColor: baseColour,
-    //         // pointBackgroundColor: baseColour + '0x51',
-    //         // pointBorderColor: '#fff',
-    //         // pointHoverBackgroundColor: '#fff',
-    //         // pointHoverBorderColor: baseColour + '0x51',
-    //         backgroundColor: 'rgba(255, 99, 132, 0.2)',
-    //         borderColor: 'rgb(255, 99, 132)',
-    //         pointBackgroundColor: 'rgb(255, 99, 132)',
-    //         pointBorderColor: '#fff',
-    //         pointHoverBackgroundColor: '#fff',
-    //         pointHoverBorderColor: 'rgb(255, 99, 132)',
-    //         fill: true,
-    //         // borderColor:'0d0d0d',
-    //         }],
-    //     // datasets: [{
-    //     //     label: 'My First Dataset',
-    //     //     data: [65, 59, 90, 81, 56, 55, 40],
-    //     //     fill: true,
-    //     //     backgroundColor: 'rgba(255, 99, 132, 0.2)',
-    //     //     borderColor: 'rgb(255, 99, 132)',
-    //     //     pointBackgroundColor: 'rgb(255, 99, 132)',
-    //     //     pointBorderColor: '#fff',
-    //     //     pointHoverBackgroundColor: '#fff',
-    //     //     pointHoverBorderColor: 'rgb(255, 99, 132)'
-    //     // }, {
-    //     //     label: 'My Second Dataset',
-    //     //     data: [28, 48, 40, 19, 96, 27, 100],
-    //     //     fill: true,
-    //     //     backgroundColor: 'rgba(54, 162, 235, 0.2)',
-    //     //     borderColor: 'rgb(54, 162, 235)',
-    //     //     pointBackgroundColor: 'rgb(54, 162, 235)',
-    //     //     pointBorderColor: '#fff',
-    //     //     pointHoverBackgroundColor: '#fff',
-    //     //     pointHoverBorderColor: 'rgb(54, 162, 235)'
-    //     // }]
-    // };
-
-
-    // const radarConfig = {
-    //     type: 'radar',
-    //     data: radarData,
-    //     options: {
-    //         elements: {
-    //         line: {
-    //             borderWidth: 3
-    //         }
-    //         }
-    //     },
-    // };
-
-    
-
-    // let newRadarChart;
-    // const renderedRadar = document.getElementById('RadarChart');
-    // if (renderedRadar) {
-    //     newRadarChart = new Chart(renderedRadar, radarConfig);
-    // }
-
-
     window.addEventListener('message', event => {
-    const message = event.data;
-    console.log('[TEST 7] Message received:', message.command); // ← ADD THIS
-    if (message.command === 'updateData') {
+        const message = event.data;
+        if (message.command === 'updateData') {
 
-        if (message.heatMapData && heatChart) {
-            //Get Today's date in LOCAL YYYY-MM-DD format
-            const t = new Date();
-            const todayLocal = `${t.getFullYear()}-${String(t.getMonth() + 1).padStart(2, '0')}-${String(t.getDate()).padStart(2, '0')}`;
-
-            //Map the data while fixing the "shifting date" bug
-            const sanitizedData = message.heatMapData.map(point => {
-                // Instead of new Date(point.x), we split the string to keep it LOCAL
-                const parts = point.x.split('-');
-                const actualDate = new Date(parts[0], parts[1] - 1, parts[2]);
-                const day = actualDate.getDay(); // 0=Sun, 1=Mon...
-                
-                return {
-                    ...point,
-                    y:(day === 0 ? 7 : day) // Matches your 1-7 Mon-Sun scale
-                };
-            });
-
-            // check if the backend send data for today?
-            const todayMatch = sanitizedData.find(d => d.x === todayLocal);
-            
-            if (todayMatch) {
-                console.log("SUCCESS: Found real data for today:", todayMatch);
-            } else {
-                // ONLY if today is missing, add a placeholder so the grid isn't empty
-                console.log("Adding placeholder for today:", todayLocal);
-                sanitizedData.push({
-                    x: todayLocal,
-                    y: parseInt(isoDayOfWeek(new Date())),
-                    d: todayLocal,
-                    v: 0
-                });
-            }
-
-            // Update the chart
-            cachedThresholds = getPercentileThresholds(sanitizedData);
-
-// Pre-compute all colors BEFORE giving data to Chart.js
-const computedColors = sanitizedData.map(point => {
-    const value = point.v || 0;
-    if (value === 0) return 'rgba(200, 200, 200, 0.05)';
-
-    const { p50, p75 } = cachedThresholds;
-
-    if (value < p50) {
-        const p = p50 > 0 ? value / p50 : 0;
-        const g = Math.round(120 + (p * 135));
-        return `rgb(0, ${g}, 0)`;
+            if (message.sessionBudget !== undefined) {
+        window.sessionBudget = message.sessionBudget;
     }
-    if (value < p75) {
-        const range = p75 - p50;
-        const p = range > 0 ? (value - p50) / range : 0;
-        const r = Math.round(180 + (p * 75));
-        const g = Math.round(150 + (p * 105));
-        return `rgb(${r}, ${g}, 0)`;
-    }
-    const max = Math.max(...sanitizedData.map(d => d.v));
-    const p = (value - p75) / (max - p75 || 1);
-    const r = Math.round(180 + (p * 75));
-    return `rgb(${r}, 0, 0)`;
-});
 
-try {
-                console.log('[TEST 2] Non-zero data points:', sanitizedData.filter(d => d.v > 0).length);
-                console.log('[TEST 2] cachedThresholds:', cachedThresholds);
-                console.log('[TEST 2] computedColors sample:', computedColors.slice(0, 5));
-                heatChart.data.datasets[0].backgroundColor = computedColors;
-                heatChart.data.datasets[0].data = sanitizedData;
-                heatChart.update('none');
-                console.log('[TEST 2] heatChart.update() called');
-
-                console.log('[TEST 6] Non-zero points:', sanitizedData.filter(d => d.v > 0).map(d => ({ x: d.x, v: d.v, y: d.y })));
-            } catch(err) {
-                console.error('[TEST 5] CRASH:', err);
+            // live emission by model data from backend
+            if (message.heatMapData && heatChart) {
+                heatChart.data.datasets[0].data = message.heatMapData;
+                heatChart.update();
             }
-        }
-
-        // --- Keep your Model Chart and Budget logic below as is ---
             if (message.radarData && radarChart) {
                 const hasData = message.radarData.labels.length > 0;
                 const emptyMsg = document.getElementById('radar-empty-msg');
@@ -569,10 +444,10 @@ try {
                 if (phoneEmptyMsg) { phoneEmptyMsg.innerText = message.conversionData.phoneCharges === 0 ? "Equivalent to charging 0 iPhone 17s" : `Equivalent to charging ${message.conversionData.phoneCharges.toFixed(2)} iPhone 17s`; }
                 if (treeEmptyMsg) { treeEmptyMsg.innerText = message.conversionData.treeYearlyAbsorption === 0 ? "Equivalent to the carbon absorption of 0 trees" : `Equivalent to the carbon absorption of ${message.conversionData.treeYearlyAbsorption.toFixed(2)} trees`; }
             }
-        if (message.modelLabels && message.modelEmissions) {
-            const hasData = message.modelLabels.length > 0;
-            const emptyMsg = document.getElementById('model-empty-msg');
-            if (emptyMsg) { emptyMsg.style.display = hasData ? 'none' : 'block'; }
+            if (message.modelLabels && message.modelEmissions) {
+                const hasData = message.modelLabels.length > 0;
+                const emptyMsg = document.getElementById('model-empty-msg');
+                if (emptyMsg) { emptyMsg.style.display = hasData ? 'none' : 'block'; }
 
                 modelEmissionsChart.data.labels = message.modelLabels;
                 modelEmissionsChart.data.datasets[0].data = message.modelEmissions;
@@ -601,18 +476,31 @@ try {
             // }
 
 
-            const totalEmissions = message.modelEmissions.reduce((sum, current) => sum + current, 0);
-            const SESSION_BUDGET = message.sessionBudget !== undefined ? message.sessionBudget : 5;
-            let percentUsed = SESSION_BUDGET > 0 ? (totalEmissions / SESSION_BUDGET) * 100 : 0;
-            const visualWidth = Math.min(percentUsed, 100);
+                //budget prgess bar update logic
+                // calculate total session emissions by summing the array
+                const totalEmissions = message.modelEmissions.reduce((sum, current) => sum + current, 0);
 
-            const fillEl = document.getElementById('session-progress-fill');
-            const pctEl = document.getElementById('session-percent-used');
-            const rightEl = document.getElementById('session-text-right');
+                // Hardcoding a budget limit for testing  
 
-            fillEl.style.width = visualWidth + '%';
-            pctEl.innerText = percentUsed.toFixed(1) + '% used';
-            rightEl.innerText = totalEmissions.toFixed(5) + 'g / ' + SESSION_BUDGET + 'g CO₂e';
+                const SESSION_BUDGET = message.sessionBudget !== undefined ? message.sessionBudget : 5;
+
+                // calculate percentage 
+                let percentUsed = 0;
+                if (SESSION_BUDGET > 0) {
+                    percentUsed = (totalEmissions / SESSION_BUDGET) * 100;
+                }
+
+                // capping visual width at 100% for display purposes
+                const visualWidth = Math.min(percentUsed, 100);
+
+                // update the progress bar and text elements
+                const fillEl = document.getElementById('session-progress-fill');
+                const pctEl = document.getElementById('session-percent-used');
+                const rightEl = document.getElementById('session-text-right');
+
+                fillEl.style.width = visualWidth + '%';
+                pctEl.innerText = percentUsed.toFixed(1) + '% used';
+                rightEl.innerText = totalEmissions.toFixed(5) + 'g / ' + SESSION_BUDGET + 'g CO₂e';
 
                 // change colour to red if over 90% of budget is used
                 if (percentUsed >= 66.6) {
