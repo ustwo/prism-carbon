@@ -8,30 +8,13 @@
     // exposing the API gloablly so graph.js can use it
     window.vscodeAPI = vscode;
 
-    const startDateInput = document.getElementById('start-date');
-    const endDateInput = document.getElementById('end-date');
-
-    // Function to gather dates and send them to the backend
-    function sendDateRangeUpdate() {
-        // We convert the HTML date string ("YYYY-MM-DD") into an integer timestamp.
-        // We set start to the very beginning of the day, and end to the very end of the day.
-        const startTimestamp = startDateInput.value ? new Date(startDateInput.value).setHours(0, 0, 0, 0) : null;
-        const endTimestamp = endDateInput.value ? new Date(endDateInput.value).setHours(23, 59, 59, 999) : null;
-
-        vscode.postMessage({ 
-            command: 'setDateRange', 
-            startDate: startTimestamp, 
-            endDate: endTimestamp 
+    const resetBtn = document.getElementById('reset-btn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            vscode.postMessage({ command: 'triggerReset' });
         });
     }
-
-    // Listen for changes on both inputs
-    if (startDateInput) {
-        startDateInput.addEventListener('change', sendDateRangeUpdate);
-    }
-    if (endDateInput) {
-        endDateInput.addEventListener('change', sendDateRangeUpdate);
-    }
+    
 
     const setBudgetBtn = document.getElementById('set-budget-btn');
     if (setBudgetBtn) {

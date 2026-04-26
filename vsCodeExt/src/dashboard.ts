@@ -14,10 +14,7 @@ export class CarbonDashboardPanel {
     private readonly _extensionUri: vscode.Uri;
     
     private _selectedBranches: string[] | null = null;
-    // state variables to hold the selected date range as timestamps
-
-    private _startDate: number | null = null;
-    private _endDate: number | null = null;
+    
 
 
     private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
@@ -57,12 +54,20 @@ export class CarbonDashboardPanel {
                         this._sendData();
                         return;
                    
-                    case 'setDateRange':
-                        // Captures the dates sent from the frontend and trigger a UI refresh
-                        this._startDate = message.startDate;
-                        this._endDate = message.endDate;
-                        this._sendData(); 
-                        return;
+                    case 'triggerReset':
+                        vscode.window.showWarningMessage(
+
+                            'Are you sure you want to reset? The budget will track call from now onwards, all historical data is preserved',
+                            {modal: true},
+                            'Yes, Reset'
+                        ).then( selection =>{
+                            if (selection === 'Yes, Reset') {
+                                vscode.commands.executeCommand('ecode.clearStore');
+
+                            }
+                        });
+                        return
+                
                     case 'setBudget':
                         vscode.window.showInputBox({
                             prompt: "Enter new session budget in grams of CO2 (gCO2e)",
@@ -127,29 +132,22 @@ export class CarbonDashboardPanel {
         const allCalls = require('./extension').wrappedGetCall();
         
 
-        const calls = allCalls.filter((c: any) => {
-            if (this._selectedBranches !== null && !this._selectedBranches.includes(c.Branch || "Unknown Branch")) {
-                return false; // Skip calls that are not in the selected branches
-            }   
+        const budgetWindowStart = require('./extension').wrappedGetBudgetWindowStart();
 
-
-        // Filter calls based on the selected branch for the dashboard widgets
-        const call = this._selectedBranches === null
+        // Branch-filtered calls for pie chart, average
+        const calls = this._selectedBranches === null
             ? allCalls
             : allCalls.filter((c: any) => this._selectedBranches!.includes(c.Branch || "Unknown Branch"));
 
-
-        // Check Date Range
-        const callTime = new Date(c.DateTime).getTime();
-        if (this._startDate !== null && callTime < this._startDate) return false;
-        if (this._endDate !== null && callTime > this._endDate) return false;
-        
-        return true;
+        // Windowed calls  only those after the budget reset point --> for budget bar only
+        const windowedCalls = allCalls.filter((c: any) => {
+            const callTime = new Date(c.DateTime).getTime();
+            return callTime >= budgetWindowStart;
         });
-
-        const totalRepoEmissions = calls.reduce(
+        const totalRepoEmissions = windowedCalls.reduce(
             (sum: number, call: any) => sum + call.Emissions, 0
         );
+
         
         
         
@@ -348,13 +346,7 @@ export class CarbonDashboardPanel {
                     <div class="budget-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; margin-top: 15px; flex-wrap: wrap; gap: 10px;">
                         <button id="set-budget-btn" style="padding: 5px 10px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Set Budget</button>
                         
-                        <div style="display: flex; gap: 10px; align-items: center; font-size: 0.9rem;">
-                            <label for="start-date" style="color: var(--text-color);">Start:</label>
-                            <input type="date" id="start-date" style="padding: 4px; border-radius: 4px; border: 1px solid var(--secondary-text); background: var(--base-variant); color: var(--text-color);">
-                            
-                            <label for="end-date" style="color: var(--text-color);">End:</label>
-                            <input type="date" id="end-date" style="padding: 4px; border-radius: 4px; border: 1px solid var(--secondary-text); background: var(--base-variant); color: var(--text-color);">
-                        </div>
+                     <button id="reset-btn" style="padding: 5px 10px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Reset</button>   
                     </div>
 
                 <div class="budget-tracker-container">
