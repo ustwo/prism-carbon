@@ -97,73 +97,55 @@ const getChartTextColor = () => getComputedStyle(document.body).getPropertyValue
          
          
          
-   backgroundColor(c) {
-    function adjustColor(hex, factor) {
-    const num = parseInt(hex.replace('#', ''), 16);
+backgroundColor(c) {
+    const point = c.dataset.data[c.dataIndex];
+    if (!point || point.v === 0) return 'rgba(200, 200, 200, 0.1)';
 
-    let r = (num >> 16) + factor;
-    let g = ((num >> 8) & 0x00FF) + factor;
-    let b = (num & 0x0000FF) + factor;
+    const SESSION_BUDGET = window.sessionBudget || 100;
+    const percent = point.v / SESSION_BUDGET;
 
-    r = Math.max(Math.min(255, r), 0);
-    g = Math.max(Math.min(255, g), 0);
-    b = Math.max(Math.min(255, b), 0);
-
-    return `rgb(${r}, ${g}, ${b})`;
-}
-    const data = c.dataset.data;
-    const point = data[c.dataIndex];
-
-    const currentDate = point?.d;
-   
-    // Get CSS variables 
     const styles = getComputedStyle(document.body);
-    const low = styles.getPropertyValue('--low-carbon').trim();
-    const avg = styles.getPropertyValue('--avg-carbon').trim();
-    const high = styles.getPropertyValue('--high-carbon').trim();
 
-    //convert from hex to rgba
-    function hexToRgba(hex, alpha) {
+    function lerp(a, b, t) {
+        return a + (b - a) * t;
+    }
+
+    function hexToRgb(hex) {
         const bigint = parseInt(hex.replace('#', ''), 16);
-        const r = (bigint >> 16) & 255;
-        const g = (bigint >> 8) & 255;
-        const b = bigint & 255;
-        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        return {
+            r: (bigint >> 16) & 255,
+            g: (bigint >> 8) & 255,
+            b: bigint & 255
+        };
     }
 
-
-    // Calculate total for the day
-    const dayTotal = data
-        .filter(d => d.d === currentDate)
-        .reduce((sum, d) => sum + (d.v || 0), 0);
-
-    if (dayTotal === 0) {
-        return 'rgba(200, 200, 200, 0.1)';
+    function mix(c1, c2, t) {
+        const a = hexToRgb(c1);
+        const b = hexToRgb(c2);
+        return `rgb(${Math.round(lerp(a.r, b.r, t))},
+                    ${Math.round(lerp(a.g, b.g, t))},
+                    ${Math.round(lerp(a.b, b.b, t))})`;
     }
 
-    const SESSION_BUDGET = window.sessionBudget || 5;
-    if (SESSION_BUDGET <= 0) return '#999';
+    let start, end, t;
 
-    const percent = (dayTotal / SESSION_BUDGET) * 100;
+    if (percent <= 0.01) {
+        t = percent / 0.01;
+        start = styles.getPropertyValue('--green-start').trim();
+        end   = styles.getPropertyValue('--green-end').trim();
 
-    let alpha;
+    } else if (percent <= 0.05) {
+        t = (percent - 0.01) / 0.04;
+        start = styles.getPropertyValue('--yellow-start').trim();
+        end   = styles.getPropertyValue('--yellow-end').trim();
 
-    if (percent <= 1) {
-       alpha = 0.4 + (percent / 1) * 0.6;
-        return hexToRgba(low, alpha);
-    }   // green 
-    if (percent <= 5) {
-       const p = (percent - 1) / 4;
-        alpha = 0.4 + p * 0.6;
-        return hexToRgba(avg, alpha);
-    }    // orange 
-    
-    
-    const p = Math.min((percent - 5) / 15, 1);
-    alpha = 0.4 + p * 0.6;
+    } else {
+        t = Math.min((percent - 0.05) / 0.2, 1);
+        start = styles.getPropertyValue('--red-start').trim();
+        end   = styles.getPropertyValue('--red-end').trim();
+    }
 
-    return hexToRgba(high, alpha);   // red 
-                                      // they're all defined in the css
+    return mix(start, end, t);
 },
             borderColor: '#39FF14',
             borderRadius: 1,

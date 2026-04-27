@@ -12,6 +12,12 @@
     --theme-button-icon: #ffffff;
     --grid-border: #2e7d32;
     --chart-text: #666666;
+    --green-start: #dcfce7;
+    --green-end:   #15803d;
+    --yellow-start: #fef9c3;
+    --yellow-end:   #ca8a04;
+    --red-start: #fee2e2;
+    --red-end:   #991b1b;
 }
 
 /* body {
@@ -40,6 +46,12 @@
     --theme-button-icon: #000000;
     --grid-border: #39FF14;
     --chart-text: #ffffff;
+    --green-start: #15803d;
+    --green-end:   #63f699;
+    --yellow-start: #c48705;
+    --yellow-end:   #f4d67d;
+    --red-start: #991b1b;
+    --red-end:   #f16a6a;
 }
 
 html, body {
