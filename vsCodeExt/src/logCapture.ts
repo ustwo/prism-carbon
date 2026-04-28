@@ -66,11 +66,11 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
             console.log("testing testing ",model);
 
             if (model.startsWith('gpt-5')){
-                var effort:RegExpMatchArray | null = rawLog.match(effortLevel);
-                if (effort === null){effort = ["medium"];}
-
+                var efforts:RegExpMatchArray | null = rawLog.match(effortLevel);
+                if (efforts === null){efforts = ["medium"];}
+                
                 console.log("gpt model caught");
-                GPTs.push(model);
+                GPTs.push(model+"-"+efforts[0]);
                 newGPTFlag = true;
             };
 
