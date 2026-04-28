@@ -303,6 +303,7 @@ window.addEventListener("message", event => {
     }
 
     if (message.command === "workspaceBranches") {
+        if(JSON.stringify(workspaceBranches) === JSON.stringify(message.data)) return;
         workspaceBranches = message.data;
         dropDownTool.innerHTML = "";
 
@@ -341,6 +342,13 @@ window.addEventListener("message", event => {
                 }
                 updateSelectedBranchesCount();
                 drawGraphs();
+
+                if (window.vscodeAPI) {
+                    window.vscodeAPI.postMessage({ 
+                        command: 'filterByBranch', 
+                        branches: Array.from(selectedBranches) 
+                    });
+                }
             });
 
             const branchName = document.createElement("span");

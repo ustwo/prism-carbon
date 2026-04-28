@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as budget from './budget';
 import * as extension from './extension';
 import { domainToASCII } from 'url';
+import { all } from 'axios';
 
 
 
@@ -11,7 +12,9 @@ export class CarbonDashboardPanel {
     private readonly _panel: vscode.WebviewPanel;
     private _disposables: vscode.Disposable[] = [];
     private readonly _extensionUri: vscode.Uri;
-    private _selectedBranch: string = 'all';
+    
+    private _selectedBranches: string[] | null = null;
+    
 
 
     private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
@@ -50,10 +53,21 @@ export class CarbonDashboardPanel {
                     case 'frontEndReady':
                         this._sendData();
                         return;
+                   
                     case 'triggerReset':
-                        // When the button is clicked, run your clear command!
-                        vscode.commands.executeCommand('ecode.clearStore');
-                        return;
+                        vscode.window.showWarningMessage(
+
+                            'Are you sure you want to reset? The budget will track call from now onwards, all historical data is preserved',
+                            {modal: true},
+                            'Yes, Reset'
+                        ).then( selection =>{
+                            if (selection === 'Yes, Reset') {
+                                vscode.commands.executeCommand('ecode.clearStore');
+
+                            }
+                        });
+                        return
+                
                     case 'setBudget':
                         vscode.window.showInputBox({
                             prompt: "Enter new session budget in grams of CO2 (gCO2e)",
@@ -67,7 +81,7 @@ export class CarbonDashboardPanel {
                         return;
 
                         case 'filterByBranch':
-                            this._selectedBranch = message.branch;
+                            this._selectedBranches = message.branches;
                             this._sendData(); // Update the dashboard with the new branch filter
                             return;
                 }
@@ -111,16 +125,33 @@ export class CarbonDashboardPanel {
     }
 
     private _sendData() {
+
+        
         // Aggregate emissions by model from stored calls
         const sessionBudget = require('./extension').wrappedGetBudget();
         const allCalls = require('./extension').wrappedGetCall();
+        
 
-        // Filter calls based on the selected branch for the dashboard widgets
-        const calls = this._selectedBranch === 'all'
+        const budgetWindowStart = require('./extension').wrappedGetBudgetWindowStart();
+
+        // Branch-filtered calls for pie chart, average
+        const calls = this._selectedBranches === null
             ? allCalls
-            : allCalls.filter((c: any) => (c.Branch || "Unknown Branch") === this._selectedBranch);
+            : allCalls.filter((c: any) => this._selectedBranches!.includes(c.Branch || "Unknown Branch"));
 
-        // calculate mean average of all calls
+        // Windowed calls  only those after the budget reset point --> for budget bar only
+        const windowedCalls = allCalls.filter((c: any) => {
+            const callTime = new Date(c.DateTime).getTime();
+            return callTime >= budgetWindowStart;
+        });
+        const totalRepoEmissions = windowedCalls.reduce(
+            (sum: number, call: any) => sum + call.Emissions, 0
+        );
+
+        
+        
+        
+            // calculate mean average of all calls
         const totalEmissions = calls.reduce((sum: number, call: any) => sum + call.Emissions, 0);
         const averageEmission = calls.length > 0 ? totalEmissions / calls.length : 0;
 
@@ -133,7 +164,7 @@ export class CarbonDashboardPanel {
         const modelEmissions = modelLabels.map(k => modelMap[k]);
 
         const dailyEmissions: Record<string, number> = {};
-        for (const call of calls) {
+        for (const call of allCalls) {
             let subDate = "";
 
             let callDate = new Date(call.DateTime);
@@ -183,7 +214,9 @@ export class CarbonDashboardPanel {
             modelEmissions,
             heatMapData,
             sessionBudget,
-            averageEmission // this is the average emission value calculated from all calls, sent to the frontend to be displayed on the dashboard
+            averageEmission, // this is the average emission value calculated from all calls, sent to the frontend to be displayed on the dashboard
+            totalRepoEmissions // this is the total emissions from all calls, sent to the frontend to be displayed on the dashboard
+        
         });
 
         const branchMap: Record<string, any[]> = {};
@@ -310,11 +343,11 @@ export class CarbonDashboardPanel {
                         <span id="session-percent-used" class="budget-percent">0% used</span>
                         <span id="session-text-right" class="budget-detail">0g / 0g</span>
                     </div>
-                    <div class="budget-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; margin-top: 15px;">
-                        <button id="set-budget-btn" style="padding: 5px 10px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 10px;">Set Budget</button>
-                        <button id="reset-btn" style="padding: 5px 10px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Reset</button>
+                    <div class="budget-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; margin-top: 15px; flex-wrap: wrap; gap: 10px;">
+                        <button id="set-budget-btn" style="padding: 5px 10px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Set Budget</button>
+                        
+                     <button id="reset-btn" style="padding: 5px 10px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Reset</button>   
                     </div>
-                </div>
 
                 <div class="budget-tracker-container">
                     <div class="budget-header">

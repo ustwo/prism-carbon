@@ -213,6 +213,13 @@ header .chartBox {
 .progress-bar-fill.danger {
     background-color: #e74c3c; 
 }
+.progress-bar-fill.warning {
+    background-color: #f39c12; 
+}
+.progress-bar-fill.safe {
+    background-color: #6ccc74;
+}
+
 
 .budget-footer {
     display: flex;

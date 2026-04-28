@@ -8,14 +8,13 @@
     // exposing the API gloablly so graph.js can use it
     window.vscodeAPI = vscode;
 
-    // click listener so reset button can be used
     const resetBtn = document.getElementById('reset-btn');
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-            // sending a message to extension.ts
             vscode.postMessage({ command: 'triggerReset' });
         });
     }
+    
 
     const setBudgetBtn = document.getElementById('set-budget-btn');
     if (setBudgetBtn) {
@@ -268,13 +267,16 @@ backgroundColor(c) {
 
 
     function generateColors(count) {
-        const colors = [];
-        for (let i = 0; i < count; i++) {
-            const hue = Math.floor(i * (360 / count));
-            colors.push('hsl(' + hue + ', 70%, 50%)');
-        }
-        return colors;
+    const colors = [];
+    for (let i = 0; i < count; i++) {
+        // This drops the opacity gradually for each new slice
+        // Starting at solid neon green (1.0) and fading down to slightly transparent (0.2)
+        const alpha = 1 - (i * (0.8 / Math.max(count - 1, 1)));
+        colors.push(`rgba(0, 255, 0, ${alpha.toFixed(2)})`);
+
     }
+    return colors;
+}
 
     const commonOptions = {
         responsive: true,
@@ -289,7 +291,9 @@ backgroundColor(c) {
             labels: [],
             datasets: [{
                 data: [],
-                backgroundColor: generateColors(0)
+                backgroundColor: generateColors(0),
+                borderColor:'0d0d0d',
+                borderWidth:1
             }]
         },
         options: {
@@ -314,6 +318,10 @@ backgroundColor(c) {
     const message = event.data;
     console.log('[TEST 7] Message received:', message.command); // ← ADD THIS
     if (message.command === 'updateData') {
+            const avgCostEl = document.getElementById('average-cost-display');
+            if (avgCostEl && message.averageEmission !== undefined) {
+                avgCostEl.innerText = message.averageEmission.toFixed(4);
+            }
 
         if (message.heatMapData && heatChart) {
             //Get Today's date in LOCAL YYYY-MM-DD format
@@ -398,15 +406,31 @@ try {
             const emptyMsg = document.getElementById('model-empty-msg');
             if (emptyMsg) { emptyMsg.style.display = hasData ? 'none' : 'block'; }
 
-            modelEmissionsChart.data.labels = message.modelLabels;
-            modelEmissionsChart.data.datasets[0].data = message.modelEmissions;
-            modelEmissionsChart.data.datasets[0].backgroundColor = generateColors(message.modelLabels.length);
-            modelEmissionsChart.update();
+                modelEmissionsChart.data.labels = message.modelLabels;
+                modelEmissionsChart.data.datasets[0].data = message.modelEmissions;
+                modelEmissionsChart.data.datasets[0].backgroundColor = generateColors(message.modelLabels.length);
+                modelEmissionsChart.data.datasets[0].borderColor = '#0d0d0d';
+                modelEmissionsChart.data.datasets[0].borderWidth = 1;
+                modelEmissionsChart.update();
 
-            const totalEmissions = message.modelEmissions.reduce((sum, current) => sum + current, 0);
-            const SESSION_BUDGET = message.sessionBudget !== undefined ? message.sessionBudget : 5;
-            let percentUsed = SESSION_BUDGET > 0 ? (totalEmissions / SESSION_BUDGET) * 100 : 0;
-            const visualWidth = Math.min(percentUsed, 100);
+                //budget prgess bar update logic
+                // calculate total session emissions by summing the array
+                const totalEmissions = message.totalRepoEmissions !== undefined
+                    ? message.totalRepoEmissions
+                    : message.modelEmissions.reduce((sum, current) => sum + current, 0);
+
+                // Hardcoding a budget limit for testing  
+
+                const SESSION_BUDGET = message.sessionBudget !== undefined ? message.sessionBudget : 5;
+
+                // calculate percentage 
+                let percentUsed = 0;
+                if (SESSION_BUDGET > 0) {
+                    percentUsed = (totalEmissions / SESSION_BUDGET) * 100;
+                }
+
+                // capping visual width at 100% for display purposes
+                const visualWidth = Math.min(percentUsed, 100);
 
             const fillEl = document.getElementById('session-progress-fill');
             const pctEl = document.getElementById('session-percent-used');
@@ -416,16 +440,19 @@ try {
             pctEl.innerText = percentUsed.toFixed(1) + '% used';
             rightEl.innerText = totalEmissions.toFixed(5) + 'g / ' + SESSION_BUDGET + 'g CO₂e';
 
-            if (percentUsed >= 90) { fillEl.classList.add('danger'); } 
-            else { fillEl.classList.remove('danger'); }
-            
-            if (message.averageEmission !== undefined) {
-                const avgEl = document.getElementById('average-cost-display');
-                if (avgEl) { avgEl.innerText = message.averageEmission.toFixed(4) + ' g'; }
+                                
+                fillEl.classList.remove('safe', 'warning', 'danger');
+
+                if (percentUsed >= 66.6) {
+                    fillEl.classList.add('danger');
+                } else if (percentUsed >= 33.3) {
+                    fillEl.classList.add('warning');
+                } else {
+                    fillEl.classList.add('safe');
+                }
+
             }
         }
-    }
-});
-console.log('[TEST 1] About to send frontEndReady. heatChart exists?', !!heatChart);
+    });
     vscode.postMessage({ command: 'frontEndReady' });
 })();

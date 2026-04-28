@@ -52,11 +52,20 @@ Research into creating a dashboard and adding features
 
 I found it a bit difficult finding clear ways of implementing this as examples when I was initially conducting research were too simple or complex, by doing so research time was also expedited. 
 
+Research into getting more types of green for the pie chart
+
+> Prompt used - " I am creating a pie chart and need to havee all the sections as different types of greens how can i do this"
+
+The result was an equation to reduce the opacity of the green for each slice in the pie chart
+
 <h3>Debugging</h3>
 
 > Prompt used - " I am getting this error (Image was inserted of the error) what does it mean"
 
 The error occured when I would run the webview when I was initially creating it for the dashboard. I was having issues finding a way to alleviate this problem using online resources so I used AI which gave me a reason for this and steps to fix the error.
+
+
+
 
 <h3>Review</h3>
 
