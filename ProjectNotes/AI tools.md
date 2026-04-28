@@ -8,7 +8,7 @@ In some cases during the testing day, testers used Copilot Chat to generate file
 
 <h2>Jacob Connor</h2>
 <p>I, Jacob Connor declare that this document is accurate to my AI usage throughout the course of SEP.</p>
-<p>All models used have been  ChatGPT</p> <br>
+<p>All models used have been  ChatGPT, Claude Sonnet 4.6</p> <br>
 
 <h3>Development</h3>
 
@@ -26,6 +26,11 @@ Research into estimating cached tokens for models which don't directly publishme
 > Prompt used - "I am making a project which tracks tokens of various LLMs used when programming in vscode with copilot currently we are using the log files to catch all tokens revealed by the model Copilot and older GPT models don't reveal cached tokens which are a large portion of the overall tokens how could I best estimate this"
   
   When conducting research into how to estimate the cached tokens we could not find an appropriate solution in time. And have hence not solved this issue and notified the client as gemini and old GPT models were a stretch goal from the begining
+
+> Prompt used - "What is a mathematical fucntion I can use where I can alter the constants to fit around 2 points and the origin which levels out after the second point"
+
+  When conducting research into how best to convert our tokens into carbon emissions for calls which weren't the exact size of our data points.
+  This research was not used as we could not ensure how the tokens to emissions curve grew and hence the most defensible method was to only use the data we have.
 
 <h3>Debugging</h3>
 
