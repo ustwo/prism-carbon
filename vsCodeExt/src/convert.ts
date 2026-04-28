@@ -170,8 +170,12 @@ export function getModel(inputString: string): TieredModel | null {
         return null;
     }
     let defaultModelKey;
+    let reasoningCheckNeeded;
     const exactKey = Object.keys(modelRegistry).find(k => k.toLowerCase() === normalisedInput);
     if (exactKey) {
+        if (["high, medium, low, minimal"].some(item => exactKey.includes(item))) {
+            reasoningCheckNeeded = false;
+        }
         defaultModelKey = null;
     }
     else{
@@ -181,19 +185,20 @@ export function getModel(inputString: string): TieredModel | null {
     const activeModelKey = (exactKey || defaultModelKey) ?? "Unknown Model";
 
     let reasoningLevel;
-    if (["gpt-5-mini", "gpt-5-nano", "gpt-5", "o3", "o4-mini", "o4", "o3-pro", "o3-mini", "o3", "o1"].some(item => activeModelKey.includes(item))) {
-        if (activeModelKey.includes("minimal")){
-            reasoningLevel = "minimal";}
-        else if (activeModelKey.includes("medium")){
-            reasoningLevel = "medium";}
-        else if (activeModelKey.includes("high")){
-            reasoningLevel = "high";}
-        else if (activeModelKey.includes("low")){
-            reasoningLevel = "low";}
-        else {reasoningLevel = "medium";}
-        return modelRegistry[`${activeModelKey+"-"+reasoningLevel}`];
+    if (reasoningCheckNeeded){
+        if (["gpt-5-mini", "gpt-5-nano", "gpt-5", "o3", "o4-mini", "o4", "o3-pro", "o3-mini", "o3", "o1"].some(item => activeModelKey.includes(item))) {
+            if (activeModelKey.includes("minimal")){
+                reasoningLevel = "minimal";}
+            else if (activeModelKey.includes("medium")){
+                reasoningLevel = "medium";}
+            else if (activeModelKey.includes("high")){
+                reasoningLevel = "high";}
+            else if (activeModelKey.includes("low")){
+                reasoningLevel = "low";}
+            else {reasoningLevel = "medium";}
+            return modelRegistry[`${activeModelKey+"-"+reasoningLevel}`];
 
-    }
+        }}
     if (exactKey) {
         return modelRegistry[exactKey];
     }
