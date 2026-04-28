@@ -21,9 +21,24 @@ Research into testing Development time
   
  When conducting research into how to use and test the extensions response to copliot chat I found out that copilot does not allow for this. So I have since decided to research into testing options (without AI)
 
+Research into estimating cached tokens for models which don't directly publishment
+
+> Prompt used - "I am making a project which tracks tokens of various LLMs used when programming in vscode with copilot currently we are using the log files to catch all tokens revealed by the model Copilot and older GPT models don't reveal cached tokens which are a large portion of the overall tokens how could I best estimate this"
+  
+  When conducting research into how to estimate the cached tokens we could not find an appropriate solution in time. And have hence not solved this issue and notified the client as gemini and old GPT models were a stretch goal from the begining
 
 <h3>Debugging</h3>
 
+Debugging time of each call
+
+> Prompt used this is my code how can I change this to be in 24 hour format 
+var lDate:string[] = (new Date(lastAccess).toLocaleString('us-GB', { 
+  })).split(",");
+
+  soltion found
+  > var lDate:string[] = (new Date(lastAccess).toLocaleString('us-GB', { 
+                hour12: false
+            })).split(",");
 <h3>Review</h3>
 
 <h2>Iman</h2>
