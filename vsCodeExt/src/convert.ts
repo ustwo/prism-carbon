@@ -159,12 +159,18 @@ export function getModel(inputString: string): TieredModel | null {
     if (!normalisedInput) {
         return null;
     }
-
+    let defaultModelKey;
     const exactKey = Object.keys(modelRegistry).find(k => k.toLowerCase() === normalisedInput);
-    const defaultModelKey = Object.keys(modelRegistry).find(k => normalisedInput.includes(k.toLowerCase()));
+    if (exactKey) {
+        defaultModelKey = null;
+    }
+    else{
+        defaultModelKey = Object.keys(modelRegistry).find(k => normalisedInput.includes(k.toLowerCase()));
+    }
+    // const defaultModelKey = Object.keys(modelRegistry).find(k => normalisedInput.includes(k.toLowerCase()));
     const activeModelKey = (exactKey || defaultModelKey) ?? "Unknown Model";
 
-    let reasoningLevel
+    let reasoningLevel;
     if (["gpt-5-mini", "gpt-5-nano", "gpt-5", "o3", "o4-mini", "o4", "o3-pro", "o3-mini", "o3", "o1"].some(item => activeModelKey.includes(item))) {
         if (activeModelKey.includes("minimal")){
             reasoningLevel = "minimal";}
@@ -175,6 +181,8 @@ export function getModel(inputString: string): TieredModel | null {
         else if (activeModelKey.includes("low")){
             reasoningLevel = "low";}
         else {reasoningLevel = "medium";}
+        return modelRegistry[`${activeModelKey+"-"+reasoningLevel}`];
+
     }
     if (exactKey) {
         return modelRegistry[exactKey];
