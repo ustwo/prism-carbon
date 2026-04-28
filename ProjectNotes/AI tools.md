@@ -112,7 +112,7 @@ I used AI to review the release.yml file to ensure that it worked before merging
 <h2>Hao Ni</h2>
 <p> I, Hao Ni declare that this document is accurate to my AI usage throughout the course of SEP</p>
 
-<p>All models used have been  ChatGPT and Gemini</p> <br>
+<p>All models used have been  ChatGPT, Gemini, and Claude</p> <br>
 <h3>Development</h3>
 reseach into which papers to look into for carbon to emission formula
 
@@ -126,6 +126,8 @@ I use AI when my code can't run but I can't spot where's the problem
 The problem occur when I finish the implementation of the mode toggle but the switch isn't working and I was having problem finding the bug. The reason is I can't put the .js file and the .css file outside Dashboard.ts and should keep all the js and css part inside getwebview.
 > "Why there's always a Sunday block on the Heat Map even if it's not Sunday?"
 The problem occur because I added a round:week in my code, it can helps round the data to the week, but I set the start of the week as Sunday so it will always show Sunday first.
+> Prompt used - " I am planning to change the heat map yellow base color to #ef6c00 what do you think"
+The problem occur when I try to make the yellow part of the heat map stands out in the dark mode and not seem muddy visually. 
 
 <h3>Review</h3>
 
