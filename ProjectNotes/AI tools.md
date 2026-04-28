@@ -88,7 +88,7 @@ I used AI to review the release.yml file to ensure that it worked before merging
 <h2>Hao Ni</h2>
 <p> I, Hao Ni declare that this document is accurate to my AI usage throughout the course of SEP</p>
 
-<p>All models used have been  ChatGPT and Gemini</p> <br>
+<p>All models used have been ChatGPT and Gemini</p> <br>
 <h3>Development</h3>
 reseach into which papers to look into for carbon to emission formula
 
