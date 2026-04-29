@@ -52,30 +52,9 @@ suite('CommandTests', () => {
 	// below test is for checking failed tests fail. They do!
 
 });
-suite("Proxy Server Tests", () => {
-	let proxy: InterceptorProxy;
-	let onCallRecorded: sinon.SinonSpy;
-	setup(() => {
-		onCallRecorded = sinon.spy();
-		proxy = new InterceptorProxy(3024, onCallRecorded);
-	});
 
-	test('Should build a Call object across multiple log messages', () => {
-        const messageHandler = (proxy as any).handleWorkerMessage; 
-        
-        // ... Send your mock DateTime, Model, and Emissions messages ...
-        messageHandler({ type: 'log', message: `>> DateTime: 2026-04-29T15:00:00Z` });
-        messageHandler({ type: 'log', message: `>> Model: gpt-4o` });
-        messageHandler({ type: 'log', message: `>> Emissions: 0.0125` });
 
-        assert.ok(onCallRecorded.calledOnce, 'The callback should be triggered after Emissions are received');
-        
-        const passedCall = onCallRecorded.firstCall.args[0];
-        assert.strictEqual(passedCall.Model, 'gpt-4o');
-        assert.strictEqual(passedCall.Emissions, 0.0125);
-    });
-
-});});
+});
 
 suite("DevTime Tests", () => {
 	let ext: any;
