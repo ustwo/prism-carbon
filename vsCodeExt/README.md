@@ -60,6 +60,9 @@ Images don't produce a carbon cost - image json response doesn't give tokens, si
   but the research and implementation for carbon measuring is in progress.
 
 
+- In some cases, the zoom functionality on the timeline graph doesn't present the user with a scrollable interface. This results in the lack of granular analysis of data outside the view window
+
+
 ## Supported Models:
 
 ### Open AI
