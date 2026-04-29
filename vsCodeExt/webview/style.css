@@ -1566,3 +1566,27 @@ header .chartBox {
     flex-direction: column;
     justify-content: center;
 }
+
+.scrollable-container {
+    max-height: 450px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+
+.scrollable-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollable-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb {
+    background-color: #40916C;
+    border-radius: 3px;
+}
+
+.scrollable-container::-webkit-scrollbar-thumb:hover {
+    background-color: #52B788;
+}
