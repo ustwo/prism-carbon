@@ -5,24 +5,29 @@ import * as tiktoken from 'tiktoken';
 import * as geminiser from '@lenml/tokenizer-gemini';
 
 
-const splitPattern= /(?<=\[info\].*copilotmd \| success \| .* \| \d+ms \| \[.*)]/g;
 //was used to split the log file at the point of new model
 // this is outdated and not used but may be valuable later
+const splitPattern= /(?<=\[info\].*copilotmd \| success \| .* \| \d+ms \| \[.*)]/g;
 
 const purposePattern = /(?<= \| success \| .* \| \d*ms \| \[)[^\]]*/g; //gets the purpose of the call
 export const modelPattern = /(?<= \| success \| )\S*/g; //gets all the models used in the log file
 
+//returns all the dates
+export const dateRegex = /\d*-\d*-\d* \d*:\d*:\d*.\d*/g; 
 
-
-export const dateRegex = /\d*-\d*-\d* \d*:\d*:\d*.\d*/g; //returns all the dates
-export const claudePattern = /\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)"stop_reason":"end_turn")|(?<=stop_reason":null(.*)"cache_creation_input_tokens":)(\d+)|(?<=stop_reason":null(.*)"cache_read_input_tokens":)(\d+)|(?<=stop_reason":null(.*)"input_tokens":)(\d+)|(?<=stop_reason":"end_turn"(.*)"output_tokens":)(\d+)|(?<=stop_reason":"end_turn",(.*))}}/g;
 //regex to capture Claude model tokens with datetime
-//export const GPT5Pattern =/(?<= gpt-5.*\| \d+ms \| \[.*\]\s*\d*-\d*-\d* \d*:\d*:\d*.\d* \[info\] \[ToolCallingLoop\] Stop hook result: )shouldContinue=false|(?<={"input_tokens":)\d*|(?<=,"input_tokens_details":{"cached_tokens":)\d*|(?<=},"output_tokens":)\d*|(?<=,"output_tokens_details":{"reasoning_tokens":)\d*|(?<= gpt-5.*\| \d+ms \| \[.*\]\s*)\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)shouldContinue=false)/g; 
-export const GPT5Pattern = /(?<= gpt-5.*\| \d+ms \| \[.*\]\s*\d*-\d*-\d* \d*:\d*:\d*.\d* \[info\] \[ToolCallingLoop\] Stop hook result: )shouldContinue=false|(?<={"input_tokens":)\d*|(?<=,"input_tokens_details":{"cached_tokens":)\d*|(?<=},"output_tokens":)\d*|(?<=,"output_tokens_details":{"reasoning_tokens":)\d*|(?<= gpt-5.*\| \d+ms \| \[.*\]\s*)\d*-\d*-\d* \d*:\d*:\d*.\d*|\| success \| gpt-5/g;
-//issues with GPT5+ logging may make this obselete 
+export const claudePattern = /\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)"stop_reason":"end_turn")|(?<=stop_reason":null(.*)"cache_creation_input_tokens":)(\d+)|(?<=stop_reason":null(.*)"cache_read_input_tokens":)(\d+)|(?<=stop_reason":null(.*)"input_tokens":)(\d+)|(?<=stop_reason":"end_turn"(.*)"output_tokens":)(\d+)|(?<=stop_reason":"end_turn",(.*))}}/g;
+
+// this collects all the tokens from GPT models past 5 and the timestamp 
+// n.b - issues with GPT5+ logging may make this obselete
+// should continue = false is the line in the log files for when a call is done 
+export const GPT5Pattern =/(?<= gpt-5.*\| \d+ms \| \[.*\]\s*\d*-\d*-\d* \d*:\d*:\d*.\d* \[info\] \[ToolCallingLoop\] Stop hook result: )shouldContinue=false|(?<={"input_tokens":)\d*|(?<=,"input_tokens_details":{"cached_tokens":)\d*|(?<=},"output_tokens":)\d*|(?<=,"output_tokens_details":{"reasoning_tokens":)\d*|(?<= gpt-5.*\| \d+ms \| \[.*\]\s*)\d*-\d*-\d* \d*:\d*:\d*.\d*(?=(.*)shouldContinue=false)/g; 
+
+
+// gets the reasoning effort level for GPT models 
 export const effortLevel = /(?<=effort":")[^"]*/g;
-//should continue = false is the line in the log files for when a call is done
-//this collects all the tokens from GPT models past 5 and the timestamp 
+
+
 
 //gets Gemini's internal reasoning text
 const geminiReasoningPattern = /(?<=(reasoning_text":"))(.*)(?="}})/g;
@@ -76,7 +81,7 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
             };
 
             switch (model) {
-                case 'claude-haiku-4.5': //adds the specifc claude model to an array of claude models
+                case 'claude-haiku-4.5': //adds specific models to a queue of relevant models
                     console.log("claude-haiku-4.5 found");
                     claudes.push(model);
                     claudeFlag = true;
@@ -136,8 +141,10 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
             times = times.concat(timesG);
         }
 
-        if(geminiFlag) {
-            const enc = geminiser.fromPreTrained();
+        // models below are not currently linked to frontend - see documentation for details 
+
+        if(geminiFlag) { // skeleton support for gemini
+            const enc = geminiser.fromPreTrained(); // initialises Gemini tokeniser
             const outputText = findOutputText(rawLog, geminiTextPattern);
             const outputTokens = enc.encode(outputText).length;
             console.log("\n\nOUTPUT TOKENS: ", outputTokens);
@@ -149,7 +156,7 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
             console.log("REASONING:\n\n", reasoningText);
         }
 
-        if(oldGPTFlag) {
+        if(oldGPTFlag) { // skeleton support for GPT models < gpt-5
             const enc = tiktoken.get_encoding('o200k_base');
             const outputText = findOutputText(rawLog, gptTextPattern);
             const outputTokens = enc.encode(outputText).length;
