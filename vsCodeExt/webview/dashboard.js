@@ -24,15 +24,15 @@
     const warningColor = '#FFBF00'; // Amber
     const dangerColor = '#FF0000';
     const safeColor = '#39FF14';
-
     // click listener so reset button can be used
+
     const resetBtn = document.getElementById('reset-btn');
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-            // sending a message to extension.ts
             vscode.postMessage({ command: 'triggerReset' });
         });
     }
+    
 
     const setBudgetBtn = document.getElementById('set-budget-btn');
     if (setBudgetBtn) {
@@ -388,8 +388,13 @@ backgroundColor(c) {
     
 
     window.addEventListener('message', event => {
-        const message = event.data;
-        if (message.command === 'updateData') {
+    const message = event.data;
+    console.log('[TEST 7] Message received:', message.command); // ← ADD THIS
+    if (message.command === 'updateData') {
+            const avgCostEl = document.getElementById('average-cost-display');
+            if (avgCostEl && message.averageEmission !== undefined) {
+                avgCostEl.innerText = message.averageEmission.toFixed(4);
+            }
 
             if (message.sessionBudget !== undefined) {
         window.sessionBudget = message.sessionBudget;

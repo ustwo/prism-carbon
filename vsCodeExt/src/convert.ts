@@ -1,5 +1,7 @@
 // convert tokens to carbon
 
+import * as models from '../models.json'
+
 // for water:
 // use interface and return 
 interface EnvironmentalImpact {
@@ -38,14 +40,22 @@ export class TieredModel extends LLMModel {
     };
 }
 
-export function setCalculationData(vscode: any): void {
-    // check to see if configuration data already exists:
-    const config = vscode.workspace.getConfiguration("carbonIntensity");
+// export function setCalculationData(vscode: any): void {
+//     // check to see if configuration data already exists:
+//     const config = vscode.workspace.getConfiguration("carbonIntensity");
 
 
-}
+// }
 
 const veryLarge = Number.MAX_SAFE_INTEGER;
+
+const modelFromJson = (key: keyof typeof models): TieredModel => {
+    const model = models[key];
+    return new TieredModel(model.name, [
+        { limit: 2000, energyPerToken: model.tiers[0].energyPerToken/2000 },
+        { limit: veryLarge, energyPerToken: model.tiers[1].energyPerToken/11500 }
+    ]);
+};
 
 
 // energy values used are in wh per token based on the tool from the paper 
@@ -54,59 +64,59 @@ const veryLarge = Number.MAX_SAFE_INTEGER;
 //https://app.powerbi.com/view?r=eyJrIjoiZjVmOTI0MmMtY2U2Mi00ZTE2LTk2MGYtY2ZjNDMzODZkMjlmIiwidCI6IjQyNmQyYThkLTljY2QtNDI1NS04OTNkLTA2ODZhMzJjMTY4ZCIsImMiOjF9
 
 export const modelRegistry: Record<string, TieredModel> = {
-    "o4-mini-high": new TieredModel("OpenAI o4-mini (high)", [{limit: 2000, energyPerToken: 6.13/2000}, { limit: veryLarge, energyPerToken: 5.66/11500 }]),
-    "o3-pro": new TieredModel("OpenAI o3 Pro", [{limit: 2000, energyPerToken: 32.36/2000}, { limit: veryLarge, energyPerToken: 36.08/11500 }]),
-    "o3-mini-high": new TieredModel("OpenAI o3 Mini (high)", [{ limit: 2000, energyPerToken: 5.04/2000 }, { limit: veryLarge, energyPerToken: 8.47/11500 }]),
-    "o3-mini": new TieredModel("OpenAI o3 Mini", [{ limit: 2000, energyPerToken: 1.72/2000 }, { limit: veryLarge, energyPerToken: 2.7/11500 }]),
-    "o3": new TieredModel("OpenAI o3", [{limit: 2000, energyPerToken: 4.32/2000}, { limit: veryLarge, energyPerToken: 5.73/11500 }]),
-    "o1": new TieredModel("OpenAI o1", [{ limit: 2000, energyPerToken: 7.03/2000 }, { limit: veryLarge, energyPerToken: 14.4/11500 }]),
-    "o4": new TieredModel("OpenAI o4 default (o4 high)", [{limit: 2000, energyPerToken: 6.13/2000}, { limit: veryLarge, energyPerToken: 5.66/11500 }]),
+    "o4-mini-high": modelFromJson("o4-mini-high"),
+    "o3-pro": modelFromJson("o3-pro"),
+    "o3-mini-high": modelFromJson("o3-mini-high"),
+    "o3-mini": modelFromJson("o3-mini"),
+    "o3": modelFromJson("o3"),
+    "o1": modelFromJson("o1"),
+    "o4": modelFromJson("o4"),
 
 
 
-    "gpt-5-mini-high": new TieredModel("GPT5 Mini (high)", [{ limit: 2000, energyPerToken: 14.86/2000 }, { limit: veryLarge, energyPerToken: 13.37/11500 }]),
-    "gpt-5-mini-medium": new TieredModel("GPT5 Mini (medium)", [{ limit: 2000, energyPerToken: 4.3/2000 }, { limit: veryLarge, energyPerToken: 3.52/11500 }]),
-    "gpt-5-nano-high": new TieredModel("GPT5 Nano (high)", [{ limit: 2000, energyPerToken: 6.65/2000 }, { limit: veryLarge, energyPerToken: 6.45/11500 }]),
-    "gpt-5-nano-medium": new TieredModel("GPT5 Nano (medium)", [{ limit: 2000, energyPerToken: 3.87/2000 }, { limit: veryLarge, energyPerToken: 3.14/11500 }]),
-    "gpt-5-nano-minimal": new TieredModel("GPT5 Nano (minimal)", [{ limit: 2000, energyPerToken: 0.5/2000 }, { limit: veryLarge, energyPerToken: 0.65/11500 }]),
-    "gpt-5-minimal": new TieredModel("GPT5 (minimal)", [{ limit: 2000, energyPerToken: 3.00/2000 }, { limit: veryLarge, energyPerToken: 4.72/11500 }]),
-    "gpt-5-high": new TieredModel("GPT5 (high)", [{limit: 2000, energyPerToken: 22.16/2000}, { limit: veryLarge, energyPerToken: 21.83/11500 }]),
-    "gpt-5-medium": new TieredModel("GPT5 (medium)", [{limit: 2000, energyPerToken: 11.89/2000}, { limit: veryLarge, energyPerToken: 10.59/11500 }]),
-    "gpt-5-low": new TieredModel("GPT5 (low)", [{limit: 2000, energyPerToken: 5.01/2000}, { limit: veryLarge, energyPerToken: 6.47/11500 }]),
-    "gpt-5-mini": new TieredModel("GPT5 Mini", [{ limit: 2000, energyPerToken: 4.30/2000 }, { limit: veryLarge, energyPerToken: 3.52/11500}]),
-    "gpt-5": new TieredModel("GPT5 (medium)", [{limit: 2000, energyPerToken: 11.89/2000}, { limit: veryLarge, energyPerToken: 10.59/11500 }]),
+    "gpt-5-mini-high": modelFromJson("gpt-5-mini-high"),
+    "gpt-5-mini-medium": modelFromJson("gpt-5-mini-medium"),
+    "gpt-5-nano-high": modelFromJson("gpt-5-nano-high"),
+    "gpt-5-nano-medium": modelFromJson("gpt-5-nano-medium"),
+    "gpt-5-nano-minimal": modelFromJson("gpt-5-nano-minimal"),
+    "gpt-5-minimal": modelFromJson("gpt-5-minimal"),
+    "gpt-5-high": modelFromJson("gpt-5-high"),
+    "gpt-5-medium": modelFromJson("gpt-5-medium"),
+    "gpt-5-low": modelFromJson("gpt-5-low"),
+    "gpt-5-mini": modelFromJson("gpt-5-mini"),
+    "gpt-5": modelFromJson("gpt-5"),
 
 
-    "gpt-4-turbo": new TieredModel("GPT4 Turbo", [{limit: 2000, energyPerToken: 7.01/2000}, { limit: veryLarge, energyPerToken: 10.93/11500 }]),
-    "gpt-4.1-nano": new TieredModel("GPT4.1 Nano", [{ limit: 2000, energyPerToken: 0.36/2000 }, { limit: veryLarge, energyPerToken: 0.57/11500 }]),
-    "gpt-4.1-mini": new TieredModel("GPT4.1 Mini", [{ limit: 2000, energyPerToken: 1.4/2000 }, { limit: veryLarge, energyPerToken: 2.25/11500 }]),
-    "gpt-4.1": new TieredModel("GPT4.1", [{limit: 2000, energyPerToken: 1.85/2000}, { limit: veryLarge, energyPerToken: 2.94/11500 }]),
-    "gpt-4o-2024-11-20": new TieredModel("GPT4o November", [{ limit: 2000, energyPerToken: 1.33/2000 }, { limit: veryLarge, energyPerToken: 3.19/11500 }]),
-    "gpt-4o-2024-08-06": new TieredModel("GPT4o August", [{ limit: 2000, energyPerToken: 1.63/2000 }, { limit: veryLarge, energyPerToken: 2.24/11500 }]),
-    "gpt-4o-2024-05-13": new TieredModel("GPT4o May", [{ limit: 2000, energyPerToken: 2.18/2000 }, { limit: veryLarge, energyPerToken: 3.89/11500}]),
-    "gpt-4o-mini": new TieredModel("GPT4o mini", [{limit: 2000, energyPerToken: 1.65/2000}, { limit: veryLarge, energyPerToken: 3.85/11500 }]),
-    "gpt-4o": new TieredModel("GPT4o", [{ limit: 2000, energyPerToken: 1.30/2000 }, { limit: veryLarge, energyPerToken: 3.47/11500}]),
+    "gpt-4-turbo": modelFromJson("gpt-4-turbo"),
+    "gpt-4.1-nano": modelFromJson("gpt-4.1-nano"),
+    "gpt-4.1-mini": modelFromJson("gpt-4.1-mini"),
+    "gpt-4.1": modelFromJson("gpt-4.1"),
+    "gpt-4o-2024-11-20": modelFromJson("gpt-4o-2024-11-20"),
+    "gpt-4o-2024-08-06": modelFromJson("gpt-4o-2024-08-06"),
+    "gpt-4o-2024-05-13": modelFromJson("gpt-4o-2024-05-13"),
+    "gpt-4o-mini": modelFromJson("gpt-4o-mini"),
+    "gpt-4o": modelFromJson("gpt-4o"),
     
     
-    "claude-haiku-4.5": new TieredModel("Claude Haiku 4.5", [{ limit: 2000, energyPerToken: 4.75/2000 }, { limit: veryLarge, energyPerToken: 8.73/11500 }]),
-    "claude-opus-4.1": new TieredModel("Claude Opus 4.1", [{ limit: 2000, energyPerToken: 6.97/2000 }, { limit: veryLarge, energyPerToken: 13.22/11500 }]),
-    "claude-sonnet-4.5": new TieredModel("Claude Sonnet 4.5", [{ limit: 2000, energyPerToken: 6.44/2000 }, { limit: veryLarge, energyPerToken: 10.11/11500 }]),
-    "claude-sonnet-4": new TieredModel("Claude Sonnet 4", [{ limit: 2000, energyPerToken: 5.63/2000 }, { limit: veryLarge, energyPerToken: 10.02/11500 }]),
-    "claude-opus-4": new TieredModel("Claude Opus 4", [{ limit: 2000, energyPerToken: 5.62/2000 }, { limit: veryLarge, energyPerToken: 10.73/11500 }]),
-    "claude-haiku-3": new TieredModel("Claude Haiku 3", [{ limit: 2000, energyPerToken: 1.77/2000 }, { limit: veryLarge, energyPerToken: 2.74/11500 }]),
-    "claude-sonnet": new TieredModel("Claude Sonnet (Generic - using 4.5 data)", [{ limit: 2000, energyPerToken: 6.44/2000 }, { limit: veryLarge, energyPerToken: 10.11/11500 }]),
-    "claude-haiku": new TieredModel("Claude Haiku (Generic - using 4.5 data)", [{ limit: 2000, energyPerToken: 4.75/2000 }, { limit: veryLarge, energyPerToken: 8.73/11500 }]),
-    "claude-opus": new TieredModel("Claude Opus (Generic - using 4.1 data)", [{ limit: 2000, energyPerToken: 6.97/2000 }, { limit: veryLarge, energyPerToken: 13.22/11500 }]),
+    "claude-haiku-4.5": modelFromJson("claude-haiku-4.5"),
+    "claude-opus-4.1": modelFromJson("claude-opus-4.1"),
+    "claude-sonnet-4.5": modelFromJson("claude-sonnet-4.5"),
+    "claude-sonnet-4": modelFromJson("claude-sonnet-4"),
+    "claude-opus-4": modelFromJson("claude-opus-4"),
+    "claude-haiku-3": modelFromJson("claude-haiku-3"),
+    "claude-sonnet": modelFromJson("claude-sonnet"),
+    "claude-haiku": modelFromJson("claude-haiku"),
+    "claude-opus": modelFromJson("claude-opus"),
 
 
-    "gemini-2.5-pro": new TieredModel("Gemini 2.5 Pro", [{ limit: 2000, energyPerToken: 2.29/2000 }, { limit: veryLarge, energyPerToken: 2.54/11500 }]),
-    "gemini-2.5-flash": new TieredModel("Gemini 2.5 Flash", [{ limit: 2000, energyPerToken: 1.24/2000 }, { limit: veryLarge, energyPerToken: 2.51/11500 }]),
+    "gemini-2.5-pro": modelFromJson("gemini-2.5-pro"),
+    "gemini-2.5-flash": modelFromJson("gemini-2.5-flash"),
     
     // data from this website since other study had no data for gemini models 3+
     // https://www.climatealigned.co/tools/ai-footprint-calculator
 
-    "gemini-3.1-pro": new TieredModel("Gemini 3.1 Pro", [{ limit: 2000, energyPerToken: 1.44/2000 }, { limit: veryLarge, energyPerToken: 10.33/11500 }]),
-    "gemini-3-flash": new TieredModel("Gemini 3 Flash", [{ limit: 2000, energyPerToken: 0.57/2000 }, { limit: veryLarge, energyPerToken: 4.14/11500 }]),
+    "gemini-3.1-pro": modelFromJson("gemini-3.1-pro"),
+    "gemini-3-flash": modelFromJson("gemini-3-flash"),
 
     
     
@@ -159,23 +169,36 @@ export function getModel(inputString: string): TieredModel | null {
     if (!normalisedInput) {
         return null;
     }
-
+    let defaultModelKey;
+    let reasoningCheckNeeded = true;
     const exactKey = Object.keys(modelRegistry).find(k => k.toLowerCase() === normalisedInput);
-    const defaultModelKey = Object.keys(modelRegistry).find(k => normalisedInput.includes(k.toLowerCase()));
+    if (exactKey) {
+        if (["high, medium, low, minimal"].some(item => exactKey.includes(item))) {
+            reasoningCheckNeeded = false;
+        }
+        defaultModelKey = null;
+    }
+    else{
+        defaultModelKey = Object.keys(modelRegistry).find(k => normalisedInput.includes(k.toLowerCase()));
+    }
+    // const defaultModelKey = Object.keys(modelRegistry).find(k => normalisedInput.includes(k.toLowerCase()));
     const activeModelKey = (exactKey || defaultModelKey) ?? "Unknown Model";
 
-    let reasoningLevel
-    if (["gpt-5-mini", "gpt-5-nano", "gpt-5", "o3", "o4-mini", "o4", "o3-pro", "o3-mini", "o3", "o1"].some(item => activeModelKey.includes(item))) {
-        if (activeModelKey.includes("minimal")){
-            reasoningLevel = "minimal";}
-        else if (activeModelKey.includes("medium")){
-            reasoningLevel = "medium";}
-        else if (activeModelKey.includes("high")){
-            reasoningLevel = "high";}
-        else if (activeModelKey.includes("low")){
-            reasoningLevel = "low";}
-        else {reasoningLevel = "medium";}
-    }
+    let reasoningLevel;
+    if (reasoningCheckNeeded){
+        if (["gpt-5-mini", "gpt-5-nano", "gpt-5", "o3", "o4-mini", "o4", "o3-pro", "o3-mini", "o3", "o1"].some(item => activeModelKey.includes(item))) {
+            if (activeModelKey.includes("minimal")){
+                reasoningLevel = "minimal";}
+            else if (activeModelKey.includes("medium")){
+                reasoningLevel = "medium";}
+            else if (activeModelKey.includes("high")){
+                reasoningLevel = "high";}
+            else if (activeModelKey.includes("low")){
+                reasoningLevel = "low";}
+            else {reasoningLevel = "medium";}
+            return modelRegistry[`${activeModelKey+"-"+reasoningLevel}`];
+
+        }}
     if (exactKey) {
         return modelRegistry[exactKey];
     }

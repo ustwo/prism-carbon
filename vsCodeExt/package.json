@@ -192,12 +192,12 @@
   },
   "dependencies": {
     "@lenml/tokenizer-gemini": "^3.7.2",
+    "axios": "^1.13.5",
     "@vscode/codicons": "^0.0.44",
     "@vscode/webview-ui-toolkit": "^1.4.0",
-    "axios": "^1.13.5",
     "chart.js": "^4.5.1",
     "http-proxy": "^1.18.1",
-    "mocha": "^11.3.0",
+    "mocha": "^11.7.5",
     "mockttp": "^4.2.1",
     "styled-components": "^6.4.1",
     "tiktoken": "^1.0.22"

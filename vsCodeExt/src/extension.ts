@@ -98,14 +98,14 @@ export async function activate(context: vscode.ExtensionContext) {
         getLogs(context);
     }));
 
-    const reset = vscode.commands.registerCommand('ecode.clearStore', () => {
-        budg.resetBudget();
+    const reset = vscode.commands.registerCommand('ecode.clearStore', async () => {
+        await budg.resetBudget();
         treeDataProvider.clearTree();
         barManager.updateBar(0);
         //vscode.window.showInformationMessage('Past calls cleared.');
         // state.runningInterceptor = true;
 
-        CarbonDashboardPanel.sendData();
+        CarbonDashboardPanel.sendData(budg);
 
     });
 
@@ -113,7 +113,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // Dashboard command 
     const dashboardCommand = vscode.commands.registerCommand('ecode.openDashboard', () => {
-        CarbonDashboardPanel.createOrShow(context.extensionUri);
+        CarbonDashboardPanel.createOrShow(context.extensionUri, budg);
         console.log('Carbon Dashboard command registered.');
     });
 
@@ -132,7 +132,7 @@ export async function activate(context: vscode.ExtensionContext) {
         if (currentBranch !== lastKnownBranch) {
             lastKnownBranch = currentBranch;
             //Trigger the data recalculation and update the dashboard with the new branch information
-            CarbonDashboardPanel.sendData();
+            CarbonDashboardPanel.sendData(budg);
         }
     });
     context.subscriptions.push(branchChangeListener);
@@ -474,7 +474,7 @@ export function updateTree(call: budget.Call) {
     tree.addMessage("Emissions: " + call.Emissions + "g CO₂e - Model: " + call.Model + " - Date: " + new Date(call.DateTime).toLocaleString());
     
     bar.updateBar(call.Emissions);
-    CarbonDashboardPanel.sendData(); 
+    CarbonDashboardPanel.sendData(budg); 
     
 }
 
@@ -536,6 +536,11 @@ export function wrappedGetCall() {
 export function wrappedGetBudget(): number {
     return budg.getBudget();
 }
+
+export function wrappedGetBudgetWindowStart(): number {
+    return budg.getBudgetWindowStart();
+}
+
 
 export function wrappedSetBudget(newBudget: number): void {
     budg.setBudget(newBudget);

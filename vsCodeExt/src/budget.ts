@@ -24,16 +24,22 @@ export class budget {
         this.callStore = memento;
     }
     async resetBudget(): Promise<void> {
-        await this.callStore.update(this.storeKey, undefined);
+        //Instead of wiping the entire store, we can just reset the budget and the start time for the current budget window. This way, we can maintain the call history while starting a new budget tracking period.
+        await this.callStore.update("budgetWindowStart", Date.now());
     }
 
+    getBudgetWindowStart(): number {
+        // If no budget is set, default to 0
+        return this.callStore.get<number>("budgetWindowStart",0);
+    }
     getBudget(): number {
-        return this.callStore.get<number>("budget", 5);
+    return this.callStore.get<number>("budget", 5);
     }
 
     async setBudget(newBudget: number): Promise<void> {
         await this.callStore.update("budget", newBudget);
     }
+    
 
     updateLimit(): number { // returns the median average of emissions from calls made thus far
         this.calls = this.callStore.get<Call[]>(this.storeKey, []) || [];
