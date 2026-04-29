@@ -1566,7 +1566,7 @@ header .chartBox {
     flex-direction: column;
     justify-content: center;
 }
-
+/* custom scrollbar*/
 .scrollable-container {
     max-height: 450px;
     overflow-y: scroll;

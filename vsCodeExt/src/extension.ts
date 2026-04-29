@@ -69,7 +69,7 @@ export async function activate(context: vscode.ExtensionContext) {
     const disposables: vscode.Disposable[] = [];
 
 
-
+// sets the display for the tree and status bar 
     setDisplay(treeDataProvider, barManager);
 
 
@@ -125,7 +125,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // keep track of the last known branch 
     let lastKnownBranch = getCurrentBranch();
-
+//listens for branch changes and updates dashboard accordingly with new branch information 
     const branchChangeListener = vscode.workspace.onDidChangeWorkspaceFolders(() => {
         const currentBranch = getCurrentBranch();
         // only send new data if the branch has changed                   
@@ -538,8 +538,9 @@ export function wrappedGetCall() {
 export function wrappedGetBudget(): number {
     return budg.getBudget();
 }
-
+// This function is used in the dashboard to determine the start of the current budget tracking window
 export function wrappedGetBudgetWindowStart(): number {
+    
     return budg.getBudgetWindowStart();
 }
 
