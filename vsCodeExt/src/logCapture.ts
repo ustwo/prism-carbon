@@ -70,7 +70,7 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
                 if (efforts === null){efforts = ["medium"];}
                 
                 console.log("gpt model caught");
-                GPTs.push(model+"-"+efforts[0]);
+                GPTs.push(model+"-"+efforts[efforts.length-1]);
                 newGPTFlag = true;
             };
 
