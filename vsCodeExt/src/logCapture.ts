@@ -136,7 +136,7 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
         }
         if(newGPTFlag){
             console.log("checking for GPT pattern");
-            const [timesG,resultsG] = findModel(rawLog,GPT5Pattern,"shouldContinue=false");//returns an array of time stamps and total tokens for all GPT models
+            const [timesG,resultsG] = findModel(rawLog,GPT5Pattern,"| success | gpt-5");//returns an array of time stamps and total tokens for all GPT models
             results = results.concat(resultsG);
             times = times.concat(timesG);
         }
@@ -165,8 +165,6 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
             console.log("OUTPUT:\n\n", outputText);
 
         }
-
-
         //var totalResults = [resultsC,resultsG];
         
         //for (const results of totalResults)
@@ -175,6 +173,7 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
             if (results[i] !== -1) { 
                 activeCall.Model = allModels[i];
                 console.log("MODEL:   "+ activeCall.Model);
+                console.log("reults: ",results[i]);
                 activeCall.Emissions = Number(convert.calculateEmission(activeCall.Model, results[i]).toFixed(4)); 
                 // converts current call's token count to emissions and stores it in the call data structure
                 activeCall.DateTime = times[i]; //apply appropriate time stamp
@@ -210,11 +209,11 @@ export function findModel(log: string,pattern : RegExp,splitString : string): [n
             else{
                 if (match[i].match(dateRegex) !== null){ //if match we are currently looking at is a date make it the timestamp
                     if (!timeFlag){
-                        timestamp.push(new Date(match[i] + "Z").getTime());
+                        timestamp.push(new Date(match[i]).getTime());
                         timeFlag = true;
                     }
                     else{
-                        timestamp[i] = new Date(match[i] + "Z").getTime();
+                        timestamp[i] = new Date(match[i]).getTime();
                     }
                     //add here what to do if flag is off and such
                     
