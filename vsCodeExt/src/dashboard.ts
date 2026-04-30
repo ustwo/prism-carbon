@@ -1,20 +1,18 @@
+/***********************************************************************
+ *                            DASHBOARD.TS                             *
+ *     ACTS AS INTERFACE BETWEEN WEBVIEW FOLDER AND EXTENSION.TS,      *
+ * HANDLES DATA PROCESSING AND COMMUNICATION TO THE DASHBOARD WEBVIEW, *
+ *          ALSO GENERATES THE HTML CONTENT FOR THE WEBVIEW.           *
+ ***********************************************************************/
+
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as budget from './budget';
-// import * as extension from './extension';
-// import { domainToASCII } from 'url';
-// import { all } from 'axios';
-// import {RadarController,
-// LineElement,
-// PointElement} from 'chart.js';
-
-
 
 // created interface for comparison data to be used in the comparisons 
 // widget of the dashboard when implemented - 
 // this will hold equivalent carbon data for different activities 
 // to help users contextualize their emissions
-
 interface comparisonData {
         milesDriven: number;
         hoursOfStreaming: number;
@@ -23,18 +21,13 @@ interface comparisonData {
         treeYearlyAbsorption: number;
     }
 
-
-
 export class CarbonDashboardPanel {
     public static currentPanel: CarbonDashboardPanel | undefined;
     private readonly _panel: vscode.WebviewPanel;
     private _disposables: vscode.Disposable[] = [];
     private readonly _extensionUri: vscode.Uri;
     private _budget: budget.budget;
-    
     private _selectedBranches: string[] | null = null;
-    
-
 
     private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, budg: budget.budget) {
         this._budget = budg
@@ -42,30 +35,6 @@ export class CarbonDashboardPanel {
         this._extensionUri = extensionUri;
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
         this._panel.webview.html = this._getWebviewContent();
-
-        // setTimeout(() => {
-        //   this._panel.webview.postMessage({
-        //     command: "workspaceBranches",
-        //     data: [
-        //       "main",
-        //       "customer/sign-up",
-        //       "customer/favourites",
-        //       "component/footer"
-        //     ]
-        //   });
-        // }, 300);
-
-        // setTimeout(() => {
-        //   this._panel.webview.postMessage({
-        //     command: "commitDots",
-        //     data: {
-        //       main: [{ xAxis: 30, carbon: 35 }, { xAxis: 55, carbon: 10 }, { xAxis: 95, carbon: 110 }],
-        //       "customer/sign-up": [{ xAxis: 110, carbon: 229 }, { xAxis: 175, carbon: 23 }],
-        //       "customer/favourites": [{ xAxis: 210, carbon: 57 }, { xAxis: 245, carbon: 3 }],
-        //       "component/footer": [{ xAxis: 270, carbon: 313 }]
-        //     }
-        //   });
-        // }, 500);
 
         this._panel.webview.onDidReceiveMessage(
             message => {
@@ -134,7 +103,6 @@ export class CarbonDashboardPanel {
         );
 
         CarbonDashboardPanel.currentPanel = new CarbonDashboardPanel(panel, extensionUri, budg);
-        // CarbonDashboardPanel.currentPanel._sendData();
     }
 
     // Call this from extension whenever a new call is recorded to keep the chart live
@@ -159,14 +127,11 @@ export class CarbonDashboardPanel {
 
         
         // Aggregate emissions by model from stored calls
-        // const sessionBudget = require('./extension').wrappedGetBudget();
 
         const sessionBudget = this._budget.getBudget();
         const allCalls = this._budget.getCalls();
-        // const allCalls = require('./extension').wrappedGetCall();
         
 
-        // const budgetWindowStart = require('./extension').wrappedGetBudgetWindowStart();
         const budgetWindowStart = this._budget.getBudgetWindowStart();
 
         // Branch-filtered calls for pie chart, average
@@ -312,9 +277,6 @@ export class CarbonDashboardPanel {
         });
     }
 
-
-
-
     public dispose() {
         CarbonDashboardPanel.currentPanel = undefined;
         this._panel.dispose();
@@ -326,22 +288,11 @@ export class CarbonDashboardPanel {
     // generates the HTML content for the webview
     // importing chart.js for that charts can be drawn and its libraries will handle the math and drawing
     private _getWebviewContent(webview: vscode.Webview = this._panel.webview): string {
-        // const stylePath = path.join(this._extensionUri.fsPath, 'src', 'webview', 'style.css');
-        // const scriptPath = path.join(this._extensionUri.fsPath, 'src', 'webview', 'dashboard.js');
-        // const graphPath = vscode.Uri.file(this._extensionUri.fsPath + '/src/webview/graph.js');
-        // const graphUri = this._panel.webview.asWebviewUri(graphPath);
-        // const darkModePath = path.join(this._extensionUri.fsPath, 'src', 'webview', 'darkmode.js');
-        // const darkModeUri = webview.asWebviewUri(vscode.Uri.file(darkModePath));
-
-
-        // const styleUri = webview.asWebviewUri(vscode.Uri.file(stylePath));
-        // const scriptUri = webview.asWebviewUri(vscode.Uri.file(scriptPath));
 
         const styleUri = webview.asWebviewUri(vscode.Uri.file(path.join(this._extensionUri.fsPath, 'webview', 'style.css')));
         const scriptUri = webview.asWebviewUri(vscode.Uri.file(path.join(this._extensionUri.fsPath, 'webview', 'dashboard.js')));
         const graphUri = webview.asWebviewUri(vscode.Uri.file(path.join(this._extensionUri.fsPath, 'webview', 'graph.js')));
         const darkModeUri = webview.asWebviewUri(vscode.Uri.file(path.join(this._extensionUri.fsPath, 'webview', 'darkmode.js')));
-        // const themeUri = webview.asWebviewUri(vscode.Uri.file(path.join(this._extensionUri.fsPath, 'webview', 'theming.js')));
         return `<!DOCTYPE html>
 <html lang="en">
 

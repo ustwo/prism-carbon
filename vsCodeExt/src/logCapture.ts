@@ -1,3 +1,9 @@
+/***********************************************************
+ *                     LOG CAPTURE.TS                      *
+ * TAKES IN COPILOT LOG FILES, PARSES THEM FOR TOKEN DATA  *
+ * AND RETURNS TO CONVERT.TS FOR PROCESSING AND PRODUCTION *
+ *    OF EMISSION DATA FOR THE DASHBOARD AND TREE VIEW     *
+ ***********************************************************/
 import * as budget from './budget';
 import * as vscode from 'vscode';
 import * as convert from './convert';
@@ -164,9 +170,6 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
             console.log("OUTPUT:\n\n", outputText);
 
         }
-        //var totalResults = [resultsC,resultsG];
-        
-        //for (const results of totalResults)
 
         for(var i = 0; i<results.length;i++){
             if (results[i] !== -1) { 

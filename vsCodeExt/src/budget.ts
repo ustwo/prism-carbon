@@ -1,3 +1,9 @@
+/**********************************************
+ *                 BUDGET.TS                  *
+ * HANDLES CALL STORAGE AND BUDGET MANAGEMENT *
+ * DEFINES A CALL INTERFACE AND BUDGET CLASS  *
+ **********************************************/
+
 import { Memento } from "vscode";
 
 export interface Call {

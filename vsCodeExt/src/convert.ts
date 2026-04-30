@@ -1,4 +1,10 @@
-// convert tokens to carbon
+/*****************************************************************************************
+ *                                      CONVERT.TS                                       *
+ *   HANDLES CONVERSION OF MODEL NAMES AND TOKEN COUNT TO ENERGY AND CARBON ESTIMATES.   *
+ *    USES THE MODEL REGISTRY FROM MODELS.JSON TO CALCULATE RATES BASED ON THE PAPER     *
+ * "HOW HUNGRY IS AI? BENCHMARKING ENERGY, WATER, AND CARBON FOOTPRINT OF LLM INFERENCE" *
+ *                                 BY JEGHAM ET AL. 2025                                 *
+ *****************************************************************************************/
 
 import * as models from '../models.json'
 
@@ -22,8 +28,6 @@ export class TieredModel extends LLMModel {
     ) {
         super();
         this.modelName = modelName;
-        // this.energyPerToken = energyPerToken; // in kwh
-        // this.waterPerToken = waterPerToken; // in ml
     }
 
     calculate(tokens: number): number {
@@ -32,23 +36,17 @@ export class TieredModel extends LLMModel {
             surplusTokens = tokens - 2000;
         }
         const energyRate1 = this.energyTiers[0].energyPerToken; // rate for first 2000 tokens
-        const energyRate2 = this.energyTiers[1].energyPerToken; // rate for tokens beyond 2000 (up to 11500)
+        const energyRate2 = this.energyTiers[1].energyPerToken; // rate for tokens beyond 2000 (taken at the 11500 token data point)
         return ((tokens-surplusTokens) * energyRate1) + (surplusTokens * energyRate2);
-        // // return {
+        // return {
         //     carbon: carbonRate*tokens,
         //     water : waterRate * tokens{}};
     };
 }
 
-// export function setCalculationData(vscode: any): void {
-//     // check to see if configuration data already exists:
-//     const config = vscode.workspace.getConfiguration("carbonIntensity");
-
-
-// }
-
 const veryLarge = Number.MAX_SAFE_INTEGER;
 
+// fetches models from models.json
 const modelFromJson = (key: keyof typeof models): TieredModel => {
     const model = models[key];
     return new TieredModel(model.name, [
@@ -57,13 +55,14 @@ const modelFromJson = (key: keyof typeof models): TieredModel => {
     ]);
 };
 
-
 // energy values used are in wh per token based on the tool from the paper 
 // "How Hungry is AI? Benchmarking Energy, Water, and Carbon Footprint of LLM Inference" by Jegham et al. 2025
-
 //https://app.powerbi.com/view?r=eyJrIjoiZjVmOTI0MmMtY2U2Mi00ZTE2LTk2MGYtY2ZjNDMzODZkMjlmIiwidCI6IjQyNmQyYThkLTljY2QtNDI1NS04OTNkLTA2ODZhMzJjMTY4ZCIsImMiOjF9
 
+// registry is loaded from models.json, and ordered in by specificity of model name
+// to allow for partial matching to filter correctly.
 export const modelRegistry: Record<string, TieredModel> = {
+    // GPT O Models
     "o4-mini-high": modelFromJson("o4-mini-high"),
     "o3-pro": modelFromJson("o3-pro"),
     "o3-mini-high": modelFromJson("o3-mini-high"),
@@ -74,8 +73,7 @@ export const modelRegistry: Record<string, TieredModel> = {
     "o1": modelFromJson("o1"),
     "o4": modelFromJson("o4"),
 
-
-
+    //GPT 5 Models
     "gpt-5-mini-high": modelFromJson("gpt-5-mini-high"),
     "gpt-5-mini-medium": modelFromJson("gpt-5-mini-medium"),
     "gpt-5-nano-high": modelFromJson("gpt-5-nano-high"),
@@ -88,7 +86,7 @@ export const modelRegistry: Record<string, TieredModel> = {
     "gpt-5-mini": modelFromJson("gpt-5-mini"),
     "gpt-5": modelFromJson("gpt-5"),
 
-
+    // GPT 4 Models
     "gpt-4-turbo": modelFromJson("gpt-4-turbo"),
     "gpt-4.1-nano": modelFromJson("gpt-4.1-nano"),
     "gpt-4.1-mini": modelFromJson("gpt-4.1-mini"),
@@ -99,7 +97,7 @@ export const modelRegistry: Record<string, TieredModel> = {
     "gpt-4o-mini": modelFromJson("gpt-4o-mini"),
     "gpt-4o": modelFromJson("gpt-4o"),
     
-    
+    // Anthropic Claude Models
     "claude-haiku-4.5": modelFromJson("claude-haiku-4.5"),
     "claude-opus-4.1": modelFromJson("claude-opus-4.1"),
     "claude-sonnet-4.5": modelFromJson("claude-sonnet-4.5"),
@@ -110,43 +108,17 @@ export const modelRegistry: Record<string, TieredModel> = {
     "claude-haiku": modelFromJson("claude-haiku"),
     "claude-opus": modelFromJson("claude-opus"),
 
-
+    // Gemini Models
     "gemini-2.5-pro": modelFromJson("gemini-2.5-pro"),
     "gemini-2.5-flash": modelFromJson("gemini-2.5-flash"),
     
     // data from this website since other study had no data for gemini models 3+
     // https://www.climatealigned.co/tools/ai-footprint-calculator
-
     "gemini-3.1-pro": modelFromJson("gemini-3.1-pro"),
     "gemini-3-flash": modelFromJson("gemini-3-flash"),
-
-    
-    
-    // OLD DATA FROM BEFORE - IMPLEMENT NEW TIERS ABOVE
-
-    // // "gpt-4o-mini": new TieredModel("GPT4oMini", [{ limit: 400, energyPerToken: 0.00923 }, { limit: 2000, energyPerToken: 0.00369 }, { limit: veryLarge, energyPerToken: 0.0006293 }]),
-    // // "gpt-3.5-turbo": new TieredModel("GPT3.5Turbo", [{ limit: veryLarge, energyPerToken: 0.000002 }]),// kwh (1)
-    // // "gpt-4-turbo": new TieredModel("GPT4Turbo", [{ limit: veryLarge, energyPerToken: 0.000006 }]), //kwh (1)
-    // "gpt-4o": new TieredModel("GPT4o", [{ limit: veryLarge, energyPerToken: 0.9/365000 }]), //kwh (1)
-    // // "gpt-4.5": new TieredModel("GPT4.5", [{ limit: veryLarge, energyPerToken: 0.0003 }]),
-    // // "gpt-4": new TieredModel("GPT4", [{ limit: veryLarge, energyPerToken: 0.000006 }]), //kwh (1)
-    // "gpt-5": new TieredModel("GPT5", [{ limit: veryLarge, energyPerToken: 1.8/365000 }]), // ESTIMATED //https://impact.esg.ai/
-    // "claude-haiku-4.5": new TieredModel("ClaudeHaiku4.5", [{ limit: veryLarge, energyPerToken: 0.2/365000 }]),  //https://impact.esg.ai/
-    // "claude-sonnet-4.5": new TieredModel("ClaudeSonnet4.5", [{ limit: veryLarge, energyPerToken: 0.4/365000 }]),  //https://impact.esg.ai/
-    // "claude-opus-4.5": new TieredModel("ClaudeOpus4.5", [{ limit: veryLarge, energyPerToken: 4.6/365000 }]),  //https://impact.esg.ai/
-    // // "claude": new TieredModel("Generic Claude", [{ limit: veryLarge, energyPerToken: 0.000969444444 }]), // generic claude catcher
-    // "gemini": new TieredModel("Gemini", [{ limit: veryLarge, energyPerToken: 0.7/365000 }]) // based on gemini 2.5 pro
-    // // "gpt": new TieredModel("Generic GPT Model", [{ limit: veryLarge, energyPerToken: 0.00036 }]) // emissions based on 0.09g per median gemini prompt. Assuming this to be 250 tokens (input and output) then 0.09/250
-
 };
 
-
-
-
-// references - (1) https://tokenomy.ai/tools?tab=energy
-
 // reference for SCI formula: https://sci.greensoftware.foundation/
-
 // SCI = ((E * I)+M) per R
 
 // E = energy consumed (kWh)
@@ -163,50 +135,7 @@ export const modelRegistry: Record<string, TieredModel> = {
 
 // so our SCI = ((Energy of model tokens * global average carbon intensity) + manufacturing emissions per R tokens) / R = gCO2e per token
 
-// export function getModel(inputString: string): TieredModel | null {
-//     if (inputString === undefined){
-//         return null;
-//     }
-//     const normalisedInput = inputString.trim().toLowerCase();
-//     if (!normalisedInput) {
-//         return null;
-//     }
-//     let defaultModelKey;
-//     let reasoningCheckNeeded = true;
-//     const exactKey = Object.keys(modelRegistry).find(k => k.toLowerCase() === normalisedInput);
-//     if (exactKey) {
-//         if (["high", "medium", "low", "minimal"].some(item => exactKey.includes(item))) {
-//             reasoningCheckNeeded = false;
-//         }
-//         defaultModelKey = null;
-//     }
-//     else{
-//         defaultModelKey = Object.keys(modelRegistry).find(k => normalisedInput.includes(k.toLowerCase()));
-//     }
-//     // const defaultModelKey = Object.keys(modelRegistry).find(k => normalisedInput.includes(k.toLowerCase()));
-//     const activeModelKey = (exactKey || defaultModelKey) ?? "Unknown Model";
-
-//     let reasoningLevel;
-//     if (reasoningCheckNeeded){
-//         if (["gpt-5-mini", "gpt-5-nano", "gpt-5", "o3", "o4-mini", "o4", "o3-pro", "o3-mini", "o3", "o1"].some(item => activeModelKey.includes(item))) {
-//             if (normalisedInput.includes("minimal")){
-//                 reasoningLevel = "minimal";}
-//             else if (normalisedInput.includes("medium")){
-//                 reasoningLevel = "medium";}
-//             else if (normalisedInput.includes("high")){
-//                 reasoningLevel = "high";}
-//             else if (normalisedInput.includes("low")){
-//                 reasoningLevel = "low";}
-//             else {reasoningLevel = "medium";}
-//             return modelRegistry[`${activeModelKey+"-"+reasoningLevel}`];
-//         }}
-//     if (exactKey) {
-//         return modelRegistry[exactKey];
-//     }
-//     else{
-//         return defaultModelKey ? modelRegistry[defaultModelKey] : null;    }
-// }
-
+// returns correct Record item from modelRegsitry based on input string, null if no match found
 export function getModel(inputString: string): TieredModel | null {
     if (inputString === undefined) {
         return null;
@@ -215,35 +144,20 @@ export function getModel(inputString: string): TieredModel | null {
     if (!normalisedInput) {
         return null;
     }
-
     const exactKey = Object.keys(modelRegistry).find(k => k.toLowerCase() === normalisedInput);
     if (exactKey) {
         return modelRegistry[exactKey];
     }
 
+    // if the model index is not an exact match, find partial match. Ordering of registry allows this to filter correctly 
     const defaultModelKey = Object.keys(modelRegistry).find(k => normalisedInput.includes(k.toLowerCase()));
-
     if (defaultModelKey) {
         return modelRegistry[defaultModelKey];
     }
-
     return null;
 }
     
-    // if (exactKey) {
-    //     return modelRegistry[exactKey];
-    // }
-    // else{;
-    // }
-
-    // // Substring match (case-insensitive). Prefer the longest key to avoid partial collisions.
-    // const keysBySpecificity = Object.keys(modelRegistry).sort((a, b) => b.length - a.length);
-    // const matchedKey = keysBySpecificity.find(k => normalizedInput.includes(k.toLowerCase()));
-    // return matchedKey ? modelRegistry[matchedKey] : null;
-
-
-    
-
+// takes model name and tokens, returns carbon in grams for the call
 export function calculateEmission(modelName: string, numTokens: number) {
     const energy = getEnergy(modelName, numTokens); // energy in kwh from call using tokens
     const gridCarbonIntensity = carbonIntensityGrid; // gco2e/kwh from configuration or default
@@ -251,16 +165,11 @@ export function calculateEmission(modelName: string, numTokens: number) {
     return energy * gridCarbonIntensity; // returns carbon in grams for this call
 }
 
-
+// takes model name and tokens, returns energy in kwh for the call
 export function getEnergy(modelName: string, numTokens: number): number {
     if (numTokens < 0) { return 0; }
     const chosenModel = getModel(modelName);
     const energyWh = chosenModel?.calculate(numTokens) ?? 0;
     const energyKwh = energyWh / 1000; // convert Wh to kWh
-
     return energyKwh;
 }
-
-
-getModel("gpt-4o-mini");
-getModel("gpt-5-minimal");

@@ -1,16 +1,10 @@
 import * as assert from 'assert';
-import * as vscode from 'vscode';
-import * as sinon from 'sinon';
-import * as budget from '../budget';
-import * as logCap from '../logCapture'; 
-import path from 'path';
 import fs from 'fs';
-import { InterceptorProxy } from '../proxyServer';
-import { Memento } from "vscode";
-import { wrappedGetCall } from '../extension';
-
-import { state } from '../state';
-import { appendFile } from 'fs';
+import path from 'path';
+import * as sinon from 'sinon';
+import * as vscode from 'vscode';
+import * as budget from '../budget';
+import * as logCap from '../logCapture';
 
 suite("Runtime Tests", () => {
 suite('CommandTests', () => {
