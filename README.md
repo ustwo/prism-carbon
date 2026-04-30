@@ -140,8 +140,7 @@ We aim to design a toolkit that:
     |   ├── style.css # styling for dashbord
     |   ├── graph.js # logic for timeline graph
     |   ├── darkmode.js # logic for darkmode
-    ├── tsconfig.json
-    └── vsc-extension-quickstart.md
+    └── tsconfig.json
     
 
 </pre>
