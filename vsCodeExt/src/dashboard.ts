@@ -243,7 +243,7 @@ export class CarbonDashboardPanel {
                 datasets: radarDataSets
             }
         });
-
+        
         const branchMap: Record<string, any[]> = {};
         const branchCounts: Record<string, number> = {};
 

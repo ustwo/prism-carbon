@@ -54,15 +54,24 @@ I found it a bit difficult finding clear ways of implementing this as examples w
 
 Research into getting more types of green for the pie chart
 
-> Prompt used - " I am creating a pie chart and need to havee all the sections as different types of greens how can i do this"
+> Prompt used - " I am creating a pie chart and need to have all the sections as different types of greens how can i do this"
 
 The result was an equation to reduce the opacity of the green for each slice in the pie chart
 
+Needed to quickly implement a feature so I asked AI how to do it to reduce time spent 
+> Prompt used - "I need to add a scrollable feature using CSS how can I do this"
+
+Result was being told to add "scrollable-container" to the containers that needed them
 <h3>Debugging</h3>
 
 > Prompt used - " I am getting this error (Image was inserted of the error) what does it mean"
 
 The error occured when I would run the webview when I was initially creating it for the dashboard. I was having issues finding a way to alleviate this problem using online resources so I used AI which gave me a reason for this and steps to fix the error.
+
+I used copilot in VsCode
+> Prompt used - "/explain Property 'asWebviewUri' does not exist on type 'Webview'."
+
+I was given a series of possible causes as the method asWebviewUri was not available. I was told to fix this i should: 1. check my VSCode API version 2. Update VSCode dependency 3. Verify Object Type
 
 
 

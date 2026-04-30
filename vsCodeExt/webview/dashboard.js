@@ -39,6 +39,7 @@
         });
     }
     
+    // click listener for set budget button 
     const setBudgetBtn = document.getElementById('set-budget-btn');
     if (setBudgetBtn) {
         setBudgetBtn.addEventListener('click', () => {
@@ -66,7 +67,7 @@
         return '' + wd;// get parsed
 
     }
-
+ //generates empty data for heatmap   
    function generateEmptyData() {
     const today = new Date();
     const end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -93,6 +94,7 @@
 }
     //setup block
 const getGridColor = () => getComputedStyle(document.body).getPropertyValue('--grid-border').trim();
+//allows chart text to adapt to theme changes
 const getChartTextColor = () => getComputedStyle(document.body).getPropertyValue('--chart-text').trim();
     const data = {
         datasets: [{
@@ -105,7 +107,7 @@ const getChartTextColor = () => getComputedStyle(document.body).getPropertyValue
 backgroundColor(c) {
     const point = c.dataset.data[c.dataIndex];
     if (!point || point.v === 0) return 'rgba(200, 200, 200, 0.1)';
-
+// For testing: create a gradient from green to red based on the value relative to a budget
     const SESSION_BUDGET = window.sessionBudget || 100;
     const percent = point.v / SESSION_BUDGET;
 
@@ -114,7 +116,7 @@ backgroundColor(c) {
     function lerp(a, b, t) {
         return a + (b - a) * t;
     }
-
+// Converts hex color to RGB object
     function hexToRgb(hex) {
         const bigint = parseInt(hex.replace('#', ''), 16);
         return {
@@ -123,7 +125,7 @@ backgroundColor(c) {
             b: bigint & 255
         };
     }
-
+// Mixes two hex colors based on t (0 to 1)
     function mix(c1, c2, t) {
         const a = hexToRgb(c1);
         const b = hexToRgb(c2);
@@ -133,7 +135,7 @@ backgroundColor(c) {
     }
 
     let start, end, t;
-
+// Define thresholds for green, yellow, and red zones
     if (percent <= 0.01) {
         t = percent / 0.01;
         start = styles.getPropertyValue('--green-start').trim();
@@ -208,7 +210,7 @@ backgroundColor(c) {
         round:'week',
         isoWeekday: 1,
         displayFormats: {
-            week: 'MMM dd'
+            week: 'MMM dd' //start date of the week will be shown on x axis
         }
     },
     ticks: {
@@ -264,6 +266,7 @@ backgroundColor(c) {
         }
     };
 
+    // test button to generate random data for heatmap
     const testBtn = document.getElementById('testBtn');
     if (testBtn) {
         testBtn.addEventListener('click', function () {
@@ -272,7 +275,7 @@ backgroundColor(c) {
     }
 
 
-   
+   // Initialize the heatmap chart
     let heatChart;
     const heatCtx = document.getElementById('myChart');
     if (heatCtx) {
@@ -286,7 +289,7 @@ backgroundColor(c) {
         }
         return colours;
     }
-
+   // Common options for all charts to ensure consistent styling
     const commonOptions = {
         responsive: true,
         maintainAspectRatio: false,

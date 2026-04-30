@@ -1,26 +1,27 @@
 let pendingCommitDots = null;
-let cumulativeGraphButton;
+let cumulativeGraphButton; // UI variables
 let timelineGraphButton;
 let slider;
-let graphType = "timeline";
+let graphType = "timeline"; // current graph mode
 let workspaceBranches = [];
 let referenceStrip;
 let hoverFunctionality;
 let container;
 let branchSelector;
-let selectedBranches = new Set();
+let selectedBranches = new Set(); // this handles branches that are selected to display
 let dynamicSizeChanger;
 const branchSelectorTool = document.getElementById("branch-selector-tool");
 let dropDownTool;
 let displaySelectedBranchesCount;
-let zoom = 1;
+let zoom = 1; // zoom controls
 const zoomGap = 1.5;
 const minZoom = 1;
 const maxZoom = 100;
 
-const ref = document.getElementById("branchGraph");
+const ref = document.getElementById("branchGraph"); // main container for graph
 
 if (ref) {
+    // container for everything
     container = document.createElement("div");
     container.id = "carbon-graph-wrapper";
     container.style.width = "98%";
@@ -41,7 +42,7 @@ if (ref) {
     referenceStrip.style.gap = "16px";
     referenceStrip.style.fontSize = "12px";
     referenceStrip.style.alignItems = "center";
-    [
+    [ // creates the reference strip
         { label: "Low Emission", color: "var(--low-carbon)" },
         { label: "Average Emission", color: "var(--avg-carbon)" },
         { label: "High Emission", color: "var(--high-carbon)" },
@@ -119,7 +120,7 @@ if (ref) {
         button.style.userSelect = "none";
         button.style.fontSize = "13px";
         button.style.transition = "all 0.15s ease";
-        button.addEventListener("mouseenter", () => {
+        button.addEventListener("mouseenter", () => { // hover effect
             button.style.background = "rgba(255, 255, 255, 0.08)";
         });
         button.addEventListener("mouseleave", () => {
@@ -131,6 +132,7 @@ if (ref) {
     const zoomInButton = makeZoomButton("+");
     const zoomOutButton = makeZoomButton("−");
 
+    // incrase/decrease zoom and then redraw the graph
     zoomInButton.onclick = () => {
         zoom = Math.min(zoom * zoomGap, maxZoom);
         drawGraphs();
@@ -299,15 +301,16 @@ if (ref) {
 
 
 
-window.addEventListener("message", event => {
+window.addEventListener("message", event => { // receive data from backend
     const message = event.data;
-    if (message.command === "commitDots") {
+    if (message.command === "commitDots") { // draw graph if data received
         pendingCommitDots = message.data;
         drawGraphs();
     }
 
     if (message.command === "workspaceBranches") {
         if(JSON.stringify(workspaceBranches) === JSON.stringify(message.data)) return;
+        // if data received is same then no need to redraw
         workspaceBranches = message.data;
         dropDownTool.innerHTML = "";
 
@@ -335,8 +338,9 @@ window.addEventListener("message", event => {
             checkbox.style.accentColor = "#4ade80";
             checkbox.style.cursor = "pointer";
 
-            selectedBranches.add(branch);
+            selectedBranches.add(branch); // by default all branches are selected 
 
+            // handle the checkbox selection and user changing the branch
             checkbox.addEventListener("change", () => {
                 if (checkbox.checked) {
                     selectedBranches.add(branch);
@@ -347,7 +351,7 @@ window.addEventListener("message", event => {
                 updateSelectedBranchesCount();
                 drawGraphs();
 
-                if (window.vscodeAPI) {
+                if (window.vscodeAPI) { // inform the backend
                     window.vscodeAPI.postMessage({ 
                         command: 'filterByBranch', 
                         branches: Array.from(selectedBranches) 
@@ -376,12 +380,12 @@ function deletePreviousGraph() {
     mainGraphArea.innerHTML = "";
 }
 
-function drawGraphs() {
+function drawGraphs() { // main graph drawing function - chooses which graph to draw
     const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
     const currentScroll = mainGraphArea.querySelector("div");
 
     let scrollRatio = 1;
-
+    // keep scroll position same
     if(currentScroll){
         const maxScroll = currentScroll.scrollWidth - currentScroll.clientWidth;
         if(maxScroll > 0){
@@ -412,7 +416,7 @@ function drawGraphs() {
     }
 }
 
-function getCumulativeGraphData() {
+function getCumulativeGraphData() { // converts data to cumulative data
     if (!pendingCommitDots) {
         return {};
     }
@@ -423,7 +427,7 @@ function getCumulativeGraphData() {
         let netTotal = 0;
 
         cumulativeGraphData[branch] = [...pendingCommitDots[branch]]
-            .sort((a, b) => a.xAxis - b.xAxis)
+            .sort((a, b) => a.xAxis - b.xAxis) // important for time order
             .map((commit, index) => {
                 netTotal += commit.carbon;
                 return {
@@ -578,7 +582,7 @@ function getCColor(carbon) {
     return "var(--high-carbon)";
 }
 
-function makeButtons(text, id) {
+function makeButtons(text, id) { // this is for the toggle buttons
     const button = document.createElement("div");
     button.innerText = text;
     button.id = id;
@@ -587,6 +591,7 @@ function makeButtons(text, id) {
     return button;
 }
 
+// this is the toggle logic
 cumulativeGraphButton.addEventListener("click", () => {
     graphType = "cumulative";
     slider.style.transform = "translateX(100%)";
@@ -624,7 +629,7 @@ function drawCandleStickTimelineGraph(scrollRatio = 1){
     
     const allCommitsMap = new Map();
 
-    Object.keys(pendingCommitDots).forEach(branch => {
+    Object.keys(pendingCommitDots).forEach(branch => { // combine commits
 
         if(!selectedBranches.has(branch)) {
             return;
@@ -642,7 +647,7 @@ function drawCandleStickTimelineGraph(scrollRatio = 1){
                     timeStamp: commit.timeStamp
                 });
             }
-            const findMatch = allCommitsMap.get(match);
+            const findMatch = allCommitsMap.get(match); // add carbon of commits from same timestamps
             findMatch.carbon = findMatch.carbon + commit.carbon;
         });
 
@@ -652,7 +657,7 @@ function drawCandleStickTimelineGraph(scrollRatio = 1){
 
     allCommits.sort((a,b) => a.time - b.time);
 
-    const branchTotals = {};
+    const branchTotals = {}; // used to track cumulative carbon for each branch
 
     allCommits.forEach(commit => {
         if (!branchTotals[commit.branch]) {
@@ -703,7 +708,7 @@ function drawCandleStickTimelineGraph(scrollRatio = 1){
     svg.setAttribute("width", width);
     svg.setAttribute("height", height);
 
-    allCommits.forEach(commit => {
+    allCommits.forEach(commit => { // draw each commit
         const xAxis = margin.left + (commit.time - minTime) * pixelsPerMilliseconds;
         const topYSpace = margin.top + graphHeight - (commit.carbon / maxCarbon) * graphHeight;
         const bottomYSpace = margin.top + graphHeight;
@@ -897,7 +902,7 @@ function drawCandleStickTimelineGraph(scrollRatio = 1){
     }, 10);
 }
 
-function enableDynamicSizeChanger() {
+function enableDynamicSizeChanger() { // the graph needs to be redrawn if container size changes
     const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
 
     if (!mainGraphArea){
