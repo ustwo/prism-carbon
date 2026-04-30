@@ -1,13 +1,13 @@
-# Ecode README
+# Estimating Carbon README
 
-This is the README for Ecode - the extension that monitors carbon costs associated with LLM and AI inputs and presents statistics on this data.
+This is the README for Estimating Carbon - the extension that monitors carbon costs associated with LLM and AI inputs and presents statistics on this data.
 
 ## How To Use:
 
 On installation, you will be prompted to set the `Github Copilot Chat` log level to `Trace`. This is shown below:
 <video controls src="SetTraceLevel.mp4" title="Set Trace Level"></video>
 
-The main way to use the extension is with the Ecode Menu at the right hand side of the taskbar (yellow circle). Average Carbon Cost for a session is shown at the left hand side of the taskbar (green circle)
+The main way to use the extension is with the Estimating Carbon Menu at the right hand side of the taskbar (yellow circle). Average Carbon Cost for a session is shown at the left hand side of the taskbar (green circle)
 ![alt text](<Interface Explanation.png>)
 
 Carbon emissions are tracked during development when using copilot chat, or inline copilot generations (ctrl+i) with claude models. Tab autocompletes are not yet supported. 
@@ -49,7 +49,7 @@ This extension contributes the following settings:
 
 ## Menu
 
-The menu on the bottom right is the main access interface for the Ecode extension. On launch, the user is prompted to set their GitHub Copilot Chat debug level to "Trace" to enable development time analysis functionality.
+The menu on the bottom right is the main access interface for the Estimating Carbon extension. On launch, the user is prompted to set their GitHub Copilot Chat debug level to "Trace" to enable development time analysis functionality.
 
 ## Known Issues
 
@@ -102,7 +102,7 @@ The menu on the bottom right is the main access interface for the Ecode extensio
 
 ### 0.0.1
 
-Initial release of ecode, supports all Claude models.
+Initial release of Estimating Carbon, supports all Claude models.
 
 ### 0.0.2
 

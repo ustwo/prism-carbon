@@ -177,7 +177,7 @@ export async function activate(context: vscode.ExtensionContext) {
         //create a new terminal with specific Environment Vars
 
         terminal = vscode.window.createTerminal({
-            name: "Ecode RunTime Analysis Terminal",
+            name: "Estimating Carbon RunTime Analysis Terminal",
             env: {
                 // proxy environment variables
                 "HTTP_PROXY": proxyUrl,
@@ -234,7 +234,7 @@ export async function activate(context: vscode.ExtensionContext) {
         const ecodeCommands = [
             {
                 label: `$(play) Start Runtime Analysis`,
-                description: "Opens Ecode Terminal where files to be analysed are run",
+                description: "Opens Estimating Carbon Terminal where files to be analysed are run",
                 command: "ecode.runtimeAnalysis"
             },
             {
@@ -255,7 +255,7 @@ export async function activate(context: vscode.ExtensionContext) {
         ];
 
         const selection = await vscode.window.showQuickPick(ecodeCommands, {
-            placeHolder: "Select an Ecode function",
+            placeHolder: "Select an Estimating Carbon function",
         });
 
         if (selection) {
@@ -264,7 +264,7 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
     const runtimeLaunchButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-    runtimeLaunchButton.text = `$(list-unordered) Ecode`;
+    runtimeLaunchButton.text = `$(list-unordered) Estimating Carbon`;
     runtimeLaunchButton.tooltip = "Click to see AI Analysis Options";
     runtimeLaunchButton.command = "ecode.menu";
     runtimeLaunchButton.show();
