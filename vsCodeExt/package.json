@@ -1,13 +1,13 @@
 {
   "name": "ecode",
-  "displayName": "Ecode",
+  "displayName": "Estimating Carbon",
   "publisher": "development",
   "repository": {
     "type": "git",
     "url": "https://github.com/spe-uob/2025-EstimatingCarbon.git"
   },
   "description": "",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "release": {
     "branches": [
       "main",
@@ -45,8 +45,8 @@
         {
           "assets": [
             {
-              "path": "Ecode.vsix",
-              "label": "Ecode VSIX"
+              "path": "Estimating Carbon.vsix",
+              "label": "Estimating Carbon VSIX"
             }
           ]
         }
@@ -65,31 +65,6 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "configuration": {
-      "title": "Ecode Extension Settings",
-      "properties": {
-        "ecode.energyRates.gpt4o": {
-          "type": "number",
-          "default": 0.0012,
-          "description": "Energy rate for GPT-4o (kWh per 1K tokens)"
-        },
-        "ecode.energyRates.gpt4": {
-          "type": "number",
-          "default": 0.006,
-          "description": "Energy rate for GPT-4 (kWh per 1K tokens)"
-        },
-        "ecode.energyRates.gpt4Turbo": {
-          "type": "number",
-          "default": 0.006,
-          "description": "Energy rate for GPT-4-Turbo (kWh per 1K tokens)"
-        },
-        "ecode.energyRates.gpt3.5Turbo": {
-          "type": "number",
-          "default": 0.002,
-          "description": "Energy rate for GPT-3.5-Turbo (kWh per 1K tokens)"
-        }
-      }
-    },
     "keybindings": [],
     "viewsContainers": {
       "activitybar": [
@@ -112,39 +87,39 @@
     "commands": [
       {
         "command": "ecode.openDashboard",
-        "title": "Ecode: Open Carbon Dashboard"
+        "title": "Estimating Carbon: Open Carbon Dashboard"
       },
       {
         "command": "ecode.clearStore",
-        "title": "Ecode: Clear stored calls"
+        "title": "Estimating Carbon: Clear stored calls"
       },
       {
         "command": "ecode.inputdisplay",
-        "title": "Ecode: Input Display"
+        "title": "Estimating Carbon: Input Display"
       },
       {
         "command": "ecode.refreshLogs",
-        "title": "Ecode: Refresh carbon data",
+        "title": "Estimating Carbon: Refresh carbon data",
         "category": "Logging"
       },
       {
         "command": "ecode.interceptorStart",
-        "title": "Ecode: Start Proxy Interceptor",
+        "title": "Estimating Carbon: Start Proxy Interceptor",
         "category": "Interceptor"
       },
       {
         "command": "ecode.interceptorStop",
-        "title": "Ecode: Stop Proxy Interceptor",
+        "title": "Estimating Carbon: Stop Proxy Interceptor",
         "category": "Interceptor"
       },
       {
         "command": "ecode.interceptorOpenTerminal",
-        "title": "Ecode: Open Runtime Terminal",
+        "title": "Estimating Carbon: Open Runtime Terminal",
         "category": "Interceptor"
       },
       {
         "command": "ecode.runtimeAnalysis",
-        "title": "Ecode: Analyse Runtime",
+        "title": "Estimating Carbon: Analyse Runtime",
         "category": "Interceptor"
       }
     ]
