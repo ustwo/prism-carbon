@@ -144,6 +144,11 @@ We aim to design a toolkit that:
     
 
 </pre>
+  <h2>Documents</h2>
+  <ol>
+    <li>Handover Document: Go to for handover document. This includes instructions, features, maintenance guidance, future development, and issues.</li>
+    <li>Methodology Report: Go to for a detailed report on our methodology and our considerations when estimating carbon emissions.</li>
+  </ol>
   <h2>Client Names</h2>
   <ul>
     <li>Paolo Rizzi</li>
