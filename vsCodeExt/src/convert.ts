@@ -199,14 +199,12 @@ export const modelRegistry: Record<string, TieredModel> = {
 //                 reasoningLevel = "low";}
 //             else {reasoningLevel = "medium";}
 //             return modelRegistry[`${activeModelKey+"-"+reasoningLevel}`];
-
 //         }}
 //     if (exactKey) {
 //         return modelRegistry[exactKey];
 //     }
 //     else{
 //         return defaultModelKey ? modelRegistry[defaultModelKey] : null;    }
-    
 // }
 
 export function getModel(inputString: string): TieredModel | null {
