@@ -1,5 +1,6 @@
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
+import stylistic from "@stylistic/eslint-plugin"
 
 export default [
     {
@@ -12,6 +13,7 @@ export default [
     }, {
         plugins: {
             "@typescript-eslint": typescriptEslint,
+            "@stylistic": stylistic,
         },
 
         languageOptions: {
@@ -29,7 +31,7 @@ export default [
             curly: "warn",
             eqeqeq: "warn",
             "no-throw-literal": "warn",
-            semi: "warn",
+            "@stylistic/semi": ["warn", "always"],
         },
 
 

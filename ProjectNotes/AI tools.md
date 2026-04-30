@@ -8,7 +8,7 @@ In some cases during the testing day, testers used Copilot Chat to generate file
 
 <h2>Jacob Connor</h2>
 <p>I, Jacob Connor declare that this document is accurate to my AI usage throughout the course of SEP.</p>
-<p>All models used have been  ChatGPT</p> <br>
+<p>All models used have been  ChatGPT, Claude Sonnet 4.6</p> <br>
 
 <h3>Development</h3>
 
@@ -21,9 +21,29 @@ Research into testing Development time
   
  When conducting research into how to use and test the extensions response to copliot chat I found out that copilot does not allow for this. So I have since decided to research into testing options (without AI)
 
+Research into estimating cached tokens for models which don't directly publishment
+
+> Prompt used - "I am making a project which tracks tokens of various LLMs used when programming in vscode with copilot currently we are using the log files to catch all tokens revealed by the model Copilot and older GPT models don't reveal cached tokens which are a large portion of the overall tokens how could I best estimate this"
+  
+  When conducting research into how to estimate the cached tokens we could not find an appropriate solution in time. And have hence not solved this issue and notified the client as gemini and old GPT models were a stretch goal from the begining
+
+> Prompt used - "What is a mathematical fucntion I can use where I can alter the constants to fit around 2 points and the origin which levels out after the second point"
+
+  When conducting research into how best to convert our tokens into carbon emissions for calls which weren't the exact size of our data points.
+  This research was not used as we could not ensure how the tokens to emissions curve grew and hence the most defensible method was to only use the data we have.
 
 <h3>Debugging</h3>
 
+Debugging time of each call
+
+> Prompt used this is my code how can I change this to be in 24 hour format 
+var lDate:string[] = (new Date(lastAccess).toLocaleString('us-GB', { 
+  })).split(",");
+
+  soltion found
+  > var lDate:string[] = (new Date(lastAccess).toLocaleString('us-GB', { 
+                hour12: false
+            })).split(",");
 <h3>Review</h3>
 
 <h2>Iman</h2>
@@ -37,11 +57,29 @@ Research into creating a dashboard and adding features
 
 I found it a bit difficult finding clear ways of implementing this as examples when I was initially conducting research were too simple or complex, by doing so research time was also expedited. 
 
+Research into getting more types of green for the pie chart
+
+> Prompt used - " I am creating a pie chart and need to have all the sections as different types of greens how can i do this"
+
+The result was an equation to reduce the opacity of the green for each slice in the pie chart
+
+Needed to quickly implement a feature so I asked AI how to do it to reduce time spent 
+> Prompt used - "I need to add a scrollable feature using CSS how can I do this"
+
+Result was being told to add "scrollable-container" to the containers that needed them
 <h3>Debugging</h3>
 
 > Prompt used - " I am getting this error (Image was inserted of the error) what does it mean"
 
 The error occured when I would run the webview when I was initially creating it for the dashboard. I was having issues finding a way to alleviate this problem using online resources so I used AI which gave me a reason for this and steps to fix the error.
+
+I used copilot in VsCode
+> Prompt used - "/explain Property 'asWebviewUri' does not exist on type 'Webview'."
+
+I was given a series of possible causes as the method asWebviewUri was not available. I was told to fix this i should: 1. check my VSCode API version 2. Update VSCode dependency 3. Verify Object Type
+
+
+
 
 <h3>Review</h3>
 
@@ -81,12 +119,14 @@ This helped me to identify the problem was in fact with the environment surround
 
 
 <h3>Review</h3>
-I don't use AI to review my code, I have only used it for small excerpts, prototyping and error analysis.
+
+I used AI to review the release.yml file to ensure that it worked before merging to main. I tested it briefly on a test repo, but it ended up failing on main anyway. To prevent this problem from occuring again when trying to fix it, I copied and pasted the file into gemini 3.1 pro and asked it to make sure the file would run. It said that it was happy for it to run, and so I merged the file.
+
 
 <h2>Hao Ni</h2>
 <p> I, Hao Ni declare that this document is accurate to my AI usage throughout the course of SEP</p>
 
-<p>All models used have been  ChatGPT</p> <br>
+<p>All models used have been  ChatGPT, Gemini, and Claude</p> <br>
 <h3>Development</h3>
 reseach into which papers to look into for carbon to emission formula
 
@@ -96,21 +136,41 @@ I was having problem finding relevent papers online, because most of the materia
 <h3>Debugging</h3>
 I use AI when my code can't run but I can't spot where's the problem
 
-> Prompt used - " I am suppose to the Dash board's color change to black now, why is it not working"
+> Prompt used - " I am suppose to make the Dash board's color change to black now, why is it not working"
 The problem occur when I finish the implementation of the mode toggle but the switch isn't working and I was having problem finding the bug. The reason is I can't put the .js file and the .css file outside Dashboard.ts and should keep all the js and css part inside getwebview.
+> "Why there's always a Sunday block on the Heat Map even if it's not Sunday?"
+The problem occur because I added a round:week in my code, it can helps round the data to the week, but I set the start of the week as Sunday so it will always show Sunday first.
+> Prompt used - " I am planning to change the heat map yellow base color to #ef6c00 what do you think"
+The problem occur when I try to make the yellow part of the heat map stands out in the dark mode and not seem muddy visually. 
 
 <h3>Review</h3>
 
 <h2>Morgan Parry</h2>
+<p> I, Morgan Parry, declare that this document is accurate to my AI usage throughout the course of SEP</p>
 
 <h3>Development</h3>
-<p>All models used have been  ChatGPT</p> <br>
+<p>All models used have been ChatGPT</p> <br>
+
 > Prompt used - "Give an overview of regexes and how they work, in particular how they can be formatted to exclude lines of text based on a phrase they contain."
+
 > Prompt used - "How can I use a regex to capture text between two characters?"
 
 When conducting research into how I can use a regex to exclude the lines I need from the captured log files in development time analysis, I used ChatGPT to research how I can use them for the specific task I need (excluding lines containing unneeded levels of Copilot logging). I did this after conducting my own research which left me unsure of how to achieve this. I did not copy any regexes directly from ChatGPT's response, but I used them to start playing around with more specific regexes using a [regex sandbox website](https://regexr.com/).
 
+> Prompt used - "How useful would the tiktoken library be for tokenising Gemini outputs? Is there a better option I can use in typescript if they are too dissimilar?"
+
+While adding support for Gemini in DevTime, I was unable to find any clear research into the inner workings of LLM tokenisers. I opted to use ChatGPT to research whether I could use the tiktoken library, which I was already familiar with, to tokenise Gemini outputs. ChatGPT suggested using a rough mathematical calculation to tokenise the outputs. I initially planned on using this but was able to find a better [Gemini tokeniser](https://www.npmjs.com/package/@lenml/tokenizer-gemini) on the npm registry upon further research, so I ended up scrapping the AI solution.
+
+> Prompt used - "Convert the data stored in the model registry to JSON and store it in the models.json file"
+
+I used ChatGPT here to handle the brunt conversion of our original emissions data from the convert.ts model registry to a separate JSON file, as there were over 80 data points to convert. I did not use any logic from the LLM and solely used it to save time in copying the data over myself.
+
 <h3>Debugging</h3>
+
+> Prompt used - "ESLint: 10.0.2 TypeError: util.styleText is not a function at util.styleText.validateStream - what causes this error?"
+
+I had a versioning error with ESLint when attempting to compile the project that I used ChatGPT to debug. No AI code was pasted as the error was simply me needing to upgrade Node.js.
+
 
 <h3>Review</h3>
 

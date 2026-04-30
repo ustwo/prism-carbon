@@ -106,10 +106,11 @@ We aim to design a toolkit that:
    - In the "Runtime Terminal" that appears, run your file.
    - The carbon costs and log will appear in the sidebar, and a coloured indicator in the status bar. They show the cost of using an LLM in real time, as each API call happens.
 8. For development time analysis, run "Developer: Set Log Level" :arrow_right: "GitHub Copilot Chat" :arrow_right: "Trace"
+9. Run the "Refresh carbon data" command to fetch the most recent data from Copilot. 
 
-9. To access the dashboard, run "Open Carbon Dashboard" command.
+10. To access the dashboard, run "Open Carbon Dashboard" command.
 
-10. For development time analysis, run the "Refresh carbon data" command to fetch the most recent data from Copilot. 
+
 <br>
    
 <p>This is currently the same for both developers and users. However, we plan to have the extension downloadable from the VScode store for users.</p>
@@ -119,21 +120,36 @@ We aim to design a toolkit that:
 <pre>
 ├── Images # architecture diagrams
 ├── ProjectNotes # meeting minutes and other project notes
-├── README.md
-├── tree.txt
+├── README.md # main repo readme
+├── Methodology.md # documentation for carbon calculations
 └── vsCodeExt # main directory for VS Code extension
-    ├── howToRun.md # instructions on how to run the extension
     ├── package.json # config file containing extension metadata
+    ├── models.json # emissions conversion ratios for different models 
+    ├── LICENSE.md
     ├── src
+    |   ├── budget.ts # interface for Call structure and usage calculations
+    |   ├── convert.ts # handles conversion of token data to carbon emissions
+    |   ├── dashboard.ts # main UI file
     │   ├── extension.ts # main UI features and commands 
-    │   ├── budget.ts # interface for Call structure and usage calculations
-    │   ├── serverWorker.ts # listens on proxyServer and handles parsing
+    │   ├── logCapture.ts # handles collection and parsing of Copilot log files 
     │   ├── proxyServer.ts # starts server, receives parsed information
-    │   ├── logCapture.ts # handles collection and parsing of Copilot log files
-    ├── tsconfig.json
-    └── vsc-extension-quickstart.md
+    │   ├── serverWorker.ts # listens on proxyServer and handles parsing
+    │   ├── state.ts # flag for runtime testing
+    ├── webview
+    |   ├── dashboard.js # functionality for dashboard
+    |   ├── style.css # styling for dashbord
+    |   ├── graph.js # logic for timeline graph
+    |   ├── darkmode.js # logic for darkmode
+    └── tsconfig.json
+    
 
 </pre>
+
+## Documents
+1. Handover Document: Go to [`ProjectNotes/Documents/Handover Document.pdf`](ProjectNotes/Documents/Handover%20Document.pdf) for the handover document. This includes instructions, features, maintenance guidance, future development, and issues.
+2. Methodology Report: Go to [`ProjectNotes/Documents/Emission Calculation Methodology.pdf`](ProjectNotes/Documents/Emission%20Calculation%20Methodology.pdf) for a detailed report on our methodology and our considerations when estimating carbon emissions.
+
+
   <h2>Client Names</h2>
   <ul>
     <li>Paolo Rizzi</li>
@@ -142,11 +158,12 @@ We aim to design a toolkit that:
   
   <h2 id="team"> Team Members </h2>
   <ul>
-    <li> Hao Ni (wx24939) </li>
+    <li>Hao Ni (wx24939) </li>
     <li>Iman Hadi (jp24368) </li>
     <li>Jacob Connor (gn24034)</li>
     <li>Max Davies (cg24012)</li>
     <li>Morgan Parry (vi24348)</li>
+    <li>Aayush Bhalerao (in24486)</li>
   </ul>
   <h2> Supporting Mentor</h2>
   <ul> 

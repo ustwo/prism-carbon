@@ -4,10 +4,12 @@ on:
   push:
     branches:
       - main
+      - dev
+      - ReleaseYMLFix
   workflow_dispatch:
 jobs:
   
-  release:
+  test:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
@@ -21,7 +23,7 @@ jobs:
     - name: Install Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 18.x
+        node-version: 22.x
         cache: npm
         cache-dependency-path: ./vsCodeExt/package-lock.json
     - name: Cache VS Code Test instance
@@ -40,5 +42,25 @@ jobs:
 
     - run: npm test
       if: runner.os != 'Linux'
-    
-    - run: npm release
+
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./vsCodeExt
+    steps:
+      - name: Checkout  
+        uses: actions/checkout@v4
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x  
+          cache: npm
+          cache-dependency-path: ./vsCodeExt/package-lock.json
+      - run: npm ci
+
+      - name: Create Release
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

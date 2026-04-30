@@ -1,23 +1,18 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
+/****************************************************************
+ *                         EXTENSION.TS                         *
+ * THE MAIN FILE FOR THE EXTENSION. RESPONSIBLE FOR ACTIVATION, *
+ *       REGISTERING COMMANDS, AND MANAGING OVERALL STATE       *
+ ****************************************************************/
 
-import * as devTok from './devTokens';
-import * as vscode from 'vscode';
-import * as https from 'https';
-import * as budget from './budget';
-import * as logCap from './logCapture';
+import * as childProcess from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Memento } from 'vscode';
-import { stringify } from 'querystring';
-import * as child_process from 'child_process';
-
+import * as vscode from 'vscode';
+import * as budget from './budget';
+import * as logCap from './logCapture';
 import { CarbonDashboardPanel } from './dashboard';
 import { state } from './state';
-
 import { InterceptorProxy } from './proxyServer';
-import { privateEncrypt } from 'crypto';
-import { getSystemErrorMap } from 'util';
 
 export let tree: MyTreeDataProvider;
 export let bar: statusBarManager;
@@ -33,8 +28,6 @@ const PROXY_PORT = 3024;
 var budg: budget.budget;
 
 export async function activate(context: vscode.ExtensionContext) {
-
-
     const copilotChat = vscode.extensions.getExtension('github.copilot-chat');
     if (!copilotChat) {
         vscode.window.showWarningMessage('GitHub Copilot Chat is not installed. Carbon emissions will not be tracked during development time!');
@@ -49,11 +42,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     }
 
-
     budg = new budget.budget(context.workspaceState);
-
-
-    // state.runningInterceptor = true;
 
     var barManager = new statusBarManager();
     const treeDataProvider = new MyTreeDataProvider();
@@ -64,18 +53,9 @@ export async function activate(context: vscode.ExtensionContext) {
         treeDataProvider
     );
 
-
-    function convert(x: any) {
-        //treeDataProvider.addMessage(String(x));
-        return x;
-    }
-
-
-    //let lastInlineState = false;
     const disposables: vscode.Disposable[] = [];
 
-
-
+// sets the display for the tree and status bar 
     setDisplay(treeDataProvider, barManager);
 
 
@@ -86,37 +66,32 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
 
-    // budget.initStorage(context.workspaceState);
     restoreCallHistory(treeDataProvider, budg);
     barManager.updateLimit(budg.updateLimit());
-    const BarManager = vscode.window.createStatusBarItem();
-
-
-
+    const pastCalls = budg.getCalls();
+    if (pastCalls.length > 0) {
+        barManager.updateBar(pastCalls[pastCalls.length - 1].Emissions);
+    } else {
+        barManager.updateBar(0);
+    }
 
     disposables.push(vscode.workspace.onDidSaveTextDocument(async evt => {
         console.log("Updating logs..........");
         getLogs(context);
     }));
 
-
-
-    const reset = vscode.commands.registerCommand('ecode.clearStore', () => {
-        budg.resetBudget();
+    const reset = vscode.commands.registerCommand('ecode.clearStore', async () => {
+        await budg.resetBudget();
         treeDataProvider.clearTree();
-        barManager.updateLimit(0);
-        //vscode.window.showInformationMessage('Past calls cleared.');
-        // state.runningInterceptor = true;
+        barManager.updateBar(0);
 
-        CarbonDashboardPanel.sendData();
+        CarbonDashboardPanel.sendData(budg);
 
     });
 
-    // }));
-
     // Dashboard command 
     const dashboardCommand = vscode.commands.registerCommand('ecode.openDashboard', () => {
-        CarbonDashboardPanel.createOrShow(context.extensionUri);
+        CarbonDashboardPanel.createOrShow(context.extensionUri, budg);
         console.log('Carbon Dashboard command registered.');
     });
 
@@ -126,26 +101,45 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
 
-
-    const input = vscode.commands.registerCommand('ecode.inputdisplay', async () => {
-        //vscode.window.showInformationMessage('Hello World from EstimatingCarbon!');
-        const limit = await vscode.window.showInputBox({ //opens an input box currently representing the carbon footprint
-            prompt: 'Enter test call: ',
-            placeHolder: 'eg. 5',
-            ignoreFocusOut: true // keep input box open even if focus moves away from window
-        });
-
-        var num = Number(limit);
-        if (!Number.isNaN(num)) {
-            let date = new Date();
-            var newCall: budget.Call = { Emissions: num, Model: "TEST", DateTime: Number(date.toLocaleDateString()) };
-            updateTree(newCall);
+    // keep track of the last known branch 
+    let lastKnownBranch = getCurrentBranch();
+//listens for branch changes and updates dashboard accordingly with new branch information 
+    const branchChangeListener = vscode.workspace.onDidChangeWorkspaceFolders(() => {
+        const currentBranch = getCurrentBranch();
+        // only send new data if the branch has changed                   
+        if (currentBranch !== lastKnownBranch) {
+            lastKnownBranch = currentBranch;
+            //Trigger the data recalculation and update the dashboard with the new branch information
+            CarbonDashboardPanel.sendData(budg);
         }
-        else {
-            vscode.window.showInformationMessage('Error: NaN inputted.');
-        }
-
     });
+    context.subscriptions.push(branchChangeListener);
+
+   const input = vscode.commands.registerCommand('ecode.inputdisplay', async () => {
+    const limit = await vscode.window.showInputBox({
+        prompt: 'Enter test call: ',
+        placeHolder: 'eg. 5',
+        ignoreFocusOut: true 
+    });
+
+    var num = Number(limit);
+    if (!Number.isNaN(num)) {
+        // Use a local date string to prevent timezone shifting
+        const now = new Date();
+        const bumpedTime = now.getTime() + (5 * 60 * 60 * 1000);
+       
+        var newCall: budget.Call = { 
+            Emissions: num, 
+            Model: "TEST", 
+            DateTime: bumpedTime
+        };
+        
+        updateTree(newCall);
+        vscode.window.showInformationMessage(`Added ${num}g CO2e for today.`);
+    }else {
+        vscode.window.showInformationMessage('Error: NaN inputted.');
+    }
+});
     context.subscriptions.push(input);
     context.subscriptions.push(dashboardCommand);
 
@@ -159,32 +153,11 @@ export async function activate(context: vscode.ExtensionContext) {
         }
         try {
             // start local server
-            proxyServer = new InterceptorProxy(PROXY_PORT);
+            proxyServer = new InterceptorProxy(PROXY_PORT, (call) => {
+                updateTree(call);
+            });
             await proxyServer.start(context.globalStorageUri.fsPath);
-
-            // set VSCode to use local proxy
-            // const config = vscode.workspace.getConfiguration('http');
-            // await config.update('proxy', `http://localhost:${PROXY_PORT}`, vscode.ConfigurationTarget.Global);
-
-            // //QUICK FIX TO NOT NEED SSL CERTS FOR NOW
-            // // NEED TO CHANGE FOR BETA
-            // await config.update('proxyStrictSSL', false, vscode.ConfigurationTarget.Global);
-
-
-            // const disposableAPIKEY = vscode.commands.registerCommand('ecode.setApiKey', async () => {
-            //  const apiKey = await vscode.window.showInputBox({
-            //      prompt: 'Enter your API Key',
-            //      placeHolder: 'e.g.   sk - xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-            //      ignoreFocusOut: true // keep input box open even if focus moves away from window
-
-            //  });
-            //  if (apiKey) {
-            //      await context.secrets.store('myApiKey', apiKey); // securely stores apikey using key 'myApiKey'
-
-            //      // to retrieve key from secret store, use:   const apiKey = await context.secrets.get('myApiKey');
             state.runningInterceptor = true;
-            // vscode.window.showInformationMessage('Interceptor Proxy started on port ' + "->" + PROXY_PORT + state.runningInterceptor + "DONE");
-            // vscode.window.showInformationMessage("Status: " + state.runningInterceptor);
         } catch (error) {
             console.error("Error starting Interceptor Proxy:", error);
             vscode.window.showErrorMessage('Failed to start Interceptor Proxy: ' + error);
@@ -204,7 +177,7 @@ export async function activate(context: vscode.ExtensionContext) {
         //create a new terminal with specific Environment Vars
 
         terminal = vscode.window.createTerminal({
-            name: "Ecode RunTime Analysis Terminal",
+            name: "Estimating Carbon RunTime Analysis Terminal",
             env: {
                 // proxy environment variables
                 "HTTP_PROXY": proxyUrl,
@@ -232,7 +205,6 @@ export async function activate(context: vscode.ExtensionContext) {
         });
 
         terminal.show();
-        // vscode.window.showInformationMessage("Opened Terminal with Proxy Environment Vars");
     });
 
 
@@ -247,13 +219,6 @@ export async function activate(context: vscode.ExtensionContext) {
         if (terminal) {
             terminal.dispose();
         }
-
-        // clear VSCode proxy settings
-        // const config = vscode.workspace.getConfiguration('http');
-        // await config.update('proxy', undefined, vscode.ConfigurationTarget.Global);
-        // await config.update('proxyStrictSSL', undefined, vscode.ConfigurationTarget.Global);
-
-        // vscode.window.showInformationMessage('Interceptor Proxy stopped. ');//Proxy settings cleared.');
     });
 
     let runtimeDisposable = vscode.commands.registerCommand("ecode.runtimeAnalysis", async () => {
@@ -269,14 +234,13 @@ export async function activate(context: vscode.ExtensionContext) {
         const ecodeCommands = [
             {
                 label: `$(play) Start Runtime Analysis`,
-                description: "Opens Ecode Terminal where files to be analysed are run",
+                description: "Opens Estimating Carbon Terminal where files to be analysed are run",
                 command: "ecode.runtimeAnalysis"
             },
             {
                 label: `$(play) Stop Runtime Proxy`,
                 description: "Stops the recording of carbon emissions",
                 command: "ecode.interceptorStop"
-                // TODO need to have a way to keep the environment variables (gemini api key) so that it doesn't need to be input every time
             },
             {
                 label: `$(play) Reset Stored Session`,
@@ -291,7 +255,7 @@ export async function activate(context: vscode.ExtensionContext) {
         ];
 
         const selection = await vscode.window.showQuickPick(ecodeCommands, {
-            placeHolder: "Select an Ecode function",
+            placeHolder: "Select an Estimating Carbon function",
         });
 
         if (selection) {
@@ -300,18 +264,10 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
     const runtimeLaunchButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-    // runtimeLaunchButton.text = `$(play) Start Ecode Runtime Analysis`;
-    // runtimeLaunchButton.tooltip = "Click to open terminal to run file to be analysed";
-    // runtimeLaunchButton.command = "ecode.runtimeAnalysis";
-    // runtimeLaunchButton.show();
-    runtimeLaunchButton.text = `$(list-unordered) Ecode`;
+    runtimeLaunchButton.text = `$(list-unordered) Estimating Carbon`;
     runtimeLaunchButton.tooltip = "Click to see AI Analysis Options";
     runtimeLaunchButton.command = "ecode.menu";
     runtimeLaunchButton.show();
-
-    // TODO need to make sure that multiple interceptors can't be started at once. 
-    // This isn't handled very gracefully at the moment.
-
 
     context.subscriptions.push(terminalDisposable);
     context.subscriptions.push(startDisposable);
@@ -331,10 +287,6 @@ export async function deactivate() {
     if (proxyServer) {
         await proxyServer.stop();
     }
-    // const config = vscode.workspace.getConfiguration('http');
-    // await config.update('proxy', undefined, vscode.ConfigurationTarget.Global);
-    // await config.update('proxyStrictSSL', undefined, vscode.ConfigurationTarget.Global);
-
 }
 
 
@@ -367,67 +319,55 @@ class MyTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
             message,
             vscode.TreeItemCollapsibleState.None
         ));
-        this._onDidChangeTreeData.fire(); //refreshes the sidebar
+        this._onDidChangeTreeData.fire(undefined); //refreshes the sidebar
 
     }
     clearTree() {
         this.items = [];
-        this._onDidChangeTreeData.fire();
+        this._onDidChangeTreeData.fire(undefined);
     }
-
-    // UstwoBristolEstimatingCarbon
-
 }
 class statusBarManager {
-    mainItem = vscode.window.createStatusBarItem(); //creates a status bar item for limit word
-    loading: vscode.StatusBarItem[] = []; //creates a list of statusbar items for the loading bar items
-    defaultColour: string = "statusBarItem.activeBackground";
-    newColour: string;
+    mainItem = vscode.window.createStatusBarItem(); // creates a new item in the VS Code status bar
+    defaultColour: string = "statusBarItem.activeBackground"; // defines default colour for the status bar item
+    newColour: string; // stores the new colour calculated based on the carbon emissions of the latest request
 
     constructor() {
         this.newColour = this.defaultColour;
-        this.mainItem.text = 'Average carbon cost: g CO₂e';
-        this.mainItem.show();//displays the limit item
-
-
+        this.mainItem.text = 'Last Request: 0 g CO₂e';
+        this.mainItem.show();
     }
 
     updateLimit(input: number) {
-        this.mainItem.text = 'Average carbon cost: ' + input + ' g CO₂e';
-        this.newColour = "statusBarItem.activeBackground";
+        this.mainItem.text = 'Last Request: 0 g CO₂e';
+        this.newColour = "statusBarItem.background";
     }
-
-    updateBar(input: number, limit: number) {
-
-        if (input) {
-            this.mainItem.text = 'Average carbon cost: ' + limit.toFixed(4) + ' g CO₂e';
-            if (input >= 3 * limit) {
-                this.newColour = "statusBarItem.errorBackground"; //if well beyond the limit the loading bar goes red
-                //vscode.window.showInformationMessage('VERY high carbon AI call made (check pane for details)');
+    //this method updates the status bar item with the carbon emissions of the latest request and changes its colour based on predefined thresholds to provide real-time feedback on the environmental impact of development activities
+    updateBar(input: number) { 
+        if (input !== undefined) {
+            this.mainItem.text = 'Last Request: ' + input.toFixed(4) + ' g CO₂e';
+            
+            // Utilising static thresholds for real-time feedback
+            if (input >= 40) {
+                this.newColour = "statusBarItem.errorBackground"; // High Emission
             }
-            else if (input >= 1.5 * limit) {
-                this.newColour = "statusBarItem.warningBackground"; //if beyond the limit the loading bar goes yellow
-                //vscode.window.showInformationMessage('High carbon AI call made (check pane for details)');
+            else if (input >= 15) {
+                this.newColour = "statusBarItem.warningBackground"; // Average Emission
+            }
+
+            else if (input > 0) {
+                this.newColour = "statusBarItem.background"; // Low Emission (keeping for now if there is a way to make it green)
             }
             else {
-                this.newColour = "statusBarItem.activeBackground"; //if not beyond the limit loading bar is clear
-                //vscode.window.showInformationMessage('below limit');  
+                this.newColour = "statusBarItem.activeBackground"; // Low Emission
             }
-            var i: number = 0;
         }
         else {
             this.newColour = "statusBarItem.activeBackground";
-            input = 0;
-            //vscode.window.showInformationMessage('not satisfied!');
+            this.mainItem.text = 'Last Request: 0 g CO₂e';
         }
-        // for(i = 0;i<Math.max(input);i++){ //populates the loading bar
-        //  this.loading[i].backgroundColor = new vscode.ThemeColor(this.newColour);
-        //  }
-        // for(i;i<this.loading.length;i++){
-        //  this.loading[i].backgroundColor = new vscode.ThemeColor("statusBarItem.activeBackground");
-        //  }
 
-        this.mainItem.backgroundColor = new vscode.ThemeColor(this.newColour); //colours the word "loading"
+        this.mainItem.backgroundColor = new vscode.ThemeColor(this.newColour);  // Update the background color of the status bar item based on the new colour
     }
 }
 
@@ -446,7 +386,7 @@ export function getCurrentBranch(): string {
             return "Unknown Branch";
         }
         const cwd = workspaceFolders[0].uri.fsPath;
-        const branch = child_process.execSync("git rev-parse --abbrev-ref HEAD", { cwd, encoding: 'utf8' }).trim();
+        const branch = childProcess.execSync("git rev-parse --abbrev-ref HEAD", { cwd, encoding: 'utf8' }).trim();
         return branch || "Unknown Branch"; // defaults to unknown branch
     } catch (error) {
         console.error("Error getting git branch:", error);
@@ -459,13 +399,14 @@ export function updateTree(call: budget.Call) {
         call.Branch = getCurrentBranch();
     }
     budg.storeCall(call);
-    var cLimit = budg.updateLimit();
-    console.log("limit: " + cLimit);
-    bar.updateBar(call.Emissions, cLimit);
+   
+    
+    console.log("BACKEND CHECK: Stored call value:", call.Emissions, "for date:", new Date(call.DateTime).toISOString());
     tree.addMessage("Emissions: " + call.Emissions + "g CO₂e - Model: " + call.Model + " - Date: " + new Date(call.DateTime).toLocaleString());
-
-    CarbonDashboardPanel.sendData();
-
+    
+    bar.updateBar(call.Emissions);
+    CarbonDashboardPanel.sendData(budg); 
+    
 }
 
 export async function getLogs(context: vscode.ExtensionContext) {
@@ -477,25 +418,45 @@ export async function getLogs(context: vscode.ExtensionContext) {
 
         // reads file and outputs lines to console one at a time
         const content = fs.readFileSync(logUri, 'utf-8');
-        const lDate = new Date(lastAccess);
+        // var lDate:string[] = (new Date(lastAccess).toLocaleString('us-GB', { 
+        //                 hour12: false
+        //             })).split(",");
+        
 
-        const regex: RegExp = new RegExp(lDate.toLocaleString());
-        const splitting = content.split(regex);
-        var input: string = content;
+        // var dateSec = new Date(lastAccess).toISOString().slice(0, 10).split('/').join('-'); //formats the date in accordance to the log files
+        // var timeSplit = dateSec+lDate[1];
+        // const regex: RegExp = new RegExp(timeSplit);
+        // const splitting:string[] = content.split(regex);//splits the time stamp
+        // var input: string;
+        // if (splitting.length < 2){//uses the entire log file if nothing can be found the timestamp
+        //     input= content;
+        // }
+        // else{
+        //     input = splitting[splitting.length-1];//incase multiple lines of the log file are at the same second look past the last one
+        // }
 
+        //the above comment used to split the log file as to avoid taking too long loading when log files get larger
+        //due to a slight last minute changes to log files this created issues and has been removed 
+
+        var input:string = content;
         const models: budget.Call[] = await logCap.identifyModel(input);
-        console.log("CALLS: ", models);
-        for (let index = 0; index < models.length; index++) {
+        const sortedModels = models.sort((a: budget.Call, b: budget.Call) => {
+            return a.DateTime - b.DateTime;
+        });
+        console.log("CALLS: ", sortedModels);
 
-            if (models[index].DateTime > lastAccess) {
-                updateTree(models[index]);
+        for (let index = 0; index < sortedModels.length; index++) {
+            if (sortedModels[index].DateTime > lastAccess) {
+                console.log("updating tree");
+                updateTree(sortedModels[index]);//updates side bar with all calls returned
+                 //plan to only give identify model and such the log file after the last access to make it quicker
             }
         }
-        lastAccess = new Date().getTime();
 
-        //vscode.window.showInformationMessage("Copilot log files refreshed.");
+        if (sortedModels.length !== 0) {lastAccess = sortedModels[sortedModels.length-1].DateTime;}        
     }
     catch (error) {
+        console.log(error);
         vscode.window.showErrorMessage("Error: Copilot log files not found.");
     }
 }
@@ -507,6 +468,12 @@ export function wrappedGetCall() {
 export function wrappedGetBudget(): number {
     return budg.getBudget();
 }
+// This function is used in the dashboard to determine the start of the current budget tracking window
+export function wrappedGetBudgetWindowStart(): number {
+    
+    return budg.getBudgetWindowStart();
+}
+
 
 export function wrappedSetBudget(newBudget: number): void {
     budg.setBudget(newBudget);

@@ -1,0 +1,610 @@
+2026-04-29 00:55:01.268 [info] [GitExtensionServiceImpl] Initializing Git extension service.
+2026-04-29 00:55:01.269 [trace] [GithubAccountFilterProvider]::getFilters SKU: free_educational_quota, Internal Org: undefined, IsFcv1: false, IsSn: false, IsVscodeTeamMember: false, OrganizationList: 
+2026-04-29 00:55:01.269 [trace] [RelatedExtensionsFilterProvider]::getFilters looking up related extensions
+2026-04-29 00:55:01.269 [trace] [RelatedExtensionsFilterProvider]::getFilters Filters: [["X-Copilot-RelatedPluginVersion-msvscodecpptools","1.31.5"],["X-Copilot-RelatedPluginVersion-msvscodecmaketools","1.23.52"],["X-Copilot-RelatedPluginVersion-mspythonpython","2026.4.0"],["X-Copilot-RelatedPluginVersion-mspythonvscodepylance","2026.2.1"],["X-Copilot-RelatedPluginVersion-vscodetypescriptlanguagefeatures","10.0.0"],["X-Copilot-RelatedPluginVersion-msvscodevscodetypescriptnext","6.0.20260416"],["X-Copilot-RelatedPluginVersion-msdotnettoolscsharp","2.130.5"]]
+2026-04-29 00:55:01.269 [trace] [CopilotExtensionsFilterProvider]::getFilters Copilot Extension Version: undefined, Copilot Chat Extension Version: 0.45.1, Completions Core Version: 1.378.1799
+2026-04-29 00:55:01.269 [trace] [CopilotCompletionsFilterProvider]::getFilters Filters: []
+2026-04-29 00:55:01.269 [trace] [PlatformAndReleaseDateFilterProvider]::getFilters Filters: [["X-VSCode-Platform","Windows"],["X-VSCode-ReleaseDate","2026042116"]]
+2026-04-29 00:55:01.269 [info] [GitExtensionServiceImpl] Successfully activated the vscode.git extension.
+2026-04-29 00:55:01.269 [info] [GitExtensionServiceImpl] Enablement state of the vscode.git extension: true.
+2026-04-29 00:55:01.269 [info] [GitExtensionServiceImpl] Successfully registered Git commit message provider.
+2026-04-29 00:55:03.757 [trace] [BaseExperimentationService] Initial fetch completed
+2026-04-29 00:55:03.900 [info] ConversationFeature: Waiting for copilot token to activate conversation feature
+2026-04-29 00:55:03.900 [debug] Getting CopilotToken (force: undefined)...
+2026-04-29 00:55:03.900 [debug] [context keys] Updating context keys.
+2026-04-29 00:55:03.900 [debug] Getting CopilotToken (force: undefined)...
+2026-04-29 00:55:03.900 [debug] Getting CopilotToken (force: undefined)...
+2026-04-29 00:55:03.900 [debug] Getting CopilotToken (force: undefined)...
+2026-04-29 00:55:03.900 [trace] [NES][Feature] Return: void
+2026-04-29 00:55:03.900 [debug] Getting CopilotToken (force: undefined)...
+2026-04-29 00:55:03.903 [debug] Getting CopilotToken (force: undefined)...
+2026-04-29 00:55:03.904 [trace] ChatStatusWorkspaceIndexingStatus::_writeStatusItem()
+2026-04-29 00:55:03.904 [trace] ChatStatusWorkspaceIndexingStatus::updateStatusItem(id=1): starting
+2026-04-29 00:55:03.904 [debug] [CopilotCLI] Starting MCP HTTP server for VS Code Copilot CLI...
+2026-04-29 00:55:03.904 [trace] [OTel] Instrumentation disabled
+2026-04-29 00:55:03.904 [debug] Getting CopilotToken (force: undefined)...
+2026-04-29 00:55:03.904 [trace] [GithubAccountFilterProvider]::getFilters SKU: free_educational_quota, Internal Org: undefined, IsFcv1: false, IsSn: false, IsVscodeTeamMember: false, OrganizationList: 
+2026-04-29 00:55:03.904 [trace] [RelatedExtensionsFilterProvider]::getFilters looking up related extensions
+2026-04-29 00:55:03.905 [trace] [RelatedExtensionsFilterProvider]::getFilters Filters: [["X-Copilot-RelatedPluginVersion-msvscodecpptools","1.31.5"],["X-Copilot-RelatedPluginVersion-msvscodecmaketools","1.23.52"],["X-Copilot-RelatedPluginVersion-mspythonpython","2026.4.0"],["X-Copilot-RelatedPluginVersion-mspythonvscodepylance","2026.2.1"],["X-Copilot-RelatedPluginVersion-vscodetypescriptlanguagefeatures","10.0.0"],["X-Copilot-RelatedPluginVersion-msvscodevscodetypescriptnext","6.0.20260416"],["X-Copilot-RelatedPluginVersion-msdotnettoolscsharp","2.130.5"]]
+2026-04-29 00:55:03.905 [trace] [CopilotExtensionsFilterProvider]::getFilters Copilot Extension Version: undefined, Copilot Chat Extension Version: 0.45.1, Completions Core Version: 1.378.1799
+2026-04-29 00:55:03.905 [trace] [CopilotCompletionsFilterProvider]::getFilters Filters: [["X-VSCode-ExtensionRelease","stable"],["X-Copilot-ClientVersion","0.45.1"],["X-Copilot-Engine","gpt-41-copilot"]]
+2026-04-29 00:55:03.905 [trace] [PlatformAndReleaseDateFilterProvider]::getFilters Filters: [["X-VSCode-Platform","Windows"],["X-VSCode-ReleaseDate","2026042116"]]
+2026-04-29 00:55:03.906 [trace] [CopilotCLI] Generated socket path: \\.\pipe\mcp-f80d4ed9-543e-487c-a701-1295f142b05a.sock
+2026-04-29 00:55:03.970 [trace] ChatStatusWorkspaceIndexingStatus::_writeStatusItem()
+2026-04-29 00:55:03.999 [debug] [CopilotCLI] HTTP server listening on socket
+2026-04-29 00:55:03.999 [debug] [CopilotCLI] Registering push notifications...
+2026-04-29 00:55:03.999 [debug] [CopilotCLI] Registered selection change notification
+2026-04-29 00:55:03.999 [debug] [CopilotCLI] Registered diagnostics change notification
+2026-04-29 00:55:04.000 [trace] [CopilotCLI] Creating lock file in: C:\Users\JC_Bo\.copilot\ide
+2026-04-29 00:55:04.026 [debug] FetcherService: Using experimentation service to determine fetcher configuration.
+2026-04-29 00:55:04.026 [info] Using the Electron fetcher.
+2026-04-29 00:55:04.124 [debug] [context keys] Window state change. Needs offline check: false, active: true, focused: true.
+2026-04-29 00:55:04.210 [debug] [Power] CPU speed limit changed: 41% (throttled)
+2026-04-29 00:55:04.210 [debug] [Power] CPU speed limit changed: 43% (throttled)
+2026-04-29 00:55:04.212 [debug] [Power] Initial power state: on AC power, thermal state: unknown, system idle time: 0s
+2026-04-29 00:55:04.214 [debug] Getting CopilotToken (force: undefined)...
+2026-04-29 00:55:04.223 [trace] copilotCloudSessionsProvider#provideChatSessionProviderOptions Start
+2026-04-29 00:55:04.306 [debug] Send fetcher telemetry: Exclude other windows.
+2026-04-29 00:55:04.671 [info] Logged in as JacobConnor5
+2026-04-29 00:55:04.755 [trace] [GitServiceImpl][doOpenRepository] Repository: file:///c%3A/Users/JC_Bo/PersonalProjects/EdgeDetection
+2026-04-29 00:55:05.417 [info] [CopilotCLI] OpenTelemetry enabled: exporter=file, source=github.copilot
+2026-04-29 00:55:05.422 [debug] [CopilotCLI] Created lock file: C:\Users\JC_Bo\.copilot\ide\ce8e97f3-ccc8-4047-bda3-3c6f9ff52a6b.lock
+2026-04-29 00:55:05.422 [info] [CopilotCLI] MCP server started. Lock file: C:\Users\JC_Bo\.copilot\ide\ce8e97f3-ccc8-4047-bda3-3c6f9ff52a6b.lock
+2026-04-29 00:55:05.422 [info] [CopilotCLI] Server URI: pipe:%5C%5C.%5Cpipe%5Cmcp-f80d4ed9-543e-487c-a701-1295f142b05a.sock#%2Fmcp
+2026-04-29 00:55:05.477 [debug] Auth state changed, minting a new CopilotToken...
+2026-04-29 00:55:05.477 [debug] Getting CopilotToken (force: true)...
+2026-04-29 00:55:05.548 [debug] [CopilotCLI] Found 0 JSONL sessions and 0 legacy sessions
+2026-04-29 00:55:05.550 [info] [CopilotCLIChatSessionContentProvider] listSessions took 1326.2255000000005ms
+2026-04-29 00:55:05.585 [debug] FetcherService: electron-fetch succeeded (JSON)
+2026-04-29 00:55:05.588 [debug] FetcherService: electron-fetch succeeded (JSON)
+2026-04-29 00:55:05.591 [info] Got Copilot token for JacobConnor5
+2026-04-29 00:55:05.591 [info] Copilot Chat: 0.45.1, VS Code: 1.117.0
+2026-04-29 00:55:05.595 [debug] Handling CopilotToken refresh.
+2026-04-29 00:55:05.595 [debug] Got CopilotToken (force: undefined).
+2026-04-29 00:55:05.618 [debug] Got CopilotToken (force: undefined).
+2026-04-29 00:55:05.618 [debug] Got CopilotToken (force: undefined).
+2026-04-29 00:55:05.618 [debug] Got CopilotToken (force: undefined).
+2026-04-29 00:55:05.618 [debug] Got CopilotToken (force: undefined).
+2026-04-29 00:55:05.618 [debug] Got CopilotToken (force: undefined).
+2026-04-29 00:55:05.618 [debug] Got CopilotToken (force: undefined).
+2026-04-29 00:55:05.618 [debug] Got CopilotToken (force: undefined).
+2026-04-29 00:55:05.618 [debug] Got CopilotToken (force: true).
+2026-04-29 00:55:05.620 [debug] copilotCloudSessionsProvider: CAPI URL changed, refreshing sessions
+2026-04-29 00:55:05.635 [info] [context keys] Setting context key: github.copilot-chat.activated
+2026-04-29 00:55:05.638 [debug] Minted a new CopilotToken.
+2026-04-29 00:55:05.639 [info] activationBlocker from 'languageModelAccess' took for 1832ms
+2026-04-29 00:55:05.649 [debug] [CopilotCLI] Removed stale lock file for PID 23220: C:\Users\JC_Bo\.copilot\ide\138ce6b3-9b41-491d-8461-67018430e844.lock
+2026-04-29 00:55:05.650 [info] [CopilotCLI] Cleaned up 1 stale lock file(s).
+2026-04-29 00:55:05.680 [trace] copilotCloudSessionsProvider#provideChatSessionProviderOptions Start
+2026-04-29 00:55:05.939 [debug] CopilotToken state changed, firing event.
+2026-04-29 00:55:05.939 [info] AuthenticationService: firing onDidAuthenticationChange from handleAuthChangeEvent. Has token: true
+2026-04-29 00:55:05.939 [info] copilot token sku: free_educational_quota
+2026-04-29 00:55:05.939 [info] ConversationFeature: Activating contributions
+2026-04-29 00:55:05.939 [info] GitHub.vscode-pull-request-github extension is not yet activated.
+2026-04-29 00:55:05.957 [info] Registering default platform agent...
+2026-04-29 00:55:05.959 [info] ConversationFeature: onDidAuthenticationChange has token: true
+2026-04-29 00:55:05.959 [debug] [context keys] Updating context keys.
+2026-04-29 00:55:05.959 [trace] [NES][ModelsService][constructor] computing models
+2026-04-29 00:55:05.959 [trace] [NES][ModelsService][aggregateModels] adding built-in default model: useSlashModels true, fetchedNesModels undefined
+2026-04-29 00:55:05.959 [trace] [NES][ModelsService][aggregateModels] Adding default model configuration: copilot-nes-oct
+2026-04-29 00:55:05.959 [trace] [NES][ModelsService][constructor] computing current model
+2026-04-29 00:55:05.959 [trace] [NES][ModelsService][constructor] computing model info
+2026-04-29 00:55:05.960 [info] [code-referencing] Public code references are enabled.
+2026-04-29 00:55:05.961 [debug] Finished handling auth change event.
+2026-04-29 00:55:05.961 [info] activationBlocker from 'conversationFeature' took for 2182ms
+2026-04-29 00:55:05.993 [info] GithubAvailableEmbeddingTypesManager: Got embeddings. Primary: metis-1024-I16-Binary. Deprecated: 
+2026-04-29 00:55:06.001 [info] WorkspaceChunkSearchService: using embedding type metis-1024-I16-Binary
+2026-04-29 00:55:06.001 [trace] CodeSearchRepoTracker.tryInitGitRepos(): started
+2026-04-29 00:55:06.001 [trace] CodeSearchRepoTracker.tryInitGitRepos(): Git service not initialized. Waiting for init signal.
+2026-04-29 00:55:06.002 [trace] CodeSearchChunkSearch::initialize#0 started
+2026-04-29 00:55:06.002 [trace] CodeSearchChunkSearch::initialize_impl started
+2026-04-29 00:55:06.002 [trace] ChatStatusWorkspaceIndexingStatus::updateStatusItem(id=2): starting
+2026-04-29 00:55:06.003 [trace] CodeSearchChunkSearch::initialize#1 started
+2026-04-29 00:55:06.004 [trace] ChatStatusWorkspaceIndexingStatus::_writeStatusItem()
+2026-04-29 00:55:06.303 [debug] [CopilotCLI] Found 0 JSONL sessions and 0 legacy sessions
+2026-04-29 00:55:06.304 [info] [CopilotCLIChatSessionContentProvider] listSessions took 43.240999999999985ms
+2026-04-29 00:55:06.458 [debug] [CopilotCLI] Found 0 JSONL sessions and 0 legacy sessions
+2026-04-29 00:55:06.459 [info] [CopilotCLIChatSessionContentProvider] listSessions took 55.95709999999963ms
+2026-04-29 00:55:06.557 [trace] [NES][ModelsService][constructor] computing models
+2026-04-29 00:55:06.557 [trace] [NES][ModelsService][aggregateModels] Processing 4 fetched models...
+2026-04-29 00:55:06.557 [trace] [NES][ModelsService][aggregateModels] Adding 3 fetched models after filtering.
+2026-04-29 00:55:06.557 [trace] [NES][ModelsService][constructor] computing current model
+2026-04-29 00:55:06.557 [trace] [NES][ModelsService][constructor] computing model info
+2026-04-29 00:55:06.607 [info] Fetched model metadata in 2755ms c89ec851-9edc-41d1-a214-029f0d8925de
+2026-04-29 00:55:06.633 [trace] Should request permissive session upgrade: false - already have permissive session
+2026-04-29 00:55:06.899 [info] BYOK: Copilot Chat known models list fetched successfully.
+2026-04-29 00:55:06.947 [trace] [GitServiceImpl][doOpenRepository] Repository initialized: {"type":0,"name":"main","upstream":{"name":"main","remote":"origin","commit":"8980f57a7c291e8bfa9ae312d1dce54391fd6946"},"commit":"9fbcdcbfd460ff83497db39c63eefacc5fd6a2ca","ahead":0,"behind":1}
+2026-04-29 00:55:06.948 [trace] [GitServiceImpl][doOpenRepository] Active repository: {"_repo":{"rootUri":{"$mid":1,"external":"file:///c%3A/Users/JC_Bo/PersonalProjects/EdgeDetection","path":"/c:/Users/JC_Bo/PersonalProjects/EdgeDetection","scheme":"file"},"inputBox":{},"kind":"repository","state":{},"ui":{},"isUsingVirtualFileSystem":false},"rootUri":{"$mid":1,"external":"file:///c%3A/Users/JC_Bo/PersonalProjects/EdgeDetection","path":"/c:/Users/JC_Bo/PersonalProjects/EdgeDetection","scheme":"file"},"kind":"repository","isUsingVirtualFileSystem":false,"headBranchName":"main","headCommitHash":"9fbcdcbfd460ff83497db39c63eefacc5fd6a2ca","headIncomingChanges":1,"headOutgoingChanges":0,"upstreamBranchName":"main","upstreamRemote":"origin","isRebasing":true,"remotes":["origin"],"remoteFetchUrls":["https://github.com/JacobConnor5/EdgeDetection.git"],"worktrees":[{"name":"EdgeDetection","path":"c:\\Users\\JC_Bo\\PersonalProjects\\EdgeDetection","ref":"refs/heads/main","detached":false,"main":true}],"changes":{"mergeChanges":[],"indexChanges":[],"workingTree":[{},{},{},{},{}],"untrackedChanges":[]},"_onDidChangeSignal":{"_observers":"Set()","debugName":"Observable Signal From Event"},"headBranchNameObs":{"_observers":"Set()","_debugNameData":{},"_state":0,"_updateCount":0,"_dependencies":"Set()","_dependenciesToBeRemoved":"Set()","_isUpdating":false,"_isComputing":false,"_didReportChange":false,"_isInBeforeUpdate":false,"_isReaderValid":false,"_removedObserverToCallEndUpdateOn":null},"headCommitHashObs":{"_observers":"Set()","_debugNameData":{},"_state":0,"_updateCount":0,"_dependencies":"Set()","_dependenciesToBeRemoved":"Set()","_isUpdating":false,"_isComputing":false,"_didReportChange":false,"_isInBeforeUpdate":false,"_isReaderValid":false,"_removedObserverToCallEndUpdateOn":null},"upstreamBranchNameObs":{"_observers":"Set()","_debugNameData":{},"_state":0,"_updateCount":0,"_dependencies":"Set()","_dependenciesToBeRemoved":"Set()","_isUpdating":false,"_isComputing":false,"_didReportChange":false,"_isInBeforeUpdate":false,"_isReaderValid":false,"_removedObserverToCallEndUpdateOn":null},"upstreamRemoteObs":{"_observers":"Set()","_debugNameData":{},"_state":0,"_updateCount":0,"_dependencies":"Set()","_dependenciesToBeRemoved":"Set()","_isUpdating":false,"_isComputing":false,"_didReportChange":false,"_isInBeforeUpdate":false,"_isReaderValid":false,"_removedObserverToCallEndUpdateOn":null},"isRebasingObs":{"_observers":"Set()","_debugNameData":{},"_state":0,"_updateCount":0,"_dependencies":"Set()","_dependenciesToBeRemoved":"Set()","_isUpdating":false,"_isComputing":false,"_didReportChange":false,"_isInBeforeUpdate":false,"_isReaderValid":false,"_removedObserverToCallEndUpdateOn":null},"_checkIsIgnored":{"_waitingTimeMs":1000,"_queue":[],"_timeout":null},"_isIgnored":{"_map":{},"_map2":{}}}
+2026-04-29 00:55:06.967 [trace] [GitServiceImpl] Initial repository discovery finished: 1 repositories found.
+2026-04-29 00:55:06.978 [debug] copilotCloudSessionsProvider#provideChatSessionItems: repoIds=[{"org":"JacobConnor5","repo":"EdgeDetection","host":"github.com"}], isAgentSessionsWorkspace=false
+2026-04-29 00:55:06.978 [debug] copilotCloudSessionsProvider#provideChatSessionItems: repoIds=[{"org":"JacobConnor5","repo":"EdgeDetection","host":"github.com"}], isAgentSessionsWorkspace=false
+2026-04-29 00:55:06.982 [trace] CodeSearchRepoTracker.tryInitGitRepos(): Found initial repos: [file:///c%3A/Users/JC_Bo/PersonalProjects/EdgeDetection].
+2026-04-29 00:55:06.982 [trace] CodeSearchRepoTracker::openGitRepo#0 started
+2026-04-29 00:55:06.982 [trace] CodeSearchRepoTracker.openGitRepo(file:///c%3A/Users/JC_Bo/PersonalProjects/EdgeDetection)
+2026-04-29 00:55:06.985 [trace] CodeSearchRepoTracker::openGitRepo#0 success. Elapsed 3.1890999999995984
+2026-04-29 00:55:06.985 [trace] CodeSearchRepoTracker.tryInitGitRepos(): Complete
+2026-04-29 00:55:07.120 [info] Latest entry: ccreq:latest.copilotmd
+2026-04-29 00:55:07.123 [info] ccreq:4f83a41c.copilotmd | markdown
+2026-04-29 00:55:07.236 [debug] [RateLimit] REST rate limit remaining: 4974, user
+2026-04-29 00:55:07.238 [trace] [GitServiceImpl][getRepositoryFetchUrls] URI: file:///c%3A/Users/JC_Bo/PersonalProjects/EdgeDetection/src
+2026-04-29 00:55:07.238 [trace] [GitServiceImpl][getRepositoryFetchUrls] Remotes (open repository): {"rootUri":{"$mid":1,"path":"/c:/Users/JC_Bo/PersonalProjects/EdgeDetection","scheme":"file"},"remoteFetchUrls":["https://github.com/JacobConnor5/EdgeDetection.git"]}
+2026-04-29 00:55:07.238 [trace] [GitHubOrgChatResourcesService] Found GitHub repo: JacobConnor5/EdgeDetection
+2026-04-29 00:55:07.239 [trace] [GitHubOrgChatResourcesService] Workspace organization: JacobConnor5
+2026-04-29 00:55:07.239 [trace] [GitHubOrgChatResourcesService] Using workspace organization: JacobConnor5
+2026-04-29 00:55:07.268 [trace] [GitHubOrgChatResourcesService] Cache directory does not exist: vscode-userdata:/c%3A/Users/JC_Bo/AppData/Roaming/Code/User/globalStorage/github.copilot-chat/github/jacobconnor5/agents
+2026-04-29 00:55:07.269 [trace] [GitHubOrgChatResourcesService] Cache directory does not exist: vscode-userdata:/c%3A/Users/JC_Bo/AppData/Roaming/Code/User/globalStorage/github.copilot-chat/github/jacobconnor5/agents
+2026-04-29 00:55:07.270 [trace] [GitHubOrgChatResourcesService] Cache directory does not exist: vscode-userdata:/c%3A/Users/JC_Bo/AppData/Roaming/Code/User/globalStorage/github.copilot-chat/github/jacobconnor5/agents
+2026-04-29 00:55:07.270 [trace] [GitHubOrgChatResourcesService] Cache directory does not exist: vscode-userdata:/c%3A/Users/JC_Bo/AppData/Roaming/Code/User/globalStorage/github.copilot-chat/github/jacobconnor5/agents
+2026-04-29 00:55:07.296 [debug] [getAllSessions] Fetching sessions for nwo=JacobConnor5/EdgeDetection, open=false
+2026-04-29 00:55:07.303 [debug] [getAllSessions] Fetching sessions for nwo=JacobConnor5/EdgeDetection, open=true
+2026-04-29 00:55:07.307 [debug] [getAllSessions] Fetching sessions for nwo=JacobConnor5/EdgeDetection, open=true
+2026-04-29 00:55:07.365 [trace] [PlanAgentProvider] Wrote agent file: vscode-userdata:/c%3A/Users/JC_Bo/AppData/Roaming/Code/User/globalStorage/github.copilot-chat/plan-agent/Plan.agent.md
+2026-04-29 00:55:07.366 [trace] [PlanAgentProvider] Wrote agent file: vscode-userdata:/c%3A/Users/JC_Bo/AppData/Roaming/Code/User/globalStorage/github.copilot-chat/plan-agent/Plan.agent.md
+2026-04-29 00:55:07.374 [trace] [CopilotCLI] [DIFF] getActiveDiffByTab: tab is not a diff tab
+2026-04-29 00:55:07.376 [trace] [CopilotCLI] [DIFF] getActiveDiffByTab: tab is not a diff tab
+2026-04-29 00:55:07.378 [trace] [CopilotCLI] [DIFF] getActiveDiffByTab: tab is not a diff tab
+2026-04-29 00:55:07.380 [trace] [CopilotCLI] [DIFF] getActiveDiffByTab: tab is not a diff tab
+2026-04-29 00:55:07.383 [trace] [CopilotCLI] [DIFF] getActiveDiffByTab: tab is not a diff tab
+2026-04-29 00:55:07.385 [trace] [PlanAgentProvider] Wrote agent file: vscode-userdata:/c%3A/Users/JC_Bo/AppData/Roaming/Code/User/globalStorage/github.copilot-chat/plan-agent/Plan.agent.md
+2026-04-29 00:55:07.420 [debug] [Power] CPU speed limit changed: 39% (throttled)
+2026-04-29 00:55:07.444 [trace] [AskAgentProvider] Wrote agent file: vscode-userdata:/c%3A/Users/JC_Bo/AppData/Roaming/Code/User/globalStorage/github.copilot-chat/ask-agent/Ask.agent.md
+2026-04-29 00:55:07.450 [trace] [CopilotCLI] [DIFF] getActiveDiffByTab: tab is not a diff tab
+2026-04-29 00:55:07.453 [trace] [CopilotCLI] [DIFF] getActiveDiffByTab: tab is not a diff tab
+2026-04-29 00:55:07.456 [trace] [CopilotCLI] [DIFF] getActiveDiffByTab: tab is not a diff tab
+2026-04-29 00:55:07.458 [trace] [CopilotCLI] [DIFF] getActiveDiffByTab: tab is not a diff tab
+2026-04-29 00:55:07.460 [trace] [CopilotCLI] [DIFF] getActiveDiffByTab: tab is not a diff tab
+2026-04-29 00:55:07.468 [trace] [AskAgentProvider] Wrote agent file: vscode-userdata:/c%3A/Users/JC_Bo/AppData/Roaming/Code/User/globalStorage/github.copilot-chat/ask-agent/Ask.agent.md
+2026-04-29 00:55:07.513 [trace] [ExploreAgentProvider] Wrote agent file: vscode-userdata:/c%3A/Users/JC_Bo/AppData/Roaming/Code/User/globalStorage/github.copilot-chat/explore-agent/Explore.agent.md
+2026-04-29 00:55:07.517 [trace] [CopilotCLI] [DIFF] getActiveDiffByTab: tab is not a diff tab
+2026-04-29 00:55:07.519 [trace] [CopilotCLI] [DIFF] getActiveDiffByTab: tab is not a diff tab
+2026-04-29 00:55:07.521 [trace] [CopilotCLI] [DIFF] getActiveDiffByTab: tab is not a diff tab
+2026-04-29 00:55:07.523 [trace] [CopilotCLI] [DIFF] getActiveDiffByTab: tab is not a diff tab
+2026-04-29 00:55:07.524 [trace] [CopilotCLI] [DIFF] getActiveDiffByTab: tab is not a diff tab
+2026-04-29 00:55:07.532 [trace] [GitServiceImpl][doOpenRepository] Active repository: {"_repo":{"rootUri":{"$mid":1,"external":"file:///c%3A/Users/JC_Bo/PersonalProjects/EdgeDetection","path":"/c:/Users/JC_Bo/PersonalProjects/EdgeDetection","scheme":"file"},"inputBox":{},"kind":"repository","state":{},"ui":{},"isUsingVirtualFileSystem":false},"rootUri":{"$mid":1,"external":"file:///c%3A/Users/JC_Bo/PersonalProjects/EdgeDetection","path":"/c:/Users/JC_Bo/PersonalProjects/EdgeDetection","scheme":"file"},"kind":"repository","isUsingVirtualFileSystem":false,"headBranchName":"main","headCommitHash":"9fbcdcbfd460ff83497db39c63eefacc5fd6a2ca","headIncomingChanges":1,"headOutgoingChanges":0,"upstreamBranchName":"main","upstreamRemote":"origin","isRebasing":true,"remotes":["origin"],"remoteFetchUrls":["https://github.com/JacobConnor5/EdgeDetection.git"],"worktrees":[{"name":"EdgeDetection","path":"c:\\Users\\JC_Bo\\PersonalProjects\\EdgeDetection","ref":"refs/heads/main","detached":false,"main":true}],"changes":{"mergeChanges":[],"indexChanges":[],"workingTree":[{},{},{},{},{}],"untrackedChanges":[]},"_onDidChangeSignal":{"_observers":"Set()","debugName":"Observable Signal From Event"},"headBranchNameObs":{"_observers":"Set()","_debugNameData":{},"_state":0,"_updateCount":0,"_dependencies":"Set()","_dependenciesToBeRemoved":"Set()","_isUpdating":false,"_isComputing":false,"_didReportChange":false,"_isInBeforeUpdate":false,"_isReaderValid":false,"_removedObserverToCallEndUpdateOn":null},"headCommitHashObs":{"_observers":"Set()","_debugNameData":{},"_state":0,"_updateCount":0,"_dependencies":"Set()","_dependenciesToBeRemoved":"Set()","_isUpdating":false,"_isComputing":false,"_didReportChange":false,"_isInBeforeUpdate":false,"_isReaderValid":false,"_removedObserverToCallEndUpdateOn":null},"upstreamBranchNameObs":{"_observers":"Set()","_debugNameData":{},"_state":0,"_updateCount":0,"_dependencies":"Set()","_dependenciesToBeRemoved":"Set()","_isUpdating":false,"_isComputing":false,"_didReportChange":false,"_isInBeforeUpdate":false,"_isReaderValid":false,"_removedObserverToCallEndUpdateOn":null},"upstreamRemoteObs":{"_observers":"Set()","_debugNameData":{},"_state":0,"_updateCount":0,"_dependencies":"Set()","_dependenciesToBeRemoved":"Set()","_isUpdating":false,"_isComputing":false,"_didReportChange":false,"_isInBeforeUpdate":false,"_isReaderValid":false,"_removedObserverToCallEndUpdateOn":null},"isRebasingObs":{"_observers":"Set()","_debugNameData":{},"_state":0,"_updateCount":0,"_dependencies":"Set()","_dependenciesToBeRemoved":"Set()","_isUpdating":false,"_isComputing":false,"_didReportChange":false,"_isInBeforeUpdate":false,"_isReaderValid":false,"_removedObserverToCallEndUpdateOn":null},"_checkIsIgnored":{"_waitingTimeMs":1000,"_queue":[],"_timeout":null},"_isIgnored":{"_map":{},"_map2":{}}}
+2026-04-29 00:55:07.538 [trace] CodeSearchChunkSearch::openGitRepo#0 started
+2026-04-29 00:55:07.538 [trace] CodeSearchChunkSearch.openGitRepo(file:///c%3A/Users/JC_Bo/PersonalProjects/EdgeDetection)
+2026-04-29 00:55:07.538 [trace] CodeSearchChunkSearch::openGitRepo#0 success. Elapsed 2.0230999999985215
+2026-04-29 00:55:07.540 [trace] CodeSearchChunkSearch.updateRepoStateFromEndpoint(file:///c%3A/Users/JC_Bo/PersonalProjects/EdgeDetection). Checking status from endpoint.
+2026-04-29 00:55:07.540 [trace] CodeSearchChunkSearch.getRepoIndexStatusFromEndpoint(file:///c%3A/Users/JC_Bo/PersonalProjects/EdgeDetection
+2026-04-29 00:55:07.789 [trace] ChatStatusWorkspaceIndexingStatus::updateStatusItem(id=3): starting
+2026-04-29 00:55:07.790 [trace] CodeSearchChunkSearch::initialize#2 started
+2026-04-29 00:55:07.791 [trace] ChatStatusWorkspaceIndexingStatus::_writeStatusItem()
+2026-04-29 00:55:07.809 [trace] [GitHubOrgCustomAgentProvider] No repositories found for org JacobConnor5
+2026-04-29 00:55:07.818 [debug] [getAllSessions] Got 0 sessions for nwo=JacobConnor5/EdgeDetection
+2026-04-29 00:55:07.818 [debug] copilotCloudSessionsProvider#provideChatSessionItems: fetched 0 sessions
+2026-04-29 00:55:07.819 [debug] copilotCloudSessionsProvider#provideChatSessionItems: resolved 0/0 PRs from global IDs
+2026-04-29 00:55:07.819 [debug] copilotCloudSessionsProvider#provideChatSessionItems: returning 0 sessions (0 filtered out)
+2026-04-29 00:55:07.821 [debug] [getAllSessions] Got 0 sessions for nwo=JacobConnor5/EdgeDetection
+2026-04-29 00:55:07.821 [debug] copilotCloudSessionsProvider#provideChatSessionItems: fetched 0 sessions
+2026-04-29 00:55:07.821 [debug] copilotCloudSessionsProvider#provideChatSessionItems: resolved 0/0 PRs from global IDs
+2026-04-29 00:55:07.822 [debug] copilotCloudSessionsProvider#provideChatSessionItems: returning 0 sessions (0 filtered out)
+2026-04-29 00:55:07.823 [debug] [getAllSessions] Got 0 sessions for nwo=JacobConnor5/EdgeDetection
+2026-04-29 00:55:07.826 [trace] [GitHubOrgInstructionsProvider] No custom instructions found for org JacobConnor5
+2026-04-29 00:55:08.132 [trace] GithubCodeSearchService::getRemoteIndexState(jacobconnor5/edgedetection). semantic_indexing_enabled was false. Repo not yet indexed but possibly can be.
+2026-04-29 00:55:08.132 [trace] CodeSearchChunkSearch.updateRepoStateFromEndpoint(file:///c%3A/Users/JC_Bo/PersonalProjects/EdgeDetection). Updating state to NotYetIndexed.
+2026-04-29 00:55:08.248 [trace] ExternalIngestIndex: Opening database at path: c:\Users\JC_Bo\AppData\Roaming\Code\User\workspaceStorage\18ac5a4dfffe48b904700715c746d4dc\GitHub.copilot-chat\codebase-external.sqlite
+2026-04-29 00:55:08.248 [trace] ExternalIngestIndex: Cache version matches (1)
+2026-04-29 00:55:08.250 [trace] ExternalIngestIndex::reconcileDbFiles() Found 4 initial file entries in database.
+2026-04-29 00:55:08.250 [trace] SearchServiceImpl::findFiles#0 started
+2026-04-29 00:55:08.312 [trace] SearchServiceImpl::findFiles#0 success. Elapsed 61.9845000000023
+2026-04-29 00:55:08.312 [trace] ExternalIngestIndex::reconcileDbFiles() Found 4 candidate files in workspace folder file:///c%3A/Users/JC_Bo/PersonalProjects/EdgeDetection/src.
+2026-04-29 00:55:08.327 [trace] ExternalIngestIndex::reconcileDbFiles() Reconciled database. Added: 0, updated: 0, removed: 0
+2026-04-29 00:55:08.328 [trace] CodeSearchChunkSearch::initialize_impl success. Elapsed 2327.7844999999998
+2026-04-29 00:55:08.328 [trace] CodeSearchChunkSearch::initialize#0 success. Elapsed 2328.2533999999996
+2026-04-29 00:55:08.328 [trace] CodeSearchChunkSearch::initialize#1 success. Elapsed 2325.661399999999
+2026-04-29 00:55:08.328 [trace] CodeSearchChunkSearch::initialize#2 success. Elapsed 538.2949000000008
+2026-04-29 00:55:08.394 [debug] [Power] CPU speed limit changed: 42% (throttled)
+2026-04-29 00:55:08.503 [trace] copilotCloudSessionsProvider#checkCCAEnabled: fetched CCA enabled status for JacobConnor5/EdgeDetection: true
+2026-04-29 00:55:08.506 [trace] copilotCloudSessionsProvider#checkCCAEnabled: fetched CCA enabled status for JacobConnor5/EdgeDetection: true
+2026-04-29 00:55:08.581 [trace] ChatStatusWorkspaceIndexingStatus::updateStatusItem(id=4): starting
+2026-04-29 00:55:08.582 [trace] CodeSearchChunkSearch::initialize#3 started
+2026-04-29 00:55:08.583 [trace] CodeSearchChunkSearch::initialize#3 success. Elapsed 0.3576999999968393
+2026-04-29 00:55:08.583 [trace] ChatStatusWorkspaceIndexingStatus::_writeStatusItem()
+2026-04-29 00:55:08.860 [debug] [RateLimit] GraphQL rate limit remaining: 4960, query: 
+		query GetSuggestedActors($owner: String!, $name: String!, $first: Int!, $after: String) {
+			repository(owner: $owner, name: $name) {
+				suggestedActors(
+					first: $first
+					after: $after
+					capabilities: [CAN_BE_ASSIGNED]
+				) {
+					nodes {
+						__typename
+						login
+						avatarUrl
+						url
+					}
+					pageInfo {
+						hasNextPage
+						endCursor
+					}
+				}
+			}
+		}
+	
+2026-04-29 00:55:09.265 [debug] copilotCloudSessionsProvider#provideChatSessionProviderOptions: Returning options: [
+  {
+    "id": "models",
+    "name": "Model",
+    "description": "Select which model to use",
+    "items": [
+      {
+        "id": "auto",
+        "name": "Auto",
+        "description": "1x"
+      },
+      {
+        "id": "gpt-5.2-codex",
+        "name": "GPT-5.2-Codex",
+        "description": "1x"
+      }
+    ],
+    "when": "!chatSessionOption.partnerAgents || chatSessionOption.partnerAgents == ___vscode_partner_agent_default___"
+  }
+]
+2026-04-29 00:55:09.366 [debug] Send fetcher telemetry: This window won.
+2026-04-29 00:55:09.397 [debug] [Power] CPU speed limit changed: 100% 
+2026-04-29 00:55:09.429 [debug] [RateLimit] GraphQL rate limit remaining: 4959, query: 
+		query GetSuggestedActors($owner: String!, $name: String!, $first: Int!, $after: String) {
+			repository(owner: $owner, name: $name) {
+				suggestedActors(
+					first: $first
+					after: $after
+					capabilities: [CAN_BE_ASSIGNED]
+				) {
+					nodes {
+						__typename
+						login
+						avatarUrl
+						url
+					}
+					pageInfo {
+						hasNextPage
+						endCursor
+					}
+				}
+			}
+		}
+	
+2026-04-29 00:55:09.433 [debug] copilotCloudSessionsProvider#provideChatSessionProviderOptions: Returning options: [
+  {
+    "id": "models",
+    "name": "Model",
+    "description": "Select which model to use",
+    "items": [
+      {
+        "id": "auto",
+        "name": "Auto",
+        "description": "1x"
+      },
+      {
+        "id": "gpt-5.2-codex",
+        "name": "GPT-5.2-Codex",
+        "description": "1x"
+      }
+    ],
+    "when": "!chatSessionOption.partnerAgents || chatSessionOption.partnerAgents == ___vscode_partner_agent_default___"
+  }
+]
+2026-04-29 00:55:10.005 [debug] Fetcher telemetry probe: electron-fetch Status: 200 (638ms)
+2026-04-29 00:55:10.458 [debug] Fetcher telemetry probe: node-http Status: 200 (452ms)
+2026-04-29 00:55:11.200 [debug] Fetcher telemetry probe: node-fetch Status: 200 (744ms)
+2026-04-29 00:55:11.401 [debug] Fetcher telemetry: Succeeded in 201ms using electron-fetch with status 200 ().
+2026-04-29 00:55:11.873 [debug] Fetcher telemetry: Succeeded in 471ms using node-http with status 200 (OK).
+2026-04-29 00:55:12.101 [debug] Fetcher telemetry: Succeeded in 230ms using node-fetch with status 200 ().
+2026-04-29 00:55:30.974 [trace] [GitHubOrgChatResourcesService] Cache directory does not exist: vscode-userdata:/c%3A/Users/JC_Bo/AppData/Roaming/Code/User/globalStorage/github.copilot-chat/github/jacobconnor5/instructions
+2026-04-29 00:55:31.145 [trace] Resolving chat model
+2026-04-29 00:55:31.160 [trace] Resolving chat model
+2026-04-29 00:55:31.160 [trace] Resolving chat model
+2026-04-29 00:55:31.165 [trace] [panel] chat request received from extension host
+2026-04-29 00:55:31.167 [trace] Resolving chat model
+2026-04-29 00:55:31.167 [trace] Resolving chat model
+2026-04-29 00:55:31.170 [trace] Resolving chat model
+2026-04-29 00:55:31.170 [trace] Processing intent
+2026-04-29 00:55:31.170 [trace] Resolving chat model
+2026-04-29 00:55:31.173 [trace] Processed intent
+2026-04-29 00:55:31.181 [trace] Resolving chat model
+2026-04-29 00:55:31.183 [trace] Resolving chat model
+2026-04-29 00:55:31.186 [trace] Resolving chat model
+2026-04-29 00:55:31.223 [trace] RemoteEmbeddingsComputer::computeEmbeddings started
+2026-04-29 00:55:31.484 [trace] RemoteEmbeddingsComputer::computeEmbeddings success. Elapsed 262.49259999999776
+2026-04-29 00:55:31.664 [debug] [PowerService] Acquired power save blocker, active count: 1
+2026-04-29 00:55:31.664 [debug] modelMaxPromptTokens 12285
+2026-04-29 00:55:31.664 [debug] modelMaxResponseTokens 4096
+2026-04-29 00:55:31.664 [debug] chat model gpt-4o-mini-2024-07-18
+2026-04-29 00:55:31.667 [debug] [PowerService] Started power save blocker, id: 2
+2026-04-29 00:55:31.676 [debug] [PowerService] Acquired power save blocker, active count: 2
+2026-04-29 00:55:31.676 [debug] modelMaxPromptTokens 12285
+2026-04-29 00:55:31.676 [debug] modelMaxResponseTokens 4096
+2026-04-29 00:55:31.676 [debug] chat model gpt-4o-mini-2024-07-18
+2026-04-29 00:55:31.683 [debug] [PowerService] Acquired power save blocker, active count: 3
+2026-04-29 00:55:31.683 [debug] modelMaxPromptTokens 12285
+2026-04-29 00:55:31.683 [debug] modelMaxResponseTokens 4096
+2026-04-29 00:55:31.683 [debug] chat model gpt-4o-mini-2024-07-18
+2026-04-29 00:55:32.268 [debug] GH request id: FB37:2A216C:3FEE521:45ED823:69F148F2
+2026-04-29 00:55:32.268 [debug] request.response: [{"type":"ChatCompletions"}], took 603 ms
+2026-04-29 00:55:32.277 [debug] [PowerService] Released power save blocker acquisition, active count: 2
+2026-04-29 00:55:32.282 [trace] choice {"delta":{"content":"","role":"assistant"}}
+2026-04-29 00:55:32.283 [trace] choice {"delta":{"content":"General"}}
+2026-04-29 00:55:32.283 [trace] choice {"delta":{"content":" greeting"}}
+2026-04-29 00:55:32.283 [trace] choice {"delta":{"content":" inquiry"}}
+2026-04-29 00:55:32.288 [debug] GH request id: FB37:2A216C:3FEE521:45ED827:69F148F2
+2026-04-29 00:55:32.288 [debug] request.response: [{"type":"ChatCompletions"}], took 603 ms
+2026-04-29 00:55:32.294 [debug] [PowerService] Released power save blocker acquisition, active count: 1
+2026-04-29 00:55:32.298 [trace] choice {"delta":{"content":"","role":"assistant"}}
+2026-04-29 00:55:32.298 [trace] choice {"delta":{"content":"[\n"}}
+2026-04-29 00:55:32.299 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.299 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.300 [trace] choice {"delta":{"content":"T"}}
+2026-04-29 00:55:32.300 [trace] choice {"delta":{"content":"uning"}}
+2026-04-29 00:55:32.370 [debug] GH request id: FB37:2A216C:3FEE521:45ED826:69F148F2
+2026-04-29 00:55:32.370 [debug] request.response: [{"type":"ChatCompletions"}], took 693 ms
+2026-04-29 00:55:32.378 [debug] [PowerService] Released power save blocker acquisition, active count: 0
+2026-04-29 00:55:32.378 [debug] [PowerService] Scheduling power save blocker release in 120000ms
+2026-04-29 00:55:32.383 [trace] choice {"delta":{"content":"","role":"assistant"}}
+2026-04-29 00:55:32.383 [trace] choice {"delta":{"content":"[\n"}}
+2026-04-29 00:55:32.384 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.384 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.384 [trace] choice {"delta":{"content":"Building"}}
+2026-04-29 00:55:32.384 [trace] choice {"delta":{"content":" your"}}
+2026-04-29 00:55:32.384 [trace] choice {"delta":{"content":" masterpiece"}}
+2026-04-29 00:55:32.385 [trace] choice {"delta":{"content":"\",\n"}}
+2026-04-29 00:55:32.385 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.385 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.385 [trace] choice {"delta":{"content":"S"}}
+2026-04-29 00:55:32.387 [trace] choice {"finish_reason":"stop","delta":{"content":null}}
+2026-04-29 00:55:32.397 [info] message 0 returned. finish reason: [stop]
+2026-04-29 00:55:32.397 [debug] message 0 details: finishOffset: [undefined] completionId: [{chatcmpl-DZmZ0ukPw1P1jnXrCp3RQ1yTydkf3}] created: [{1777420530}]
+2026-04-29 00:55:32.403 [info] request done: requestId: [a5c2251b-8b52-4e05-9dc2-7fbfd4c2f71a] model deployment ID: []
+2026-04-29 00:55:32.406 [info] ccreq:305db144.copilotmd | success | gpt-4o-mini-2024-07-18 | 747ms | [title]
+2026-04-29 00:55:32.409 [trace] choice {"delta":{"content":" the"}}
+2026-04-29 00:55:32.409 [trace] choice {"delta":{"content":" syntax"}}
+2026-04-29 00:55:32.410 [trace] choice {"delta":{"content":"\",\n"}}
+2026-04-29 00:55:32.410 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.410 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.411 [trace] choice {"delta":{"content":"Pol"}}
+2026-04-29 00:55:32.411 [trace] choice {"delta":{"content":"ishing"}}
+2026-04-29 00:55:32.411 [trace] choice {"delta":{"content":" your"}}
+2026-04-29 00:55:32.411 [trace] choice {"delta":{"content":" code"}}
+2026-04-29 00:55:32.412 [trace] choice {"delta":{"content":"\",\n"}}
+2026-04-29 00:55:32.413 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.415 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.418 [trace] choice {"delta":{"content":"cripting"}}
+2026-04-29 00:55:32.419 [trace] choice {"delta":{"content":" some"}}
+2026-04-29 00:55:32.419 [trace] choice {"delta":{"content":" magic"}}
+2026-04-29 00:55:32.419 [trace] choice {"delta":{"content":"\",\n"}}
+2026-04-29 00:55:32.436 [trace] [virtual-tools] Matched ["mcp_pylance_mcp_s_pylanceDocuments","container-tools_get-config","mcp_pylance_mcp_s_pylanceInstalledTopLevelModules","mcp_pylance_mcp_s_pylanceImports","mcp_pylance_mcp_s_pylancePythonEnvironments","configure_notebook","mcp_pylance_mcp_s_pylanceUpdatePythonEnvironment","renderMermaidDiagram","mcp_pylance_mcp_s_pylanceSettings","mcp_pylance_mcp_s_pylanceWorkspaceRoots"] against the query.
+2026-04-29 00:55:32.478 [trace] choice {"delta":{"content":"Ref"}}
+2026-04-29 00:55:32.478 [trace] choice {"delta":{"content":"ining"}}
+2026-04-29 00:55:32.479 [trace] choice {"delta":{"content":" the"}}
+2026-04-29 00:55:32.480 [trace] choice {"delta":{"content":" logic"}}
+2026-04-29 00:55:32.480 [trace] choice {"delta":{"content":"\",\n"}}
+2026-04-29 00:55:32.481 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.481 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.481 [trace] choice {"delta":{"content":"Enh"}}
+2026-04-29 00:55:32.481 [trace] choice {"delta":{"content":"ancing"}}
+2026-04-29 00:55:32.481 [trace] choice {"delta":{"content":" your"}}
+2026-04-29 00:55:32.481 [trace] choice {"delta":{"content":" script"}}
+2026-04-29 00:55:32.516 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.517 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.517 [trace] choice {"delta":{"content":"T"}}
+2026-04-29 00:55:32.517 [trace] choice {"delta":{"content":"ink"}}
+2026-04-29 00:55:32.517 [trace] choice {"delta":{"content":"ering"}}
+2026-04-29 00:55:32.531 [trace] choice {"delta":{"content":" with"}}
+2026-04-29 00:55:32.531 [trace] choice {"delta":{"content":" the"}}
+2026-04-29 00:55:32.532 [trace] choice {"delta":{"content":" code"}}
+2026-04-29 00:55:32.532 [trace] choice {"delta":{"content":"\",\n"}}
+2026-04-29 00:55:32.532 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.533 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.533 [trace] choice {"delta":{"content":"Creating"}}
+2026-04-29 00:55:32.601 [trace] choice {"delta":{"content":"\",\n"}}
+2026-04-29 00:55:32.602 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.602 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.603 [trace] choice {"delta":{"content":"Spr"}}
+2026-04-29 00:55:32.604 [trace] choice {"delta":{"content":"ucing"}}
+2026-04-29 00:55:32.604 [trace] choice {"delta":{"content":" up"}}
+2026-04-29 00:55:32.606 [trace] choice {"delta":{"content":" the"}}
+2026-04-29 00:55:32.608 [trace] choice {"delta":{"content":" functions"}}
+2026-04-29 00:55:32.609 [trace] choice {"delta":{"content":"\",\n"}}
+2026-04-29 00:55:32.609 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.610 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.611 [trace] choice {"delta":{"content":"Optim"}}
+2026-04-29 00:55:32.611 [trace] choice {"delta":{"content":"izing"}}
+2026-04-29 00:55:32.658 [trace] choice {"delta":{"content":" your"}}
+2026-04-29 00:55:32.658 [trace] choice {"delta":{"content":" solution"}}
+2026-04-29 00:55:32.658 [trace] choice {"delta":{"content":"\",\n"}}
+2026-04-29 00:55:32.658 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.659 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.659 [trace] choice {"delta":{"content":"We"}}
+2026-04-29 00:55:32.659 [trace] choice {"delta":{"content":"aving"}}
+2026-04-29 00:55:32.660 [trace] choice {"delta":{"content":" the"}}
+2026-04-29 00:55:32.660 [trace] choice {"delta":{"content":" logic"}}
+2026-04-29 00:55:32.660 [trace] choice {"delta":{"content":"\",\n"}}
+2026-04-29 00:55:32.660 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.660 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.661 [trace] choice {"delta":{"content":"Sh"}}
+2026-04-29 00:55:32.661 [trace] choice {"delta":{"content":"aping"}}
+2026-04-29 00:55:32.709 [trace] choice {"delta":{"content":" the"}}
+2026-04-29 00:55:32.709 [trace] choice {"delta":{"content":" flow"}}
+2026-04-29 00:55:32.709 [trace] choice {"delta":{"content":"\",\n"}}
+2026-04-29 00:55:32.710 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.710 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.710 [trace] choice {"delta":{"content":"S"}}
+2026-04-29 00:55:32.710 [trace] choice {"delta":{"content":"moothing"}}
+2026-04-29 00:55:32.710 [trace] choice {"delta":{"content":" out"}}
+2026-04-29 00:55:32.710 [trace] choice {"delta":{"content":" the"}}
+2026-04-29 00:55:32.711 [trace] choice {"delta":{"content":" bugs"}}
+2026-04-29 00:55:32.711 [trace] choice {"delta":{"content":"\",\n"}}
+2026-04-29 00:55:32.711 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.711 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.711 [trace] choice {"delta":{"content":"Elev"}}
+2026-04-29 00:55:32.752 [trace] choice {"delta":{"content":" your"}}
+2026-04-29 00:55:32.753 [trace] choice {"delta":{"content":" request"}}
+2026-04-29 00:55:32.753 [trace] choice {"delta":{"content":"\",\n"}}
+2026-04-29 00:55:32.753 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.753 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.753 [trace] choice {"delta":{"content":"Coding"}}
+2026-04-29 00:55:32.753 [trace] choice {"delta":{"content":" in"}}
+2026-04-29 00:55:32.753 [trace] choice {"delta":{"content":" progress"}}
+2026-04-29 00:55:32.753 [trace] choice {"delta":{"content":"\",\n"}}
+2026-04-29 00:55:32.754 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.755 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.755 [trace] choice {"delta":{"content":"Design"}}
+2026-04-29 00:55:32.756 [trace] choice {"delta":{"content":"ing"}}
+2026-04-29 00:55:32.756 [trace] choice {"delta":{"content":" your"}}
+2026-04-29 00:55:32.756 [trace] choice {"delta":{"content":" dream"}}
+2026-04-29 00:55:32.756 [trace] choice {"delta":{"content":"\",\n"}}
+2026-04-29 00:55:32.756 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.756 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.757 [trace] choice {"delta":{"content":"As"}}
+2026-04-29 00:55:32.757 [trace] choice {"delta":{"content":"sembling"}}
+2026-04-29 00:55:32.757 [trace] choice {"delta":{"content":" the"}}
+2026-04-29 00:55:32.757 [trace] choice {"delta":{"content":" pieces"}}
+2026-04-29 00:55:32.757 [trace] choice {"delta":{"content":"\",\n"}}
+2026-04-29 00:55:32.757 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.757 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.777 [trace] choice {"delta":{"content":"ating"}}
+2026-04-29 00:55:32.777 [trace] choice {"delta":{"content":" your"}}
+2026-04-29 00:55:32.777 [trace] choice {"delta":{"content":" code"}}
+2026-04-29 00:55:32.778 [trace] choice {"delta":{"content":"\",\n"}}
+2026-04-29 00:55:32.778 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.778 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.779 [trace] choice {"delta":{"content":"Craft"}}
+2026-04-29 00:55:32.780 [trace] choice {"delta":{"content":"ing"}}
+2026-04-29 00:55:32.781 [trace] choice {"delta":{"content":" a"}}
+2026-04-29 00:55:32.781 [trace] choice {"delta":{"content":" masterpiece"}}
+2026-04-29 00:55:32.782 [trace] choice {"delta":{"content":"\",\n"}}
+2026-04-29 00:55:32.782 [trace] choice {"delta":{"content":"   "}}
+2026-04-29 00:55:32.782 [trace] choice {"delta":{"content":" \""}}
+2026-04-29 00:55:32.782 [trace] choice {"delta":{"content":"Sh"}}
+2026-04-29 00:55:32.783 [trace] choice {"delta":{"content":"aping"}}
+2026-04-29 00:55:32.784 [trace] choice {"delta":{"content":"Craft"}}
+2026-04-29 00:55:32.784 [trace] choice {"delta":{"content":"ing"}}
+2026-04-29 00:55:32.784 [trace] choice {"delta":{"content":" your"}}
+2026-04-29 00:55:32.784 [trace] choice {"delta":{"content":" code"}}
+2026-04-29 00:55:32.818 [trace] choice {"delta":{"content":"\"\n"}}
+2026-04-29 00:55:32.818 [trace] choice {"delta":{"content":"]"}}
+2026-04-29 00:55:32.818 [trace] choice {"finish_reason":"stop","delta":{"content":null}}
+2026-04-29 00:55:32.823 [info] message 0 returned. finish reason: [stop]
+2026-04-29 00:55:32.823 [debug] message 0 details: finishOffset: [undefined] completionId: [{chatcmpl-DZmZ0e0KoPLSW5qTXgpu9utYBcVZH}] created: [{1777420530}]
+2026-04-29 00:55:32.832 [info] request done: requestId: [fc8ae764-1a8e-48aa-bf9c-5706f49cbdcf] model deployment ID: []
+2026-04-29 00:55:32.835 [info] ccreq:e693b1ba.copilotmd | success | gpt-4o-mini-2024-07-18 | 1160ms | [progressMessages]
+2026-04-29 00:55:32.836 [trace] [InlineChatProgressMessages] Fetched 10 messages for generate
+2026-04-29 00:55:32.838 [trace] choice {"delta":{"content":" your"}}
+2026-04-29 00:55:32.838 [trace] choice {"delta":{"content":" solution"}}
+2026-04-29 00:55:32.838 [trace] choice {"delta":{"content":"\"\n"}}
+2026-04-29 00:55:32.838 [trace] choice {"delta":{"content":"]"}}
+2026-04-29 00:55:32.838 [trace] choice {"finish_reason":"stop","delta":{"content":null}}
+2026-04-29 00:55:32.851 [info] message 0 returned. finish reason: [stop]
+2026-04-29 00:55:32.851 [debug] message 0 details: finishOffset: [undefined] completionId: [{chatcmpl-DZmZ0YCD31K7IQX1GgHa3hUvRimR7}] created: [{1777420530}]
+2026-04-29 00:55:32.855 [info] request done: requestId: [35224b00-1fd3-4e90-92d8-ee21878767f2] model deployment ID: []
+2026-04-29 00:55:32.857 [info] ccreq:2f556eb3.copilotmd | success | gpt-4o-mini-2024-07-18 | 1176ms | [progressMessages]
+2026-04-29 00:55:32.857 [trace] [InlineChatProgressMessages] Fetched 10 messages for edit
+2026-04-29 00:55:32.898 [debug] [Agent] rendering with budget=102240 (baseBudget: 127997, toolTokens: 14396, totalTools: 73, toolSearchEnabled: false), summarizationEnabled=true
+2026-04-29 00:55:33.057 [trace] Resolving chat model
+2026-04-29 00:55:33.062 [trace] Resolving chat model
+2026-04-29 00:55:33.168 [trace] Built prompt
+2026-04-29 00:55:33.168 [trace] Sending prompt to model
+2026-04-29 00:55:33.175 [debug] [PowerService] Acquired power save blocker, active count: 1
+2026-04-29 00:55:33.175 [debug] modelMaxPromptTokens 127997
+2026-04-29 00:55:33.175 [debug] modelMaxResponseTokens 32000
+2026-04-29 00:55:33.175 [debug] chat model claude-haiku-4.5
+2026-04-29 00:55:33.702 [trace] SearchServiceImpl::findFiles#1 started
+2026-04-29 00:55:33.769 [trace] SearchServiceImpl::findFiles#1 success. Elapsed 66.8405999999959
+2026-04-29 00:55:33.872 [debug] [GitDiffService] Getting working tree diffs from ref 9fbcdcbfd460ff83497db39c63eefacc5fd6a2ca for 5 file(s)
+2026-04-29 00:55:34.042 [debug] [GitDiffService] Skipping untracked file (too large: 1176892 bytes): file:///c%3A/Users/JC_Bo/PersonalProjects/EdgeDetection/Patrixbourne.png
+2026-04-29 00:55:34.053 [debug] [GitDiffService] Working tree diffs from ref (after context exclusion): 5 file(s)
+2026-04-29 00:55:35.202 [debug] GH request id: FB37:2A216C:3FEE8F9:45EDCBC:69F148F3
+2026-04-29 00:55:35.202 [debug] request.response: [{"type":"ChatMessages"}], took 2026 ms
+2026-04-29 00:55:35.214 [debug] [PowerService] Released power save blocker acquisition, active count: 0
+2026-04-29 00:55:35.214 [debug] [PowerService] Scheduling power save blocker release in 120000ms
+2026-04-29 00:55:35.216 [trace] [messagesAPI]SSE: {"message":{"content":[],"id":"msg_bdrk_01Jr2hUi4wUoHyzKZURLij5C","model":"claude-haiku-4-5-20251001","role":"assistant","stop_reason":null,"stop_sequence":null,"type":"message","usage":{"cache_creation":{"ephemeral_1h_input_tokens":0,"ephemeral_5m_input_tokens":23865},"cache_creation_input_tokens":23865,"cache_read_input_tokens":0,"input_tokens":9,"output_tokens":3}},"type":"message_start"}
+2026-04-29 00:55:35.216 [trace] [messagesAPI]SSE: {"content_block":{"signature":"","thinking":"","type":"thinking"},"index":0,"type":"content_block_start"}
+2026-04-29 00:55:35.216 [trace] [messagesAPI]SSE: {"delta":{"thinking":"The user just","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.234 [trace] [messagesAPI]SSE: {"delta":{"thinking":" said \"hello\" -","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.330 [trace] [messagesAPI]SSE: {"delta":{"thinking":" this is","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.330 [trace] [messagesAPI]SSE: {"delta":{"thinking":" a greeting","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.330 [trace] [messagesAPI]SSE: {"delta":{"thinking":". I","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.330 [trace] [messagesAPI]SSE: {"delta":{"thinking":" should respond in a friendly manner.","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.360 [trace] [messagesAPI]SSE: {"delta":{"thinking":" Since this is the start of our conversation","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.360 [trace] [messagesAPI]SSE: {"delta":{"thinking":", I shoul","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.391 [trace] [messagesAPI]SSE: {"delta":{"thinking":"d ask how","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.407 [trace] [messagesAPI]SSE: {"delta":{"thinking":" I can help them with their project","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.421 [trace] [messagesAPI]SSE: {"delta":{"thinking":".\n\nLooking at the workspace info,","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.470 [trace] [messagesAPI]SSE: {"delta":{"thinking":" they","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.470 [trace] [messagesAPI]SSE: {"delta":{"thinking":"'re working on","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.500 [trace] [messagesAPI]SSE: {"delta":{"thinking":" an Edge","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.515 [trace] [messagesAPI]SSE: {"delta":{"thinking":"Detection project in","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.547 [trace] [messagesAPI]SSE: {"delta":{"thinking":" Java","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.563 [trace] [messagesAPI]SSE: {"delta":{"thinking":" with","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.593 [trace] [messagesAPI]SSE: {"delta":{"thinking":" files","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.608 [trace] [messagesAPI]SSE: {"delta":{"thinking":" like","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.639 [trace] [messagesAPI]SSE: {"delta":{"thinking":" Convolution.java, ImageMatrix","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.655 [trace] [messagesAPI]SSE: {"delta":{"thinking":".java, an","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.685 [trace] [messagesAPI]SSE: {"delta":{"thinking":"d Main.java. But","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.701 [trace] [messagesAPI]SSE: {"delta":{"thinking":" since","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.731 [trace] [messagesAPI]SSE: {"delta":{"thinking":" they're","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.747 [trace] [messagesAPI]SSE: {"delta":{"thinking":" just greeting","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.764 [trace] [messagesAPI]SSE: {"delta":{"thinking":" me, I should keep","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.793 [trace] [messagesAPI]SSE: {"delta":{"thinking":" it brief","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.808 [trace] [messagesAPI]SSE: {"delta":{"thinking":" and friendly,","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.840 [trace] [messagesAPI]SSE: {"delta":{"thinking":" and ask what","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.857 [trace] [messagesAPI]SSE: {"delta":{"thinking":" they'","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.887 [trace] [messagesAPI]SSE: {"delta":{"thinking":"d like help with.","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.903 [trace] [messagesAPI]SSE: {"delta":{"thinking":"","type":"thinking_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.903 [trace] [messagesAPI]SSE: {"delta":{"signature":"EugECkgIDRABGAIqQKJWyFDE8mgAKVvgtBMm54zD63EAf5Np3HBHSL7+fEeOXqoVh1kbvqNRSjErxBRv/UOZXgcLaD0PdwajpyRp/v4SDGpi9x1he7zuUe3kcxoMrvxceMHm7idJMRKKIjDpl+962QOtQyyIrPwKBRqmLCJLwhbtx5HCpoLSK/hZv0feSpPGrjFaeOexHrA8kKcqzQPqqxvCaDob3ceO6tGMUgyEKAMq4TrnUVXhJwd8l/zvd3dsGNxQjBgKo4jN9sdwLFOV8GzhSeCtcY++wdeT7mvgLBK5O+KAIjxdb1uL9GrnzTpFF0UX4neD5xQ02/dLx8G04YyYtFC8+ksOgWMbidOP72CyeQ3WOnBPwKEK9SmFx0UmPAtJaKJcLaP4Y/NuTJhOv2giSFGHYUUoU55OXfL/YTslAdqTmSwQHLikULTOiyqlG+QI3Ougl1QQWeIcvaIC+q14uTego0FwYH1mnnbcQDAgXKCI2f1pXuOtIe4//yoh8GRp51hVJY29zRfBut085fXRoYMURjTCb4q3/4deUq25ge2/92G65B2wTTVgaY+hQvn/nTp1/UMi147nGaezgmIq2tFbEkKnJRm7ZNFWDBALrfS3yabDs64+7/kCE8uDNmOZw1qWXmR0UfPnJQRN8p9z4SC2x+43Rt0X/EUzku/PNi/aREXxwUVWs0c2vzDC313zYz0ncGF+QNxqFj3vc6mGXXX8r20SpZ3Oh8FXIAGNBCatJvs6AzznF9qNvtly7ZM5MT4hPJcKcr7GcieLz2K0nTozSxev6/L3pT51RZPpLznkwguKa8IgpxgB","type":"signature_delta"},"index":0,"type":"content_block_delta"}
+2026-04-29 00:55:35.903 [trace] [messagesAPI]SSE: {"index":0,"type":"content_block_stop"}
+2026-04-29 00:55:35.903 [trace] [messagesAPI]SSE: {"content_block":{"text":"","type":"text"},"index":1,"type":"content_block_start"}
+2026-04-29 00:55:35.903 [warning] [messagesAPI] Unknown content_block type 'text' at index 1 for model claude-haiku-4-5-20251001
+2026-04-29 00:55:35.903 [trace] [messagesAPI]SSE: {"delta":{"text":"Hello","type":"text_delta"},"index":1,"type":"content_block_delta"}
+2026-04-29 00:55:35.933 [trace] [messagesAPI]SSE: {"delta":{"text":"! I'm GitHub","type":"text_delta"},"index":1,"type":"content_block_delta"}
+2026-04-29 00:55:35.965 [trace] [messagesAPI]SSE: {"delta":{"text":" Copilot.","type":"text_delta"},"index":1,"type":"content_block_delta"}
+2026-04-29 00:55:35.980 [debug] modelMaxPromptTokens 12285
+2026-04-29 00:55:35.980 [debug] modelMaxResponseTokens 4096
+2026-04-29 00:55:35.980 [debug] chat model gpt-4o-mini
+2026-04-29 00:55:35.995 [trace] [messagesAPI]SSE: {"delta":{"text":" I'm here to help you with your","type":"text_delta"},"index":1,"type":"content_block_delta"}
+2026-04-29 00:55:36.011 [trace] [messagesAPI]SSE: {"delta":{"text":" EdgeDetection project. What","type":"text_delta"},"index":1,"type":"content_block_delta"}
+2026-04-29 00:55:36.041 [trace] [messagesAPI]SSE: {"delta":{"text":" would you like me","type":"text_delta"},"index":1,"type":"content_block_delta"}
+2026-04-29 00:55:36.057 [trace] [messagesAPI]SSE: {"delta":{"text":" to help you with?","type":"text_delta"},"index":1,"type":"content_block_delta"}
+2026-04-29 00:55:36.088 [trace] [messagesAPI]SSE: {"index":1,"type":"content_block_stop"}
+2026-04-29 00:55:36.156 [trace] [messagesAPI]SSE: {"copilot_usage":{"token_details":null,"total_nano_aiu":0},"delta":{"stop_reason":"end_turn","stop_sequence":null},"type":"message_delta","usage":{"cache_creation_input_tokens":23865,"cache_read_input_tokens":0,"input_tokens":9,"output_tokens":148}}
+2026-04-29 00:55:36.156 [trace] [messagesAPI]SSE: {"amazon-bedrock-invocationMetrics":{"cacheReadInputTokenCount":0,"cacheWriteInputTokenCount":47730,"firstByteLatency":1152,"inputTokenCount":9,"invocationLatency":2092,"outputTokenCount":145},"type":"message_stop"}
+2026-04-29 00:55:36.156 [info] [messagesAPI] message 0 returned. finish reason: [stop]
+2026-04-29 00:55:36.156 [trace] [messagesAPI]SSE: [DONE]
+2026-04-29 00:55:36.160 [info] ccreq:1fa4532a.copilotmd | success | claude-haiku-4.5 -> claude-haiku-4-5-20251001 | 3005ms | [panel/editAgent]
+2026-04-29 00:55:36.206 [info] [ToolCallingLoop] Stop hook result: shouldContinue=false, reasons=undefined
+2026-04-29 00:55:36.232 [trace] Resolving chat model
+2026-04-29 00:55:36.357 [debug] GH request id: FB37:2A216C:3FEF0B1:45EE5EA:69F148F3
+2026-04-29 00:55:36.357 [debug] request.response: [{"type":"ChatCompletions"}], took 376 ms
+2026-04-29 00:55:36.369 [trace] choice {"delta":{"content":"","role":"assistant"}}
+2026-04-29 00:55:36.369 [trace] choice {"delta":{"content":"Consider"}}
+2026-04-29 00:55:36.370 [trace] choice {"delta":{"content":"ed"}}
+2026-04-29 00:55:36.371 [trace] choice {"delta":{"content":" project"}}
+2026-04-29 00:55:36.442 [trace] choice {"delta":{"content":" assistance"}}
+2026-04-29 00:55:36.442 [trace] choice {"delta":{"content":" for"}}
+2026-04-29 00:55:36.443 [trace] choice {"delta":{"content":" Edge"}}
+2026-04-29 00:55:36.443 [trace] choice {"delta":{"content":"Detection"}}
+2026-04-29 00:55:36.443 [trace] choice {"delta":{"content":" in"}}
+2026-04-29 00:55:36.443 [trace] choice {"delta":{"content":" Java"}}
+2026-04-29 00:55:36.443 [trace] choice {"finish_reason":"stop","delta":{"content":null}}
+2026-04-29 00:55:36.447 [info] message 0 returned. finish reason: [stop]
+2026-04-29 00:55:36.447 [debug] message 0 details: finishOffset: [undefined] completionId: [{chatcmpl-DZmZ4qiPnkk4Py1h4ElBNd7vGbAgc}] created: [{1777420534}]
+2026-04-29 00:55:36.450 [info] request done: requestId: [c26f2133-deb7-431c-abee-3aab038f67a9] model deployment ID: []
+2026-04-29 00:55:36.451 [info] ccreq:de12c68a.copilotmd | success | gpt-4o-mini -> gpt-4o-mini-2024-07-18 | 473ms | [copilotLanguageModelWrapper]
+2026-04-29 00:55:36.660 [debug] [GitDiffService] Getting working tree diffs from ref 9fbcdcbfd460ff83497db39c63eefacc5fd6a2ca for 5 file(s)
+2026-04-29 00:55:36.796 [debug] [GitDiffService] Skipping untracked file (too large: 1176892 bytes): file:///c%3A/Users/JC_Bo/PersonalProjects/EdgeDetection/Patrixbourne.png
+2026-04-29 00:55:36.803 [debug] [GitDiffService] Working tree diffs from ref (after context exclusion): 5 file(s)
+2026-04-29 00:55:40.158 [trace] [NES][Triggerer][onDidChangeTextDocument] Return: ignored document
+2026-04-29 00:55:41.465 [trace] [GitServiceImpl][doOpenRepository] Active repository: {"_repo":{"rootUri":{"$mid":1,"fsPath":"c:\\Users\\JC_Bo\\PersonalProjects\\EdgeDetection","_sep":1,"external":"file:///c%3A/Users/JC_Bo/PersonalProjects/EdgeDetection","path":"/c:/Users/JC_Bo/PersonalProjects/EdgeDetection","scheme":"file"},"inputBox":{},"kind":"repository","state":{},"ui":{},"isUsingVirtualFileSystem":false},"rootUri":{"$mid":1,"fsPath":"c:\\Users\\JC_Bo\\PersonalProjects\\EdgeDetection","_sep":1,"external":"file:///c%3A/Users/JC_Bo/PersonalProjects/EdgeDetection","path":"/c:/Users/JC_Bo/PersonalProjects/EdgeDetection","scheme":"file"},"kind":"repository","isUsingVirtualFileSystem":false,"headBranchName":"main","headCommitHash":"9fbcdcbfd460ff83497db39c63eefacc5fd6a2ca","headIncomingChanges":1,"headOutgoingChanges":0,"upstreamBranchName":"main","upstreamRemote":"origin","isRebasing":true,"remotes":["origin"],"remoteFetchUrls":["https://github.com/JacobConnor5/EdgeDetection.git"],"worktrees":[{"name":"EdgeDetection","path":"c:\\Users\\JC_Bo\\PersonalProjects\\EdgeDetection","ref":"refs/heads/main","detached":false,"main":true}],"changes":{"mergeChanges":[],"indexChanges":[],"workingTree":[{},{},{},{},{}],"untrackedChanges":[]},"_onDidChangeSignal":{"_observers":"Set()","debugName":"Observable Signal From Event"},"headBranchNameObs":{"_observers":"Set()","_debugNameData":{},"_state":0,"_updateCount":0,"_dependencies":"Set()","_dependenciesToBeRemoved":"Set()","_isUpdating":false,"_isComputing":false,"_didReportChange":false,"_isInBeforeUpdate":false,"_isReaderValid":false,"_removedObserverToCallEndUpdateOn":null},"headCommitHashObs":{"_observers":"Set()","_debugNameData":{},"_state":0,"_updateCount":0,"_dependencies":"Set()","_dependenciesToBeRemoved":"Set()","_isUpdating":false,"_isComputing":false,"_didReportChange":false,"_isInBeforeUpdate":false,"_isReaderValid":false,"_removedObserverToCallEndUpdateOn":null},"upstreamBranchNameObs":{"_observers":"Set()","_debugNameData":{},"_state":0,"_updateCount":0,"_dependencies":"Set()","_dependenciesToBeRemoved":"Set()","_isUpdating":false,"_isComputing":false,"_didReportChange":false,"_isInBeforeUpdate":false,"_isReaderValid":false,"_removedObserverToCallEndUpdateOn":null},"upstreamRemoteObs":{"_observers":"Set()","_debugNameData":{},"_state":0,"_updateCount":0,"_dependencies":"Set()","_dependenciesToBeRemoved":"Set()","_isUpdating":false,"_isComputing":false,"_didReportChange":false,"_isInBeforeUpdate":false,"_isReaderValid":false,"_removedObserverToCallEndUpdateOn":null},"isRebasingObs":{"_observers":"Set()","_debugNameData":{},"_state":0,"_updateCount":0,"_dependencies":"Set()","_dependenciesToBeRemoved":"Set()","_isUpdating":false,"_isComputing":false,"_didReportChange":false,"_isInBeforeUpdate":false,"_isReaderValid":false,"_removedObserverToCallEndUpdateOn":null},"_checkIsIgnored":{"_waitingTimeMs":1000,"_queue":[],"_timeout":null},"_isIgnored":{"_map":{},"_map2":{}}}
+2026-04-29 00:55:45.080 [debug] [context keys] Window state change. Needs offline check: false, active: true, focused: false.
+2026-04-29 00:56:31.040 [debug] [context keys] Window state change. Needs offline check: false, active: false, focused: false.
+2026-04-29 00:56:54.725 [debug] [context keys] Window state change. Needs offline check: false, active: false, focused: true.
+2026-04-29 00:56:55.241 [debug] [CopilotCLI] Found 0 JSONL sessions and 0 legacy sessions
+2026-04-29 00:56:55.244 [info] [CopilotCLIChatSessionContentProvider] listSessions took 13.317399999999907ms
+2026-04-29 00:56:55.723 [debug] [context keys] Window state change. Needs offline check: false, active: true, focused: true.
+2026-04-29 00:56:55.731 [debug] [getAllSessions] Fetching sessions for nwo=JacobConnor5/EdgeDetection, open=true
+2026-04-29 00:56:56.278 [debug] [getAllSessions] Got 0 sessions for nwo=JacobConnor5/EdgeDetection
+2026-04-29 00:56:57.750 [debug] [context keys] Window state change. Needs offline check: false, active: true, focused: false.
+2026-04-29 00:57:03.397 [debug] [Power] CPU speed limit changed: 65% (throttled)
+2026-04-29 00:57:04.410 [debug] [Power] CPU speed limit changed: 100% 
+2026-04-29 00:57:35.225 [debug] [PowerService] Stopping power save blocker, id: 2
