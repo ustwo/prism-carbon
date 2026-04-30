@@ -8,7 +8,7 @@ In some cases during the testing day, testers used Copilot Chat to generate file
 
 <h2>Jacob Connor</h2>
 <p>I, Jacob Connor declare that this document is accurate to my AI usage throughout the course of SEP.</p>
-<p>All models used have been  ChatGPT</p> <br>
+<p>All models used have been  ChatGPT, Claude Sonnet 4.6</p> <br>
 
 <h3>Development</h3>
 
@@ -26,6 +26,11 @@ Research into estimating cached tokens for models which don't directly publishme
 > Prompt used - "I am making a project which tracks tokens of various LLMs used when programming in vscode with copilot currently we are using the log files to catch all tokens revealed by the model Copilot and older GPT models don't reveal cached tokens which are a large portion of the overall tokens how could I best estimate this"
   
   When conducting research into how to estimate the cached tokens we could not find an appropriate solution in time. And have hence not solved this issue and notified the client as gemini and old GPT models were a stretch goal from the begining
+
+> Prompt used - "What is a mathematical fucntion I can use where I can alter the constants to fit around 2 points and the origin which levels out after the second point"
+
+  When conducting research into how best to convert our tokens into carbon emissions for calls which weren't the exact size of our data points.
+  This research was not used as we could not ensure how the tokens to emissions curve grew and hence the most defensible method was to only use the data we have.
 
 <h3>Debugging</h3>
 
@@ -121,7 +126,7 @@ I used AI to review the release.yml file to ensure that it worked before merging
 <h2>Hao Ni</h2>
 <p> I, Hao Ni declare that this document is accurate to my AI usage throughout the course of SEP</p>
 
-<p>All models used have been ChatGPT and Gemini</p> <br>
+<p>All models used have been  ChatGPT, Gemini, and Claude</p> <br>
 <h3>Development</h3>
 reseach into which papers to look into for carbon to emission formula
 
@@ -135,6 +140,8 @@ I use AI when my code can't run but I can't spot where's the problem
 The problem occur when I finish the implementation of the mode toggle but the switch isn't working and I was having problem finding the bug. The reason is I can't put the .js file and the .css file outside Dashboard.ts and should keep all the js and css part inside getwebview.
 > "Why there's always a Sunday block on the Heat Map even if it's not Sunday?"
 The problem occur because I added a round:week in my code, it can helps round the data to the week, but I set the start of the week as Sunday so it will always show Sunday first.
+> Prompt used - " I am planning to change the heat map yellow base color to #ef6c00 what do you think"
+The problem occur when I try to make the yellow part of the heat map stands out in the dark mode and not seem muddy visually. 
 
 <h3>Review</h3>
 
