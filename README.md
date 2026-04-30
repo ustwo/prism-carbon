@@ -144,11 +144,12 @@ We aim to design a toolkit that:
     
 
 </pre>
-  <h2>Documents</h2>
-  <ol>
-    <li>Handover Document: Go to for handover document. This includes instructions, features, maintenance guidance, future development, and issues.</li>
-    <li>Methodology Report: Go to for a detailed report on our methodology and our considerations when estimating carbon emissions.</li>
-  </ol>
+
+## Documents
+1. Handover Document: Go to [`ProjectNotes/Documents/Handover Document.pdf`](ProjectNotes/Documents/Handover%20Document.pdf) for the handover document. This includes instructions, features, maintenance guidance, future development, and issues.
+2. Methodology Report: Go to [`ProjectNotes/Documents/Emission Calculation Methodology.pdf`](ProjectNotes/Documents/Emission%20Calculation%20Methodology.pdf) for a detailed report on our methodology and our considerations when estimating carbon emissions.
+
+
   <h2>Client Names</h2>
   <ul>
     <li>Paolo Rizzi</li>
