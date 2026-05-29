@@ -135,7 +135,7 @@
     "watch-tests": "tsc -p . -w --outDir out",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src --format json",
+    "lint": "eslint src",
     "test": "vscode-test --coverage --coverage-reporter lcov --coverage-reporter html --coverage-reporter text",
     "release": "vsce package",
     "setup": "npm install && npm run compile"

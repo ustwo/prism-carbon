@@ -145,7 +145,7 @@ suite("DevTime Tests", () => {
 		assert.deepEqual(logCap.findModel("NomodelHERE",logCap.claudePattern,"}}"), [[0],[-1]]);
 	});
 	test("Identify Model function",async () =>{
-		const expectedTime = new Date("2026-04-29T00:55:36.156Z").getTime()
+		const expectedTime = new Date("2026-04-29T00:55:36.156Z").getTime();
 		var call: budget.Call = { Emissions: 10.1112, Model: 'claude-haiku-4.5', DateTime: expectedTime};//resets the call
 		const result = await logCap.identifyModel(text4);
 		assert.deepEqual(result,[call]);

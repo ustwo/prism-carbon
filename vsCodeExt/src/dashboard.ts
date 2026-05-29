@@ -30,7 +30,7 @@ export class CarbonDashboardPanel {
     private _selectedBranches: string[] | null = null;
 
     private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri, budg: budget.budget) {
-        this._budget = budg
+        this._budget = budg;
         this._panel = panel;
         this._extensionUri = extensionUri;
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
@@ -55,7 +55,7 @@ export class CarbonDashboardPanel {
 
                             }
                         });
-                        return
+                        return;
                 
                     case 'setBudget':
                         vscode.window.showInputBox({
