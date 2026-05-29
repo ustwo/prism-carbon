@@ -5,7 +5,7 @@
  ****************************************************************/
 
 import * as vscode from 'vscode';
-import { CarbonDashboardPanel } from '../ui/dashboard';
+import { CarbonDashboardPanel } from '../dashboard/dashboard';
 import { extensionState } from '../extensionState';
 import { logger } from '../utils/logger';
 

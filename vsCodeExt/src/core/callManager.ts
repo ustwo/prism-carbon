@@ -9,7 +9,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as budget from './budget';
 import * as logCap from './logCapture';
-import { CarbonDashboardPanel } from '../ui/dashboard';
+import { CarbonDashboardPanel } from '../dashboard/dashboard';
 import { extensionState } from '../extensionState';
 import { getCurrentBranch } from '../utils/gitUtils';
 import { logger } from '../utils/logger';
