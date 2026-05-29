@@ -8,14 +8,9 @@ import * as vscode from 'vscode';
 
 const MENU_ITEMS = [
     {
-        label: '$(play) Start Runtime Analysis',
-        description: 'Opens Estimating Carbon Terminal where files to be analysed are run',
+        label: '$(play) Open Runtime Terminal',
+        description: 'Opens a terminal with proxy env vars set to capture LLM API calls',
         command: 'ecode.runtimeAnalysis',
-    },
-    {
-        label: '$(play) Stop Runtime Proxy',
-        description: 'Stops the recording of carbon emissions',
-        command: 'ecode.interceptorStop',
     },
     {
         label: '$(play) Reset Stored Session',

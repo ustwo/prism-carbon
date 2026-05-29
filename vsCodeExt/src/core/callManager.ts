@@ -9,13 +9,14 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as budget from './budget';
 import * as logCap from './logCapture';
-import { CarbonDashboardPanel } from './dashboard';
-import { extensionState } from './extensionState';
-import { getCurrentBranch } from './utils/gitUtils';
+import { CarbonDashboardPanel } from '../ui/dashboard';
+import { extensionState } from '../extensionState';
+import { getCurrentBranch } from '../utils/gitUtils';
+import { logger } from '../utils/logger';
 
 export function restoreCallHistory(budg: budget.budget) {
     const pCalls = budg.getCalls();
-    console.log('CALLS:', pCalls);
+    logger.info(`Restoring ${pCalls.length} call(s) from history`);
     for (const call of pCalls) {
         extensionState.tree!.addMessage(
             `Emissions: ${call.Emissions}g CO₂e - Model: ${call.Model} - Date: ${new Date(call.DateTime).toLocaleString()}`
@@ -29,7 +30,7 @@ export function updateTree(call: budget.Call) {
     }
     extensionState.budg!.storeCall(call);
 
-    console.log('BACKEND CHECK: Stored call value:', call.Emissions, 'for date:', new Date(call.DateTime).toISOString());
+    logger.debug(`Call recorded — model: ${call.Model}, emissions: ${call.Emissions}g CO₂e, branch: ${call.Branch}, date: ${new Date(call.DateTime).toISOString()}`);
     extensionState.tree!.addMessage(
         `Emissions: ${call.Emissions}g CO₂e - Model: ${call.Model} - Date: ${new Date(call.DateTime).toLocaleString()}`
     );
@@ -41,17 +42,16 @@ export function updateTree(call: budget.Call) {
 export async function getLogs(context: vscode.ExtensionContext) {
     try {
         const filePath = logCap.getLogFilePath(context);
-        console.log(filePath);
         const logUri = path.join(path.dirname(filePath), 'GitHub.copilot-chat', 'GitHub Copilot Chat.log');
+        logger.debug(`Reading Copilot log: ${logUri}`);
 
         const content = fs.readFileSync(logUri, 'utf-8');
         const models: budget.Call[] = await logCap.identifyModel(content);
         const sortedModels = models.sort((a, b) => a.DateTime - b.DateTime);
-        console.log('CALLS: ', sortedModels);
+        logger.debug(`Log parse complete — ${sortedModels.length} new call(s) found`);
 
         for (const call of sortedModels) {
             if (call.DateTime > extensionState.lastAccess) {
-                console.log('updating tree');
                 updateTree(call);
             }
         }
@@ -60,7 +60,7 @@ export async function getLogs(context: vscode.ExtensionContext) {
             extensionState.lastAccess = sortedModels[sortedModels.length - 1].DateTime;
         }
     } catch (error) {
-        console.log(error);
+        logger.error(`Failed to read Copilot logs: ${error}`);
         vscode.window.showErrorMessage('Error: Copilot log files not found.');
     }
 }

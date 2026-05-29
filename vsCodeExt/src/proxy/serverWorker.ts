@@ -13,7 +13,7 @@ import * as mockttp from 'mockttp';
 import * as fs from 'fs';
 import * as path from 'path';
 import { RawBodyIncludesMatcher } from 'mockttp/dist/rules/matchers';
-import * as convert from './convert';
+import * as convert from '../core/convert';
 
 // server instance to be controlled
 let server: mockttp.Mockttp | null = null;

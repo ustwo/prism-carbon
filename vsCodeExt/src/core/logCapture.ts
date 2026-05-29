@@ -7,6 +7,7 @@
 import * as budget from './budget';
 import * as vscode from 'vscode';
 import * as convert from './convert';
+import { logger } from '../utils/logger';
 import * as tiktoken from 'tiktoken';
 import * as geminiser from '@lenml/tokenizer-gemini';
 
@@ -71,14 +72,14 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
     var models = rawLog.match(modelPattern); //creates an array of all models used in the log file provided
     if (models!==null){
         for(var i = 0;i< models.length;i++){
-            var model = models[i]; 
-            console.log(model);
+            var model = models[i];
+            logger.trace(`Model detected in log: ${model}`);
 
             if (model.startsWith('gpt-5')){
                 var efforts:RegExpMatchArray | null = rawLog.match(effortLevel);
                 if (efforts === null){efforts = ["medium"];}
                 //assigns the effort of the model caught
-                console.log("gpt model caught");
+                logger.debug(`GPT-5 model captured: ${model}, effort: ${efforts[efforts.length-1]}`);
 
                 GPTs.push(model+"-"+efforts[efforts.length-1]); //1
                 newGPTFlag = true;//2
@@ -122,25 +123,25 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
                     oldGPTFlag = true;
                     break;
                 default:
-                    console.log("Functionality coming soon!");
+                    logger.debug(`Model not yet supported: ${model}`);
                     break;
             }
         } 
     }
-    console.log("GPT flag",newGPTFlag);
+    logger.debug(`Flags — claude: ${claudeFlag}, gpt5: ${newGPTFlag}, gemini: ${geminiFlag}, oldGPT: ${oldGPTFlag}`);
     if (claudeFlag || newGPTFlag || geminiFlag || oldGPTFlag){
         var times:number[] = []; //list of timestamps of each call made
         var results:number[] = []; //list of total tokens each call used
         var allModels:string[] = claudes.concat(GPTs);//a list of all models we support that have be caught
-        if (claudeFlag){ 
-            console.log("claude Flag");
+        if (claudeFlag){
+            logger.debug('Parsing Claude token data');
             const [timesC, resultsC] = findModel(rawLog,claudePattern,"}}");//returns an array of time stamps and total tokens for all claude models
             results = results.concat(resultsC);
             times = times.concat(timesC);
-            console.log("Claude Results: ",resultsC);
+            logger.debug(`Claude results: ${JSON.stringify(resultsC)}`);
         }
         if(newGPTFlag){
-            console.log("checking for GPT pattern");
+            logger.debug('Parsing GPT-5 token data');
             const [timesG,resultsG] = findModel(rawLog,GPT5Pattern,"shouldContinue=false");//returns an array of time stamps and total tokens for all GPT models
             results = results.concat(resultsG);
             times = times.concat(timesG);
@@ -152,29 +153,25 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
             const enc = geminiser.fromPreTrained(); // initialises Gemini tokeniser
             const outputText = findOutputText(rawLog, geminiTextPattern);
             const outputTokens = enc.encode(outputText).length;
-            console.log("\n\nOUTPUT TOKENS: ", outputTokens);
+            logger.debug(`Gemini output tokens: ${outputTokens}`);
             const reasoningText = findOutputText(rawLog, geminiReasoningPattern);
             const reasoningTokens = enc.encode(reasoningText).length;
-            console.log("\n\nREASONING TOKENS: ", reasoningTokens);
+            logger.debug(`Gemini reasoning tokens: ${reasoningTokens}`);
             const time = findOutputText(rawLog, geminiDatePattern);
-            console.log("OUTPUT:\n\n", outputText);
-            console.log("REASONING:\n\n", reasoningText);
         }
 
         if(oldGPTFlag) { // skeleton support for GPT models < gpt-5
             const enc = tiktoken.get_encoding('o200k_base');
             const outputText = findOutputText(rawLog, gptTextPattern);
             const outputTokens = enc.encode(outputText).length;
-            console.log("\n\nOUTPUT TOKENS: ", outputTokens);
+            logger.debug(`Old GPT output tokens: ${outputTokens}`);
             const time = findOutputText(rawLog, gptDatePattern);
-            console.log("OUTPUT:\n\n", outputText);
-
         }
 
         for(var i = 0; i<results.length;i++){
-            if (results[i] !== -1) { 
+            if (results[i] !== -1) {
                 activeCall.Model = allModels[i];
-                console.log("MODEL:   "+ activeCall.Model);
+                logger.debug(`Processing call — model: ${activeCall.Model}, tokens: ${results[i]}`);
                 activeCall.Emissions = Number(convert.calculateEmission(activeCall.Model, results[i]).toFixed(4)); 
                 // converts current call's token count to emissions and stores it in the call data structure
                 activeCall.DateTime = times[i]; //apply appropriate time stamp
@@ -193,8 +190,8 @@ export async function identifyModel(rawLog: string): Promise<budget.Call[]> {
 
 export function findModel(log: string,pattern : RegExp,splitString : string): [number[], number[]] {
     var match = log.match(pattern); //matches the claude regex to the log file
-    var timeIndex:number = 0; 
-    console.log("matches:"+match);
+    var timeIndex:number = 0;
+    logger.trace(`Pattern matches: ${match?.length ?? 0}`);
     if (match!==null && match.includes(splitString)){
         var result:number[] = [];
         var timestamp:number[] = [];
@@ -231,7 +228,7 @@ export function findModel(log: string,pattern : RegExp,splitString : string): [n
         }
 
         }
-        console.log(timestamp,result);
+        logger.trace(`Parsed timestamps: ${timestamp.length}, token totals: ${result.join(', ')}`);
         return [timestamp, result]; //returns a list fo timestamps and totals found
     }
 

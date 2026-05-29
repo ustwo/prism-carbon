@@ -3,8 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import * as budget from '../budget';
-import * as logCap from '../logCapture';
+import * as budget from '../core/budget';
+import * as logCap from '../core/logCapture';
 
 suite("Runtime Tests", () => {
 suite('CommandTests', () => {
@@ -24,14 +24,7 @@ suite('CommandTests', () => {
 		try {
 			for (const command of myExtensionCommands) {
 				console.log(`Running: ${command}`);
-				if (command === "ecode.interceptorStart") {
-					await vscode.commands.executeCommand(command);
-					await new Promise(res => setTimeout(res, 500));
-
-					const status = dynamics.isInterceptorRunning();
-					assert.strictEqual(status, true, "Interceptor Not Running Correctly");
-
-				} else { await vscode.commands.executeCommand(command); }
+				await vscode.commands.executeCommand(command);
 				console.log(`Successfully Ran Test ${command}`);
 			}
 		} catch (error) {

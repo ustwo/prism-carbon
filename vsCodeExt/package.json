@@ -54,7 +54,7 @@
     ]
   },
   "engines": {
-    "vscode": "^1.60.0"
+    "vscode": "^1.74.0"
   },
   "categories": [
     "Other"
@@ -101,21 +101,6 @@
         "command": "ecode.refreshLogs",
         "title": "Estimating Carbon: Refresh carbon data",
         "category": "Logging"
-      },
-      {
-        "command": "ecode.interceptorStart",
-        "title": "Estimating Carbon: Start Proxy Interceptor",
-        "category": "Interceptor"
-      },
-      {
-        "command": "ecode.interceptorStop",
-        "title": "Estimating Carbon: Stop Proxy Interceptor",
-        "category": "Interceptor"
-      },
-      {
-        "command": "ecode.interceptorOpenTerminal",
-        "title": "Estimating Carbon: Open Runtime Terminal",
-        "category": "Interceptor"
       },
       {
         "command": "ecode.runtimeAnalysis",
