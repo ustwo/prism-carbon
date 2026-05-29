@@ -6,13 +6,13 @@
 
 import * as vscode from 'vscode';
 import { CarbonDashboardPanel } from '../dashboard';
-import { shared } from '../extensionState';
+import { extensionState } from '../extensionState';
 
 export function registerClearStore(): vscode.Disposable {
     return vscode.commands.registerCommand('ecode.clearStore', async () => {
-        await shared.budg!.resetBudget();
-        shared.tree!.clearTree();
-        shared.bar!.updateBar(0);
-        CarbonDashboardPanel.sendData(shared.budg!);
+        await extensionState.budg!.resetBudget();
+        extensionState.tree!.clearTree();
+        extensionState.bar!.updateBar(0);
+        CarbonDashboardPanel.sendData(extensionState.budg!);
     });
 }

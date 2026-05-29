@@ -8,7 +8,7 @@
 import * as vscode from 'vscode';
 import { InterceptorProxy } from '../proxyServer';
 import { state } from '../state';
-import { shared, PROXY_PORT } from '../extensionState';
+import { extensionState, PROXY_PORT } from '../extensionState';
 import { updateTree } from '../callManager';
 
 let terminal: vscode.Terminal | undefined;
@@ -20,10 +20,10 @@ export function registerInterceptorCommands(globalStoragePath: string): vscode.D
             return;
         }
         try {
-            shared.proxyServer = new InterceptorProxy(PROXY_PORT, (call) => {
+            extensionState.proxyServer = new InterceptorProxy(PROXY_PORT, (call) => {
                 updateTree(call);
             });
-            await shared.proxyServer.start(globalStoragePath);
+            await extensionState.proxyServer.start(globalStoragePath);
             state.runningInterceptor = true;
         } catch (error) {
             console.error('Error starting Interceptor Proxy:', error);
@@ -32,7 +32,7 @@ export function registerInterceptorCommands(globalStoragePath: string): vscode.D
     });
 
     const openTerminal = vscode.commands.registerCommand('ecode.interceptorOpenTerminal', async () => {
-        if (!shared.proxyServer) {
+        if (!extensionState.proxyServer) {
             vscode.window.showErrorMessage('There is no Interceptor Proxy Running. Please initiate `ecode.InterceptorStart`');
             return;
         }
@@ -46,11 +46,11 @@ export function registerInterceptorCommands(globalStoragePath: string): vscode.D
                 HTTPS_PROXY: proxyUrl,
                 http_proxy: proxyUrl,
                 https_proxy: proxyUrl,
-                REQUESTS_CA_BUNDLE: shared.proxyServer.certPath,
-                SSL_CERT_FILE: shared.proxyServer.certPath,
-                CURL_CA_BUNDLE: shared.proxyServer.certPath,
-                AWS_CA_BUNDLE: shared.proxyServer.certPath,
-                NODE_EXTRA_CA_CERTS: shared.proxyServer.certPath,
+                REQUESTS_CA_BUNDLE: extensionState.proxyServer.certPath,
+                SSL_CERT_FILE: extensionState.proxyServer.certPath,
+                CURL_CA_BUNDLE: extensionState.proxyServer.certPath,
+                AWS_CA_BUNDLE: extensionState.proxyServer.certPath,
+                NODE_EXTRA_CA_CERTS: extensionState.proxyServer.certPath,
                 NODE_OPTIONS: '--use-env-proxy',
                 JAVA_TOOL_OPTIONS: `-Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=${PROXY_PORT} -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=${PROXY_PORT}`,
             },
@@ -60,8 +60,8 @@ export function registerInterceptorCommands(globalStoragePath: string): vscode.D
     });
 
     const stop = vscode.commands.registerCommand('ecode.interceptorStop', async () => {
-        if (shared.proxyServer) {
-            shared.proxyServer.stop();
+        if (extensionState.proxyServer) {
+            extensionState.proxyServer.stop();
             state.runningInterceptor = false;
             vscode.window.showInformationMessage('Runtime Analysis stopped. ');
         }

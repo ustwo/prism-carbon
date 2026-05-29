@@ -6,7 +6,7 @@
 
 import * as vscode from "vscode";
 import * as budget from "./budget";
-import { shared } from "./extensionState";
+import { extensionState } from "./extensionState";
 import { MyTreeDataProvider } from "./ui/treeView";
 import { statusBarManager } from "./ui/statusBar";
 import { restoreCallHistory } from "./callManager";
@@ -30,18 +30,18 @@ export async function activate(context: vscode.ExtensionContext) {
     );
   }
 
-  shared.budg = new budget.budget(context.workspaceState);
-  shared.bar = new statusBarManager();
-  shared.tree = new MyTreeDataProvider();
-  shared.lastAccess = 0;
+  extensionState.budg = new budget.budget(context.workspaceState);
+  extensionState.bar = new statusBarManager();
+  extensionState.tree = new MyTreeDataProvider();
+  extensionState.lastAccess = 0;
 
-  vscode.window.registerTreeDataProvider("myPrimaryView", shared.tree);
+  vscode.window.registerTreeDataProvider("myPrimaryView", extensionState.tree);
 
-  restoreCallHistory(shared.budg);
-  shared.bar.updateLimit(shared.budg.updateLimit());
+  restoreCallHistory(extensionState.budg);
+  extensionState.bar.updateLimit(extensionState.budg.updateLimit());
 
-  const pastCalls = shared.budg.getCalls();
-  shared.bar.updateBar(
+  const pastCalls = extensionState.budg.getCalls();
+  extensionState.bar.updateBar(
     pastCalls.length > 0 ? pastCalls[pastCalls.length - 1].Emissions : 0,
   );
 
@@ -51,13 +51,13 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   return {
-    budg: shared.budg,
+    budg: extensionState.budg,
     isInterceptorRunning: () => state.runningInterceptor,
   };
 }
 
 export async function deactivate() {
-  if (shared.proxyServer) {
-    await shared.proxyServer.stop();
+  if (extensionState.proxyServer) {
+    await extensionState.proxyServer.stop();
   }
 }

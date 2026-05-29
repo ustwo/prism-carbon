@@ -11,7 +11,7 @@ import type { InterceptorProxy } from './proxyServer';
 
 export const PROXY_PORT = 3024;
 
-export const shared: {
+export const extensionState: {
     tree?: MyTreeDataProvider;
     bar?: statusBarManager;
     budg?: budget;

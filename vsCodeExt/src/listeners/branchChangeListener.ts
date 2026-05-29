@@ -7,7 +7,7 @@
 import * as childProcess from 'child_process';
 import * as vscode from 'vscode';
 import { CarbonDashboardPanel } from '../dashboard';
-import { shared } from '../extensionState';
+import { extensionState } from '../extensionState';
 
 export function registerBranchChangeListener(): vscode.Disposable {
     let lastKnownBranch = '';
@@ -19,7 +19,7 @@ export function registerBranchChangeListener(): vscode.Disposable {
             const currentBranch = childProcess.execSync('git rev-parse --abbrev-ref HEAD', { cwd, encoding: 'utf8' }).trim();
             if (currentBranch !== lastKnownBranch) {
                 lastKnownBranch = currentBranch;
-                CarbonDashboardPanel.sendData(shared.budg!);
+                CarbonDashboardPanel.sendData(extensionState.budg!);
             }
         } catch { /* branch detection failed, skip */ }
     });

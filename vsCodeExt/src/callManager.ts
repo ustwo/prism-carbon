@@ -10,14 +10,14 @@ import * as vscode from 'vscode';
 import * as budget from './budget';
 import * as logCap from './logCapture';
 import { CarbonDashboardPanel } from './dashboard';
-import { shared } from './extensionState';
+import { extensionState } from './extensionState';
 import { getCurrentBranch } from './utils/gitUtils';
 
 export function restoreCallHistory(budg: budget.budget) {
     const pCalls = budg.getCalls();
     console.log('CALLS:', pCalls);
     for (const call of pCalls) {
-        shared.tree!.addMessage(
+        extensionState.tree!.addMessage(
             `Emissions: ${call.Emissions}g CO₂e - Model: ${call.Model} - Date: ${new Date(call.DateTime).toLocaleString()}`
         );
     }
@@ -27,15 +27,15 @@ export function updateTree(call: budget.Call) {
     if (!call.Branch) {
         call.Branch = getCurrentBranch();
     }
-    shared.budg!.storeCall(call);
+    extensionState.budg!.storeCall(call);
 
     console.log('BACKEND CHECK: Stored call value:', call.Emissions, 'for date:', new Date(call.DateTime).toISOString());
-    shared.tree!.addMessage(
+    extensionState.tree!.addMessage(
         `Emissions: ${call.Emissions}g CO₂e - Model: ${call.Model} - Date: ${new Date(call.DateTime).toLocaleString()}`
     );
 
-    shared.bar!.updateBar(call.Emissions);
-    CarbonDashboardPanel.sendData(shared.budg!);
+    extensionState.bar!.updateBar(call.Emissions);
+    CarbonDashboardPanel.sendData(extensionState.budg!);
 }
 
 export async function getLogs(context: vscode.ExtensionContext) {
@@ -50,14 +50,14 @@ export async function getLogs(context: vscode.ExtensionContext) {
         console.log('CALLS: ', sortedModels);
 
         for (const call of sortedModels) {
-            if (call.DateTime > shared.lastAccess) {
+            if (call.DateTime > extensionState.lastAccess) {
                 console.log('updating tree');
                 updateTree(call);
             }
         }
 
         if (sortedModels.length !== 0) {
-            shared.lastAccess = sortedModels[sortedModels.length - 1].DateTime;
+            extensionState.lastAccess = sortedModels[sortedModels.length - 1].DateTime;
         }
     } catch (error) {
         console.log(error);
@@ -66,17 +66,17 @@ export async function getLogs(context: vscode.ExtensionContext) {
 }
 
 export function wrappedGetCall() {
-    return shared.budg!.getCalls();
+    return extensionState.budg!.getCalls();
 }
 
 export function wrappedGetBudget(): number {
-    return shared.budg!.getBudget();
+    return extensionState.budg!.getBudget();
 }
 
 export function wrappedGetBudgetWindowStart(): number {
-    return shared.budg!.getBudgetWindowStart();
+    return extensionState.budg!.getBudgetWindowStart();
 }
 
 export function wrappedSetBudget(newBudget: number): void {
-    shared.budg!.setBudget(newBudget);
+    extensionState.budg!.setBudget(newBudget);
 }
