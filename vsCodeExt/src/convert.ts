@@ -6,7 +6,7 @@
  *                                 BY JEGHAM ET AL. 2025                                 *
  *****************************************************************************************/
 
-import * as models from '../models.json'
+import * as models from '../models.json';
 
 // for water:
 // use interface and return 

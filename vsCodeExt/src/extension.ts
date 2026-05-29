@@ -4,477 +4,60 @@
  *       REGISTERING COMMANDS, AND MANAGING OVERALL STATE       *
  ****************************************************************/
 
-import * as childProcess from 'child_process';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as vscode from 'vscode';
-import * as budget from './budget';
-import * as logCap from './logCapture';
-import { CarbonDashboardPanel } from './dashboard';
-import { state } from './state';
-import { InterceptorProxy } from './proxyServer';
-
-export let tree: MyTreeDataProvider;
-export let bar: statusBarManager;
-export let lastAccess: number;
-
-export function setDisplay(t: MyTreeDataProvider, b: statusBarManager) {
-    tree = t;
-    bar = b;
-}
-
-let proxyServer: InterceptorProxy;
-const PROXY_PORT = 3024;
-var budg: budget.budget;
+import * as vscode from "vscode";
+import * as budget from "./budget";
+import { extensionState } from "./extensionState";
+import { MyTreeDataProvider } from "./ui/treeView";
+import { statusBarManager } from "./ui/statusBar";
+import { restoreCallHistory } from "./callManager";
+import { registerAllCommands } from "./commands/index";
+import { registerAllListeners } from "./listeners/index";
+import { state } from "./state";
 
 export async function activate(context: vscode.ExtensionContext) {
-    const copilotChat = vscode.extensions.getExtension('github.copilot-chat');
-    if (!copilotChat) {
-        vscode.window.showWarningMessage('GitHub Copilot Chat is not installed. Carbon emissions will not be tracked during development time!');
-    }
-    else {
-        if (!copilotChat.isActive) {
-            await copilotChat.activate();
-        }
-        vscode.commands.executeCommand('workbench.action.setLogLevel');
-        // get current log level settings
-        vscode.window.showInformationMessage('Please Select "Github Copilot Chat" then "Trace" in the above command window');
-
-    }
-
-    budg = new budget.budget(context.workspaceState);
-
-    var barManager = new statusBarManager();
-    const treeDataProvider = new MyTreeDataProvider();
-    lastAccess = 0;
-
-    vscode.window.registerTreeDataProvider(
-        'myPrimaryView',
-        treeDataProvider
+  const copilotChat = vscode.extensions.getExtension("github.copilot-chat");
+  if (!copilotChat) {
+    vscode.window.showWarningMessage(
+      "GitHub Copilot Chat is not installed. Carbon emissions will not be tracked during development time!",
     );
-
-    const disposables: vscode.Disposable[] = [];
-
-// sets the display for the tree and status bar 
-    setDisplay(treeDataProvider, barManager);
-
-
-    vscode.window.registerTreeDataProvider(
-        'myPrimaryView',
-        treeDataProvider
+  } else {
+    if (!copilotChat.isActive) {
+      await copilotChat.activate();
+    }
+    vscode.commands.executeCommand("workbench.action.setLogLevel");
+    vscode.window.showInformationMessage(
+      'Please Select "Github Copilot Chat" then "Trace" in the above command window',
     );
+  }
 
+  extensionState.budg = new budget.budget(context.workspaceState);
+  extensionState.bar = new statusBarManager();
+  extensionState.tree = new MyTreeDataProvider();
+  extensionState.lastAccess = 0;
 
+  vscode.window.registerTreeDataProvider("myPrimaryView", extensionState.tree);
 
-    restoreCallHistory(treeDataProvider, budg);
-    barManager.updateLimit(budg.updateLimit());
-    const pastCalls = budg.getCalls();
-    if (pastCalls.length > 0) {
-        barManager.updateBar(pastCalls[pastCalls.length - 1].Emissions);
-    } else {
-        barManager.updateBar(0);
-    }
+  restoreCallHistory(extensionState.budg);
+  extensionState.bar.updateLimit(extensionState.budg.updateLimit());
 
-    disposables.push(vscode.workspace.onDidSaveTextDocument(async evt => {
-        console.log("Updating logs..........");
-        getLogs(context);
-    }));
+  const pastCalls = extensionState.budg.getCalls();
+  extensionState.bar.updateBar(
+    pastCalls.length > 0 ? pastCalls[pastCalls.length - 1].Emissions : 0,
+  );
 
-    const reset = vscode.commands.registerCommand('ecode.clearStore', async () => {
-        await budg.resetBudget();
-        treeDataProvider.clearTree();
-        barManager.updateBar(0);
+  context.subscriptions.push(
+    ...registerAllListeners(context),
+    ...registerAllCommands(context),
+  );
 
-        CarbonDashboardPanel.sendData(budg);
-
-    });
-
-    // Dashboard command 
-    const dashboardCommand = vscode.commands.registerCommand('ecode.openDashboard', () => {
-        CarbonDashboardPanel.createOrShow(context.extensionUri, budg);
-        console.log('Carbon Dashboard command registered.');
-    });
-
-
-    const refresh = vscode.commands.registerCommand('ecode.refreshLogs', async () => {
-        getLogs(context);
-    });
-
-
-    // keep track of the last known branch 
-    let lastKnownBranch = getCurrentBranch();
-//listens for branch changes and updates dashboard accordingly with new branch information 
-    const branchChangeListener = vscode.workspace.onDidChangeWorkspaceFolders(() => {
-        const currentBranch = getCurrentBranch();
-        // only send new data if the branch has changed                   
-        if (currentBranch !== lastKnownBranch) {
-            lastKnownBranch = currentBranch;
-            //Trigger the data recalculation and update the dashboard with the new branch information
-            CarbonDashboardPanel.sendData(budg);
-        }
-    });
-    context.subscriptions.push(branchChangeListener);
-
-   const input = vscode.commands.registerCommand('ecode.inputdisplay', async () => {
-    const limit = await vscode.window.showInputBox({
-        prompt: 'Enter test call: ',
-        placeHolder: 'eg. 5',
-        ignoreFocusOut: true 
-    });
-
-    var num = Number(limit);
-    if (!Number.isNaN(num)) {
-        // Use a local date string to prevent timezone shifting
-        const now = new Date();
-        const bumpedTime = now.getTime() + (5 * 60 * 60 * 1000);
-       
-        var newCall: budget.Call = { 
-            Emissions: num, 
-            Model: "TEST", 
-            DateTime: bumpedTime
-        };
-        
-        updateTree(newCall);
-        vscode.window.showInformationMessage(`Added ${num}g CO2e for today.`);
-    }else {
-        vscode.window.showInformationMessage('Error: NaN inputted.');
-    }
-});
-    context.subscriptions.push(input);
-    context.subscriptions.push(dashboardCommand);
-
-    console.log('Interceptor Proxy Server is activating');
-
-    let startDisposable = vscode.commands.registerCommand('ecode.interceptorStart', async () => {
-
-        if (state.runningInterceptor) {
-            console.log("Interceptor is already running!");
-            return;
-        }
-        try {
-            // start local server
-            proxyServer = new InterceptorProxy(PROXY_PORT, (call) => {
-                updateTree(call);
-            });
-            await proxyServer.start(context.globalStorageUri.fsPath);
-            state.runningInterceptor = true;
-        } catch (error) {
-            console.error("Error starting Interceptor Proxy:", error);
-            vscode.window.showErrorMessage('Failed to start Interceptor Proxy: ' + error);
-        }
-    });
-
-    let terminal: vscode.Terminal;
-
-    let terminalDisposable = vscode.commands.registerCommand('ecode.interceptorOpenTerminal', async () => {
-        if (!proxyServer) {
-            vscode.window.showErrorMessage("There is no Interceptor Proxy Running. Please initiate `ecode.InterceptorStart`");
-            return;
-        }
-
-        const proxyUrl = `http://127.0.0.1:${PROXY_PORT}`;
-
-        //create a new terminal with specific Environment Vars
-
-        terminal = vscode.window.createTerminal({
-            name: "Estimating Carbon RunTime Analysis Terminal",
-            env: {
-                // proxy environment variables
-                "HTTP_PROXY": proxyUrl,
-                "HTTPS_PROXY": proxyUrl,
-                "http_proxy": proxyUrl,
-                "https_proxy": proxyUrl,
-
-                // supports Python, Ruby, Go, Rust
-                "REQUESTS_CA_BUNDLE": proxyServer.certPath,
-                "SSL_CERT_FILE": proxyServer.certPath,
-
-                // cURL, PHP, and many C/C++ based tools
-                "CURL_CA_BUNDLE": proxyServer.certPath,
-
-                "AWS_CA_BUNDLE": proxyServer.certPath,
-
-                // nodejs specific
-                "NODE_EXTRA_CA_CERTS": proxyServer.certPath,
-                "NODE_OPTIONS": "--use-env-proxy",
-
-                // java specific
-                "JAVA_TOOL_OPTIONS": `-Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=${PROXY_PORT} -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=${PROXY_PORT}`
-
-            }
-        });
-
-        terminal.show();
-    });
-
-
-    let stopDisposable = vscode.commands.registerCommand('ecode.interceptorStop', async () => {
-        // stop local server
-        if (proxyServer) {
-            proxyServer.stop();
-            state.runningInterceptor = false;
-            vscode.window.showInformationMessage('Runtime Analysis stopped. ');
-        }
-
-        if (terminal) {
-            terminal.dispose();
-        }
-    });
-
-    let runtimeDisposable = vscode.commands.registerCommand("ecode.runtimeAnalysis", async () => {
-        try {
-            await vscode.commands.executeCommand("ecode.interceptorStart");
-            await vscode.commands.executeCommand("ecode.interceptorOpenTerminal");
-        } catch (error) {
-            vscode.window.showErrorMessage("Failed to launch runtime analysis service");
-        }
-    });
-
-    let ecodeMenu = vscode.commands.registerCommand("ecode.menu", async () => {
-        const ecodeCommands = [
-            {
-                label: `$(play) Start Runtime Analysis`,
-                description: "Opens Estimating Carbon Terminal where files to be analysed are run",
-                command: "ecode.runtimeAnalysis"
-            },
-            {
-                label: `$(play) Stop Runtime Proxy`,
-                description: "Stops the recording of carbon emissions",
-                command: "ecode.interceptorStop"
-            },
-            {
-                label: `$(play) Reset Stored Session`,
-                description: "Resets the current record of carbon emissions",
-                command: "ecode.clearStore"
-            },
-            {
-                label: `$(play) Open Dashboard`,
-                description: "Displays information on Carbon emissions and usage",
-                command: "ecode.openDashboard"
-            }
-        ];
-
-        const selection = await vscode.window.showQuickPick(ecodeCommands, {
-            placeHolder: "Select an Estimating Carbon function",
-        });
-
-        if (selection) {
-            vscode.commands.executeCommand(selection.command);
-        }
-    });
-
-    const runtimeLaunchButton = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-    runtimeLaunchButton.text = `$(list-unordered) Estimating Carbon`;
-    runtimeLaunchButton.tooltip = "Click to see AI Analysis Options";
-    runtimeLaunchButton.command = "ecode.menu";
-    runtimeLaunchButton.show();
-
-    context.subscriptions.push(terminalDisposable);
-    context.subscriptions.push(startDisposable);
-    context.subscriptions.push(stopDisposable);
-    context.subscriptions.push(runtimeDisposable);
-    context.subscriptions.push(runtimeLaunchButton);
-    context.subscriptions.push(ecodeMenu);
-
-    return {
-        budg,
-        isInterceptorRunning: () => state.runningInterceptor
-    };
-
+  return {
+    budg: extensionState.budg,
+    isInterceptorRunning: () => state.runningInterceptor,
+  };
 }
+
 export async function deactivate() {
-    // make sure that the vscode isn't always vulnerable, disable configurations
-    if (proxyServer) {
-        await proxyServer.stop();
-    }
-}
-
-
-
-class MyTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
-    private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined | null> = new vscode.EventEmitter<vscode.TreeItem | undefined | null>();
-    readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined | null> = this._onDidChangeTreeData.event;
-    private items: vscode.TreeItem[] = []; //creates a list of tree items starts empty obviously
-
-    constructor() {
-        this.items.push(new vscode.TreeItem(
-            "Latest calls:",
-            vscode.TreeItemCollapsibleState.None)); //initialises the messages with one title message     
-    }
-
-    getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
-        return element;
-    }
-    getChildren(element?: vscode.TreeItem): Thenable<vscode.TreeItem[]> {
-        //If an element is passed it means we are getting children of a sub-item --> no nested items here so empty array returned
-        if (element) {
-            return Promise.resolve([]);
-        } else {
-            //Here a top-level item will be created which will be where the message will be displayed           
-            return Promise.resolve(this.items);
-        }
-    }
-    addMessage(message: string) { //method which allows messaged to be added
-        this.items.push(new vscode.TreeItem( //adds a new item to the side bar
-            message,
-            vscode.TreeItemCollapsibleState.None
-        ));
-        this._onDidChangeTreeData.fire(undefined); //refreshes the sidebar
-
-    }
-    clearTree() {
-        this.items = [];
-        this._onDidChangeTreeData.fire(undefined);
-    }
-}
-class statusBarManager {
-    mainItem = vscode.window.createStatusBarItem(); // creates a new item in the VS Code status bar
-    defaultColour: string = "statusBarItem.activeBackground"; // defines default colour for the status bar item
-    newColour: string; // stores the new colour calculated based on the carbon emissions of the latest request
-
-    constructor() {
-        this.newColour = this.defaultColour;
-        this.mainItem.text = 'Last Request: 0 g CO₂e';
-        this.mainItem.show();
-    }
-
-    updateLimit(input: number) {
-        this.mainItem.text = 'Last Request: 0 g CO₂e';
-        this.newColour = "statusBarItem.background";
-    }
-    //this method updates the status bar item with the carbon emissions of the latest request and changes its colour based on predefined thresholds to provide real-time feedback on the environmental impact of development activities
-    updateBar(input: number) { 
-        if (input !== undefined) {
-            this.mainItem.text = 'Last Request: ' + input.toFixed(4) + ' g CO₂e';
-            
-            // Utilising static thresholds for real-time feedback
-            if (input >= 40) {
-                this.newColour = "statusBarItem.errorBackground"; // High Emission
-            }
-            else if (input >= 15) {
-                this.newColour = "statusBarItem.warningBackground"; // Average Emission
-            }
-
-            else if (input > 0) {
-                this.newColour = "statusBarItem.background"; // Low Emission (keeping for now if there is a way to make it green)
-            }
-            else {
-                this.newColour = "statusBarItem.activeBackground"; // Low Emission
-            }
-        }
-        else {
-            this.newColour = "statusBarItem.activeBackground";
-            this.mainItem.text = 'Last Request: 0 g CO₂e';
-        }
-
-        this.mainItem.backgroundColor = new vscode.ThemeColor(this.newColour);  // Update the background color of the status bar item based on the new colour
-    }
-}
-
-function restoreCallHistory(tree: MyTreeDataProvider, budg: budget.budget) { //restores past calls to sidebar
-    var pCalls = budg.getCalls();
-    console.log("CALLS:", pCalls);
-    for (let i = 0; i < pCalls.length; i++) {
-        tree.addMessage("Emissions: " + pCalls[i].Emissions + "g CO₂e - Model: " + pCalls[i].Model + " - Date: " + new Date(pCalls[i].DateTime).toLocaleString());
-    }
-}
-
-export function getCurrentBranch(): string {
-    try {
-        const workspaceFolders = vscode.workspace.workspaceFolders;
-        if (!workspaceFolders || workspaceFolders.length === 0) {
-            return "Unknown Branch";
-        }
-        const cwd = workspaceFolders[0].uri.fsPath;
-        const branch = childProcess.execSync("git rev-parse --abbrev-ref HEAD", { cwd, encoding: 'utf8' }).trim();
-        return branch || "Unknown Branch"; // defaults to unknown branch
-    } catch (error) {
-        console.error("Error getting git branch:", error);
-        return "Unknown Branch";
-    }
-}
-
-export function updateTree(call: budget.Call) {
-    if (!call.Branch) {
-        call.Branch = getCurrentBranch();
-    }
-    budg.storeCall(call);
-   
-    
-    console.log("BACKEND CHECK: Stored call value:", call.Emissions, "for date:", new Date(call.DateTime).toISOString());
-    tree.addMessage("Emissions: " + call.Emissions + "g CO₂e - Model: " + call.Model + " - Date: " + new Date(call.DateTime).toLocaleString());
-    
-    bar.updateBar(call.Emissions);
-    CarbonDashboardPanel.sendData(budg); 
-    
-}
-
-export async function getLogs(context: vscode.ExtensionContext) {
-    try {
-        // concactenates correct file name to access Copilot logs
-        const filePath = logCap.getLogFilePath(context);
-        console.log(filePath);
-        const logUri = path.join(path.dirname(filePath), "GitHub.copilot-chat", "GitHub Copilot Chat.log");
-
-        // reads file and outputs lines to console one at a time
-        const content = fs.readFileSync(logUri, 'utf-8');
-        // var lDate:string[] = (new Date(lastAccess).toLocaleString('us-GB', { 
-        //                 hour12: false
-        //             })).split(",");
-        
-
-        // var dateSec = new Date(lastAccess).toISOString().slice(0, 10).split('/').join('-'); //formats the date in accordance to the log files
-        // var timeSplit = dateSec+lDate[1];
-        // const regex: RegExp = new RegExp(timeSplit);
-        // const splitting:string[] = content.split(regex);//splits the time stamp
-        // var input: string;
-        // if (splitting.length < 2){//uses the entire log file if nothing can be found the timestamp
-        //     input= content;
-        // }
-        // else{
-        //     input = splitting[splitting.length-1];//incase multiple lines of the log file are at the same second look past the last one
-        // }
-
-        //the above comment used to split the log file as to avoid taking too long loading when log files get larger
-        //due to a slight last minute changes to log files this created issues and has been removed 
-
-        var input:string = content;
-        const models: budget.Call[] = await logCap.identifyModel(input);
-        const sortedModels = models.sort((a: budget.Call, b: budget.Call) => {
-            return a.DateTime - b.DateTime;
-        });
-        console.log("CALLS: ", sortedModels);
-
-        for (let index = 0; index < sortedModels.length; index++) {
-            if (sortedModels[index].DateTime > lastAccess) {
-                console.log("updating tree");
-                updateTree(sortedModels[index]);//updates side bar with all calls returned
-                 //plan to only give identify model and such the log file after the last access to make it quicker
-            }
-        }
-
-        if (sortedModels.length !== 0) {lastAccess = sortedModels[sortedModels.length-1].DateTime;}        
-    }
-    catch (error) {
-        console.log(error);
-        vscode.window.showErrorMessage("Error: Copilot log files not found.");
-    }
-}
-
-export function wrappedGetCall() {
-    return budg.getCalls();
-}
-
-export function wrappedGetBudget(): number {
-    return budg.getBudget();
-}
-// This function is used in the dashboard to determine the start of the current budget tracking window
-export function wrappedGetBudgetWindowStart(): number {
-    
-    return budg.getBudgetWindowStart();
-}
-
-
-export function wrappedSetBudget(newBudget: number): void {
-    budg.setBudget(newBudget);
+  if (extensionState.proxyServer) {
+    await extensionState.proxyServer.stop();
+  }
 }
