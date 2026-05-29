@@ -7,7 +7,7 @@
 import * as childProcess from 'child_process';
 import * as vscode from 'vscode';
 import { CarbonDashboardPanel } from '../dashboard';
-import { shared } from '../shared';
+import { shared } from '../extensionState';
 
 export function registerBranchChangeListener(): vscode.Disposable {
     let lastKnownBranch = '';

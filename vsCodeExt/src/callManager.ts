@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import * as budget from './budget';
 import * as logCap from './logCapture';
 import { CarbonDashboardPanel } from './dashboard';
-import { shared } from './shared';
+import { shared } from './extensionState';
 import { getCurrentBranch } from './utils/gitUtils';
 
 export function restoreCallHistory(budg: budget.budget) {

@@ -8,7 +8,7 @@
 import * as vscode from 'vscode';
 import { InterceptorProxy } from '../proxyServer';
 import { state } from '../state';
-import { shared, PROXY_PORT } from '../shared';
+import { shared, PROXY_PORT } from '../extensionState';
 import { updateTree } from '../callManager';
 
 let terminal: vscode.Terminal | undefined;

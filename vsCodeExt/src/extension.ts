@@ -6,7 +6,7 @@
 
 import * as vscode from "vscode";
 import * as budget from "./budget";
-import { shared } from "./shared";
+import { shared } from "./extensionState";
 import { MyTreeDataProvider } from "./ui/treeView";
 import { statusBarManager } from "./ui/statusBar";
 import { restoreCallHistory } from "./callManager";

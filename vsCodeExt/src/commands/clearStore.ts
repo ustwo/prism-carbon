@@ -6,7 +6,7 @@
 
 import * as vscode from 'vscode';
 import { CarbonDashboardPanel } from '../dashboard';
-import { shared } from '../shared';
+import { shared } from '../extensionState';
 
 export function registerClearStore(): vscode.Disposable {
     return vscode.commands.registerCommand('ecode.clearStore', async () => {
