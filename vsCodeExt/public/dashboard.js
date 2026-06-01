@@ -14,22 +14,53 @@
     // exposing the API gloablly so graph.js can use it
     window.vscodeAPI = vscode;
 
-    // define colour palette:
+    // ── Theme helpers ─────────────────────────────────────────────
+    // All colours come from VSCode's CSS variables so they match
+    // whatever theme the user has active. Called at init-time so
+    // getComputedStyle reflects the current theme immediately.
+    const themeColors = (() => {
+        const s = getComputedStyle(document.body);
+        const get = v => s.getPropertyValue(v).trim();
+        return {
+            editorBg:   get('--vscode-editor-background')     || '#1e1e1e',
+            fg:         get('--vscode-charts-foreground')
+                     || get('--vscode-editor-foreground')      || '#cccccc',
+            descFg:     get('--vscode-descriptionForeground')  || '#8e8e8e',
+            focusBorder:get('--vscode-focusBorder')            || '#007fd4',
+            panelBorder:get('--vscode-panel-border')           || '#454545',
+            green:      get('--vscode-charts-green')           || '#89d185',
+            yellow:     get('--vscode-charts-yellow')          || '#e2c08d',
+            orange:     get('--vscode-charts-orange')          || '#f5884a',
+            red:        get('--vscode-charts-red')             || '#f14c4c',
+            blue:       get('--vscode-charts-blue')            || '#75beff',
+            purple:     get('--vscode-charts-purple')          || '#b180d7',
+        };
+    })();
+
+    // Palette for pie/radar — VSCode chart colours in order
     const palette = [
-        "#D8F3DC",
-        "#B7e4C7",
-        "#95D5B2",
-        "#74C69D",
-        "#52B788",
-        "#40916C",
-        "#2D6A4F",
-        "#1B4332",
-        "#081C15"
+        themeColors.blue, themeColors.green, themeColors.yellow, themeColors.orange,
+        themeColors.red,  themeColors.purple,
     ];
 
-    const warningColor = '#FFBF00'; // Amber
-    const dangerColor = '#FF0000';
-    const safeColor = '#39FF14';
+    // Adaptive formatter: uses enough decimal places so the value is never "0.00"
+    function formatStat(value, unit, singularUnit) {
+        if (value === 0) return `0 ${unit}`;
+        let str;
+        if (value >= 0.01)          { str = value.toFixed(2); }
+        else if (value >= 0.00001)  { str = value.toFixed(6); }
+        else                        { str = value.toExponential(2); }
+        const label = (singularUnit && parseFloat(str) === 1) ? singularUnit : unit;
+        return `${str} ${label}`;
+    }
+
+    // Parse a '#rrggbb' hex string → [r, g, b]
+    function hexToRgbArr(hex) {
+        const h = (hex || '#888888').replace('#', '');
+        const n = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
+        return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    }
+
     // click listener so reset button can be used
 
     const resetBtn = document.getElementById('reset-btn');
@@ -54,17 +85,8 @@
         });
     }
 
-    const btn = document.getElementById('theme-switch');
-    btn.addEventListener('click', () => { document.body.classList.toggle('darkmode'); 
-
-        if(heatChart){
-            const newTextColor = getChartTextColor();
-        heatChart.data.datasets[0].borderColor = getGridColor();
-        heatChart.options.scales.x.ticks.color = newTextColor;
-        heatChart.options.scales.y.ticks.color = newTextColor;
-        heatChart.update();
-        }
-    });
+    // Theme is now driven by VSCode's vscode-dark/vscode-light body classes.
+    // No manual toggle needed.
 
     // --- heat map here ---
 
@@ -110,67 +132,61 @@ const getChartTextColor = () => getComputedStyle(document.body).getPropertyValue
          
 backgroundColor(c) {
     const point = c.dataset.data[c.dataIndex];
-    if (!point || point.v === 0) return 'rgba(200, 200, 200, 0.1)';
-// For testing: create a gradient from green to red based on the value relative to a budget
+    if (!point || point.v === 0) {
+        // Empty cell: very faint foreground tint
+        const [r, g, b] = hexToRgbArr(themeColors.fg);
+        return `rgba(${r},${g},${b},0.07)`;
+    }
     const SESSION_BUDGET = window.sessionBudget || 100;
     const percent = point.v / SESSION_BUDGET;
-
-    const styles = getComputedStyle(document.body);
-
-    function lerp(a, b, t) {
-        return a + (b - a) * t;
-    }
-// Converts hex color to RGB object
-    function hexToRgb(hex) {
-        const bigint = parseInt(hex.replace('#', ''), 16);
-        return {
-            r: (bigint >> 16) & 255,
-            g: (bigint >> 8) & 255,
-            b: bigint & 255
-        };
-    }
-// Mixes two hex colors based on t (0 to 1)
-    function mix(c1, c2, t) {
-        const a = hexToRgb(c1);
-        const b = hexToRgb(c2);
-        return `rgb(${Math.round(lerp(a.r, b.r, t))},
-                    ${Math.round(lerp(a.g, b.g, t))},
-                    ${Math.round(lerp(a.b, b.b, t))})`;
-    }
-
-    let start, end, t;
-// Define thresholds for green, yellow, and red zones
+    // Within each zone opacity runs 0.25 → 1.0
+    let hex, t;
     if (percent <= 0.01) {
-        t = percent / 0.01;
-        start = styles.getPropertyValue('--green-start').trim();
-        end   = styles.getPropertyValue('--green-end').trim();
-
+        hex = themeColors.green;  t = percent / 0.01;
     } else if (percent <= 0.05) {
-        t = (percent - 0.01) / 0.04;
-        start = styles.getPropertyValue('--yellow-start').trim();
-        end   = styles.getPropertyValue('--yellow-end').trim();
-
+        hex = themeColors.yellow; t = (percent - 0.01) / 0.04;
     } else {
-        t = Math.min((percent - 0.05) / 0.2, 1);
-        start = styles.getPropertyValue('--red-start').trim();
-        end   = styles.getPropertyValue('--red-end').trim();
+        hex = themeColors.red;    t = Math.min((percent - 0.05) / 0.2, 1);
     }
-
-    return mix(start, end, t);
+    const [r, g, b] = hexToRgbArr(hex);
+    return `rgba(${r},${g},${b},${(0.25 + t * 0.75).toFixed(2)})`;
 },
-            borderColor: '#39FF14',
-            borderRadius: 1,
+            borderColor(c) {
+                const point = c.dataset.data[c.dataIndex];
+                if (!point || point.v === 0) { return themeColors.editorBg; }
+                const SESSION_BUDGET = window.sessionBudget || 100;
+                const percent = point.v / SESSION_BUDGET;
+                let hex, t;
+                if (percent <= 0.01) {
+                    hex = themeColors.green;  t = percent / 0.01;
+                } else if (percent <= 0.05) {
+                    hex = themeColors.yellow; t = (percent - 0.01) / 0.04;
+                } else {
+                    hex = themeColors.red;    t = Math.min((percent - 0.05) / 0.2, 1);
+                }
+                const [r, g, b] = hexToRgbArr(hex);
+                return `rgba(${r},${g},${b},${(0.6 + t * 0.4).toFixed(2)})`;
+            },
+            borderRadius: 2,
             borderWidth: 1,
-            hoverBackgroundColor: `rgba(54, 162, 235, 0.2)`,
-            hoverBorderColor: `rgba(54, 162, 235, 1)`,
+            hoverBackgroundColor: themeColors.focusBorder + '40',
+            hoverBorderColor: themeColors.focusBorder,
             width(c) {
                 const a = c.chart.chartArea || {};
-                const cols = 53;
-                return (a.right - a.left) / cols -3 ;
+                if (!a.right) { return 10; }
+                const xScale = c.chart.scales?.x;
+                let visibleWeeks = 54;
+                if (xScale && xScale.max != null && xScale.min != null) {
+                    const weekMs = 7 * 24 * 60 * 60 * 1000;
+                    // +1 accounts for partial weeks at range boundaries
+                    // (e.g. a 7-day range can span parts of 2 calendar weeks)
+                    visibleWeeks = Math.max(2, Math.ceil((xScale.max - xScale.min) / weekMs) + 1);
+                }
+                return Math.max(3, (a.right - a.left) / visibleWeeks - 2);
             },
             height(c) {
                 const a = c.chart.chartArea || {};
-                return (a.bottom - a.top) / 7-3 ;
+                return Math.max(3, (a.bottom - a.top) / 7 - 2);
             },
 
         }]
@@ -185,15 +201,13 @@ backgroundColor(c) {
             min: 1,
             max: 7,
             ticks: {
-                color:'#ffffff',
+                color: themeColors.fg,
                 stepSize: 1,
                 callback: function (value) {
                     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
                     return days[value - 1];
                 },
-                font: {
-                    size: 9
-                }
+                font: { size: 9 }
             },
             grid: {
                 display: false,
@@ -218,8 +232,8 @@ backgroundColor(c) {
         }
     },
     ticks: {
-        color:'#ffffff',
-        source: 'auto', 
+        color: themeColors.fg,
+        source: 'auto',
         maxRotation: 45,
         minRotation: 45,
         autoSkip: true,
@@ -286,6 +300,28 @@ backgroundColor(c) {
         heatChart = new Chart(heatCtx, config);
     }
 
+    // ── Heatmap range filter ───────────────────────────────────────
+    let heatmapRangeDays = 365;
+
+    function applyHeatmapRange() {
+        if (!heatChart) { return; }
+        const now     = new Date();
+        const endUTC  = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+        const startUTC = new Date(endUTC.getTime() - (heatmapRangeDays - 1) * 24 * 60 * 60 * 1000);
+        heatChart.options.scales.x.min = startUTC.toISOString().substring(0, 10);
+        heatChart.options.scales.x.max = endUTC.toISOString().substring(0, 10);
+        heatChart.update('none');
+    }
+
+    document.querySelectorAll('.heatmap-range-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.heatmap-range-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            heatmapRangeDays = parseInt(btn.dataset.days, 10);
+            applyHeatmapRange();
+        });
+    });
+
     function generateDynamicColours(dataLength){
         const colours = [];
         for (let i = 0; i < dataLength; i++) {
@@ -293,11 +329,11 @@ backgroundColor(c) {
         }
         return colours;
     }
-   // Common options for all charts to ensure consistent styling
+   // Common options for all charts — all colours from VSCode theme
     const commonOptions = {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom', labels: { color: '#888' } } }
+        plugins: { legend: { position: 'bottom', labels: { color: themeColors.descFg } } }
     };
 
     // emissions by Model chart live data from backend
@@ -308,8 +344,8 @@ backgroundColor(c) {
             datasets: [{
                 data: [],
                 backgroundColor: generateDynamicColours(data.datasets[0].data.length),
-                borderColor:'#0d0d0d',
-                borderWidth:1
+                borderColor: themeColors.editorBg,
+                borderWidth: 2
             }]
         },
         options: {
@@ -400,7 +436,8 @@ backgroundColor(c) {
             // live emission by model data from backend
             if (message.heatMapData && heatChart) {
                 heatChart.data.datasets[0].data = message.heatMapData;
-                heatChart.update();
+                heatChart.update('none');
+                applyHeatmapRange(); // keep the selected time window
             }
             if (message.radarData && radarChart) {
                 const hasData = message.radarData.labels.length > 0;
@@ -420,12 +457,13 @@ backgroundColor(c) {
                 radarChart.update();
             }
             if (message.conversionData){
-                const carEmptyMsg = document.getElementById('car-empty-msg');
+                const carEmptyMsg   = document.getElementById('car-empty-msg');
                 const phoneEmptyMsg = document.getElementById('phone-empty-msg');
-                const treeEmptyMsg = document.getElementById('tree-empty-msg');
-                if (carEmptyMsg) { carEmptyMsg.innerText = message.conversionData.milesDriven === 0 ? "Equivalent to 0 miles driven" : `Equivalent to ${message.conversionData.milesDriven.toFixed(2)} miles driven`; }
-                if (phoneEmptyMsg) { phoneEmptyMsg.innerText = message.conversionData.phoneCharges === 0 ? "Equivalent to charging 0 iPhone 17s" : `Equivalent to charging ${message.conversionData.phoneCharges.toFixed(2)} iPhone 17s`; }
-                if (treeEmptyMsg) { treeEmptyMsg.innerText = message.conversionData.treeYearlyAbsorption === 0 ? "Equivalent to the carbon absorption of 0 trees" : `Equivalent to the carbon absorption of ${message.conversionData.treeYearlyAbsorption.toFixed(2)} trees`; }
+                const treeEmptyMsg  = document.getElementById('tree-empty-msg');
+                const cd = message.conversionData;
+                if (carEmptyMsg)   { carEmptyMsg.innerText   = `Equivalent to ${formatStat(cd.milesDriven,          'miles driven')}`; }
+                if (phoneEmptyMsg) { phoneEmptyMsg.innerText = `Equivalent to charging ${formatStat(cd.phoneCharges, 'iPhone 17s', 'iPhone 17')}`; }
+                if (treeEmptyMsg)  { treeEmptyMsg.innerText  = `Equivalent to the carbon absorption of ${formatStat(cd.treeYearlyAbsorption, 'trees', 'tree')}`; }
             }
             if (message.modelLabels && message.modelEmissions) {
                 const hasData = message.modelLabels.length > 0;
@@ -435,7 +473,7 @@ backgroundColor(c) {
                 modelEmissionsChart.data.labels = message.modelLabels;
                 modelEmissionsChart.data.datasets[0].data = message.modelEmissions;
                 modelEmissionsChart.data.datasets[0].backgroundColor = generateDynamicColours(message.modelLabels.length);
-                modelEmissionsChart.data.datasets[0].borderColor = '#0d0d0d';
+                modelEmissionsChart.data.datasets[0].borderColor = themeColors.editorBg;
                 modelEmissionsChart.data.datasets[0].borderWidth = 1;
                 modelEmissionsChart.update();
 
@@ -462,6 +500,7 @@ backgroundColor(c) {
                 const rightEl = document.getElementById('session-text-right');
 
                 fillEl.style.width = visualWidth + '%';
+                fillEl.parentElement?.setAttribute('aria-valuenow', Math.round(percentUsed).toString());
                 pctEl.innerText = percentUsed.toFixed(1) + '% used';
                 rightEl.innerText = totalEmissions.toFixed(5) + 'g / ' + SESSION_BUDGET + 'g CO₂e';
 
@@ -490,30 +529,26 @@ backgroundColor(c) {
         }
     });
 
+    // Scale each animation to fill its .animation-stage container.
+    // transform: scale() is visual-only, so the animation's layout size never
+    // escapes the clipping boundary of .animation-stage.
     const observer = new ResizeObserver(entries => {
         for (let entry of entries) {
-            const parent = entry.target;
-            const currentWidth = entry.contentRect.width;
-            const safeSpace = currentWidth * 0.85;
+            const stage = entry.target;
+            // Use the smaller dimension so the animation fits both axes
+            const size = Math.min(entry.contentRect.width, entry.contentRect.height) * 0.82;
 
-            const car = parent.querySelector('.car-element');
-            if (car) { 
-                car.style.transform = `scale(${safeSpace / 450})`; 
-            }
+            const car = stage.querySelector('.car-element');
+            if (car) { car.style.transform = `scale(${size / 450})`; }
 
-            const tree = parent.querySelector('.tree-element');
-            if (tree) { 
-                tree.style.transform = `scale(${safeSpace / 450})`; 
-            }
+            const tree = stage.querySelector('.tree-element');
+            if (tree) { tree.style.transform = `scale(${size / 450})`; }
 
-            const phone = parent.querySelector('.phone-element');
-            if (phone) { 
-                phone.style.transform = `scale(${safeSpace / 400})`; 
-            }
+            const phone = stage.querySelector('.phone-element');
+            if (phone) { phone.style.transform = `scale(${size / 400})`; }
         }
     });
 
-    const gridItems = document.querySelectorAll('.grid-item');
-    gridItems.forEach(item => observer.observe(item));
+    document.querySelectorAll('.animation-stage').forEach(s => observer.observe(s));
     vscode.postMessage({ command: 'frontEndReady' });
 })();

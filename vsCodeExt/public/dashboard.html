@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@3.0.0/dist/chartjs-chart-matrix.min.js"></script>
+    <link href="{{STYLE_URI}}" rel="stylesheet">
+</head>
+<body>
+    <header id="header">
+        <h1>Carbon Analysis Dashboard</h1>
+        <p>Carbon impact of AI calls in the current budget window.</p>
+        <div id="dashboard-preferences-selector">
+            <h3>Preferences:</h3>
+            <div id="branch-selector-tool"></div>
+        </div>
+    </header>
+
+    <div id="branchGraph" style="height:350px;"></div>
+
+    <div class="dashboard-double-grid">
+        <div class="budget-tracker-container scrollable-container">
+            <h2>Emissions by model</h2>
+            <div class="grid-item">
+                <canvas id="modelEmissionsChart" role="img" aria-label="Pie chart of CO₂ emissions grouped by model"></canvas>
+            </div>
+            <p id="model-empty-msg" style="text-align:center; margin-top:12px;">No calls recorded yet.</p>
+        </div>
+
+        <div class="budget-tracker-container scrollable-container" id="radar-container">
+            <h2>Branch Emissions</h2>
+            <div class="grid-item">
+                <button id="radar-fullscreen-btn"
+                    aria-label="Toggle fullscreen for branch emissions radar chart"
+                    style="position:absolute;top:10px;right:10px;z-index:10;">⛶ Fullscreen</button>
+                <canvas id="radarChart" role="img" aria-label="Radar chart of emissions by branch and model"></canvas>
+            </div>
+            <p id="radar-empty-msg" style="text-align:center; margin-top:12px;">No calls recorded yet.</p>
+        </div>
+    </div>
+
+    <section id="main-view">
+        <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
+
+            <div class="budget-tracker-container">
+                <div class="budget-header">
+                    <h2>Session Budget</h2>
+                </div>
+                <div class="progress-bar-bg"
+                    role="progressbar"
+                    aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
+                    aria-label="Session budget used">
+                    <div class="progress-bar-fill" id="session-progress-fill"></div>
+                </div>
+                <div class="budget-footer">
+                    <span id="session-percent-used" class="budget-percent">0% used</span>
+                    <span id="session-text-right" class="budget-detail">0g / 0g</span>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:15px;">
+                    <button id="set-budget-btn" aria-label="Set session budget in gCO₂e"
+                        style="padding:5px 10px; background:var(--vscode-button-background,#0e639c); color:var(--vscode-button-foreground,#fff); border:none; border-radius:4px; cursor:pointer; font-weight:bold;">Set Budget</button>
+                    <button id="reset-btn" aria-label="Reset budget window — prior calls move to Archived"
+                        style="padding:5px 10px; background:var(--vscode-notificationsWarningIcon-foreground,#e74c3c); color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">Reset</button>
+                    <button id="purge-btn" aria-label="Permanently delete all stored logs"
+                        style="padding:5px 10px; background:#6c3483; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">🗑 Purge Logs</button>
+                </div>
+            </div>
+
+            <div class="budget-tracker-container">
+                <div class="budget-header">
+                    <h2>Average Request Cost</h2>
+                </div>
+                <div style="text-align:center; margin-top:20px;">
+                    <span id="average-cost-display"
+                        style="font-size:2.2rem; font-weight:bold; color:var(--text-color);">0.0000 g</span>
+                    <span style="color:var(--secondary-text); font-size:1.2rem;"> CO₂e</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="heatmap-section">
+            <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-top:48px; margin-bottom:12px; flex-wrap:wrap;">
+                <h2 style="margin:0;">Heat Map</h2>
+                <div class="heatmap-range-control" role="group" aria-label="Heatmap time range">
+                    <button class="heatmap-range-btn" data-days="7"  aria-pressed="false">1W</button>
+                    <button class="heatmap-range-btn" data-days="30" aria-pressed="false">1M</button>
+                    <button class="heatmap-range-btn" data-days="90" aria-pressed="false">3M</button>
+                    <button class="heatmap-range-btn active" data-days="365" aria-pressed="true">1Y</button>
+                </div>
+            </div>
+            <div style="max-width:900px; margin:12px auto 0; display:block;">
+                <div class="chart-container" style="height:220px;">
+                    <canvas id="myChart" role="img" aria-label="Carbon emissions heatmap"></canvas>
+                </div>
+                <div class="heatmap-legend">
+                    <span class="legend-label">Low</span>
+                    <div class="legend-bar"><div class="legend-gradient"></div></div>
+                    <span class="legend-label">High</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="dashboard-triple-grid">
+        <div class="grid-item">
+            <div class="animation-stage">
+                <div class="phone-element">
+                    <div class="loader"></div>
+                </div>
+            </div>
+            <p id="phone-empty-msg">Equivalent to charging 0 iPhone 17s.</p>
+        </div>
+
+        <div class="grid-item">
+            <div class="animation-stage">
+            <div class="car-element">
+                <div class="container">
+                    <div class="car-container">
+                        <div class="car"></div>
+                        <div class="front-part"></div>
+                        <div class="front-part2"></div>
+                        <div class="front-part3"></div>
+                        <div class="bottom-part"></div>
+                        <div class="wheel-container wheel-container1"></div>
+                        <div class="wheel-container wheel-container2"></div>
+                        <div class="wheel-back"></div>
+                        <div class="window"></div>
+                        <div class="window2"></div>
+                        <div class="window3"></div>
+                        <div class="details"></div>
+                        <div class="details2"></div>
+                        <div class="details3"></div>
+                        <div class="details4"></div>
+                        <div class="details5"></div>
+                        <div class="bumper"></div>
+                        <div class="bumper2"></div>
+                        <div class="head-lights"></div>
+                        <div class="tail-lights"></div>
+                        <div class="extra-lighting-details"></div>
+                        <div class="extra-lighting-details2"></div>
+                        <div class="extra-lighting-details3"></div>
+                    </div>
+                    <div class="container-wheel1">
+                        <div class="wheel-break"></div>
+                        <div class="wheel-ring wheel-ring1">
+                            <div class="wheel-center"></div>
+                            <div class="wheel-center2"></div>
+                            <div class="wheel-ring-stick"></div>
+                            <div class="wheel-ring-stick wheel-ring-stick2"></div>
+                            <div class="wheel-ring-stick wheel-ring-stick3"></div>
+                            <div class="wheel-ring-stick wheel-ring-stick4"></div>
+                            <div class="wheel-ring-stick wheel-ring-stick5"></div>
+                            <div class="wheel-logo"></div>
+                        </div>
+                    </div>
+                    <div class="container-wheel2">
+                        <div class="wheel-break2"></div>
+                        <div class="wheel-ring2 wheel-ring">
+                            <div class="wheel-center"></div>
+                            <div class="wheel-center2"></div>
+                            <div class="wheel-ring-stick"></div>
+                            <div class="wheel-ring-stick wheel-ring-stick2"></div>
+                            <div class="wheel-ring-stick wheel-ring-stick3"></div>
+                            <div class="wheel-ring-stick wheel-ring-stick4"></div>
+                            <div class="wheel-ring-stick wheel-ring-stick5"></div>
+                            <div class="wheel-logo"></div>
+                        </div>
+                    </div>
+                    <div class="street">
+                        <div class="line"></div>
+                        <div class="obstacles"></div>
+                    </div>
+                </div>
+            </div>
+            </div><!-- /animation-stage -->
+            <p id="car-empty-msg">Equivalent to 0 miles driven.</p>
+        </div>
+
+        <div class="grid-item">
+            <div class="animation-stage">
+            <div class="tree-element">
+                <div class="container">
+                    <div class="tree">
+                        <div class="branch" style="--x:0">
+                            <span style="--i:0;"></span><span style="--i:1;"></span>
+                            <span style="--i:2;"></span><span style="--i:3;"></span>
+                        </div>
+                        <div class="branch" style="--x:1">
+                            <span style="--i:0;"></span><span style="--i:1;"></span>
+                            <span style="--i:2;"></span><span style="--i:3;"></span>
+                        </div>
+                        <div class="branch" style="--x:2">
+                            <span style="--i:0;"></span><span style="--i:1;"></span>
+                            <span style="--i:2;"></span><span style="--i:3;"></span>
+                        </div>
+                        <div class="branch" style="--x:3">
+                            <span style="--i:0;"></span><span style="--i:1;"></span>
+                            <span style="--i:2;"></span><span style="--i:3;"></span>
+                        </div>
+                        <div class="stem">
+                            <span style="--i:0;"></span><span style="--i:1;"></span>
+                            <span style="--i:2;"></span><span style="--i:3;"></span>
+                        </div>
+                        <span class="shadow"></span>
+                    </div>
+                </div>
+            </div>
+            </div><!-- /animation-stage -->
+            <p id="tree-empty-msg">Equivalent to the carbon absorption of 0 trees.</p>
+        </div>
+    </div>
+
+    <script src="{{SCRIPT_URI}}"></script>
+    <script src="{{GRAPH_URI}}"></script>
+</body>
+</html>
