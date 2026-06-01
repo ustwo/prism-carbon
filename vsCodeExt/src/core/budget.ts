@@ -13,6 +13,7 @@ export interface Call {
     Emissions: number;
     Branch?: string;
     Source?: string;  // e.g. "Copilot Log", "Proxy · Anthropic (Claude)"
+    callId?: string;  // content fingerprint: normalizedModel|input|output|cacheCreation|cacheRead
 }
 
 export class budget {

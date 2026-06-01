@@ -106,14 +106,34 @@
         "command": "ecode.deleteCall",
         "title": "Delete log entry",
         "icon": "$(trash)"
+      },
+      {
+        "command": "ecode.copyCall",
+        "title": "Copy log entry",
+        "icon": "$(copy)"
       }
     ],
     "menus": {
       "view/item/context": [
         {
+          "command": "ecode.copyCall",
+          "when": "view == myPrimaryView && viewItem == callEntry",
+          "group": "inline@1"
+        },
+        {
           "command": "ecode.deleteCall",
           "when": "view == myPrimaryView && viewItem == callEntry",
-          "group": "inline"
+          "group": "inline@2"
+        },
+        {
+          "command": "ecode.copyCall",
+          "when": "view == myPrimaryView && viewItem == callEntry",
+          "group": "9_copy"
+        },
+        {
+          "command": "ecode.deleteCall",
+          "when": "view == myPrimaryView && viewItem == callEntry",
+          "group": "9_delete"
         }
       ],
       "view/title": [

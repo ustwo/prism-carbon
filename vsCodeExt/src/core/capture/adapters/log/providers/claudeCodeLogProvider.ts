@@ -12,6 +12,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import { calculateEmission } from '../../../../convert';
 import { Call } from '../../../../budget';
+import { makeCallId } from '../../../../../utils/callId';
 import { LogProvider } from '../logProvider';
 
 export const claudeCodeLogProvider: LogProvider = {
@@ -48,16 +49,17 @@ export const claudeCodeLogProvider: LogProvider = {
                 const msg = entry.message;
                 if (!msg?.model || !msg?.usage) { continue; }
 
-                const totalTokens =
-                    (msg.usage.input_tokens ?? 0) +
-                    (msg.usage.output_tokens ?? 0) +
-                    (msg.usage.cache_creation_input_tokens ?? 0) +
-                    (msg.usage.cache_read_input_tokens ?? 0);
+                const input         = msg.usage.input_tokens                  ?? 0;
+                const output        = msg.usage.output_tokens                 ?? 0;
+                const cacheCreation = msg.usage.cache_creation_input_tokens   ?? 0;
+                const cacheRead     = msg.usage.cache_read_input_tokens       ?? 0;
+                const totalTokens   = input + output + cacheCreation + cacheRead;
 
                 if (totalTokens === 0) { continue; }
 
                 const emissions = Number(calculateEmission(msg.model, totalTokens).toFixed(4));
-                calls.push({ Model: msg.model, Emissions: emissions, DateTime: timestamp });
+                const callId    = makeCallId(msg.model, input, output, cacheCreation, cacheRead);
+                calls.push({ Model: msg.model, Emissions: emissions, DateTime: timestamp, callId });
             } catch {
                 // Malformed line — skip
             }

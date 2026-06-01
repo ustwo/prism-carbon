@@ -11,6 +11,7 @@ import { registerInputDisplay } from './inputDisplay';
 import { registerMenu } from './menu';
 import { registerPurgeStore } from './purgeStore';
 import { registerDeleteCall } from './deleteCall';
+import { registerCopyCall } from './copyCall';
 
 export function registerAllCommands(context: vscode.ExtensionContext): vscode.Disposable[] {
     return [
@@ -20,5 +21,6 @@ export function registerAllCommands(context: vscode.ExtensionContext): vscode.Di
         registerMenu(),
         registerPurgeStore(),
         registerDeleteCall(),
+        registerCopyCall(),
     ];
 }
