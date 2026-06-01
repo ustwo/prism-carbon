@@ -20,6 +20,8 @@ import { logger } from '../../utils/logger';
 let proxyServer: InterceptorProxy | undefined;
 let terminalListener: vscode.Disposable | undefined;
 
+const PROXY_URL = `http://127.0.0.1:${PROXY_PORT}`;
+
 export async function startCapture(globalStoragePath: string): Promise<void> {
     if (state.runningInterceptor) {
         logger.debug('Capture already running — skipping start');

@@ -13,6 +13,7 @@ import { restoreCallHistory } from "./core/callManager";
 import { registerAllCommands } from "./commands/index";
 import { registerAllListeners } from "./listeners/index";
 import { startCapture, stopCapture } from "./core/capture/interceptorAdapter";
+import { stopLogRefresh } from "./listeners/logRefreshListener";
 import { state } from "./core/state";
 import { initLogger, logger } from "./utils/logger";
 
@@ -52,5 +53,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 export async function deactivate() {
   logger.info('Estimating Carbon deactivating...');
+  stopLogRefresh();
   await stopCapture();
 }
