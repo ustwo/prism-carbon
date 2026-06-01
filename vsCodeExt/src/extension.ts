@@ -5,16 +5,21 @@
  ****************************************************************/
 
 import * as vscode from "vscode";
-import * as budget from "./budget";
+import * as budget from "./core/budget";
 import { extensionState } from "./extensionState";
 import { MyTreeDataProvider } from "./ui/treeView";
 import { statusBarManager } from "./ui/statusBar";
-import { restoreCallHistory } from "./callManager";
+import { restoreCallHistory } from "./core/callManager";
 import { registerAllCommands } from "./commands/index";
 import { registerAllListeners } from "./listeners/index";
-import { state } from "./state";
+import { startInterceptor, stopInterceptor } from "./proxy/proxyManager";
+import { state } from "./core/state";
+import { initLogger, logger } from "./utils/logger";
 
 export async function activate(context: vscode.ExtensionContext) {
+  const log = initLogger(context);
+  log.info('Estimating Carbon activating...');
+
   const copilotChat = vscode.extensions.getExtension("github.copilot-chat");
   if (!copilotChat) {
     vscode.window.showWarningMessage(
@@ -50,6 +55,10 @@ export async function activate(context: vscode.ExtensionContext) {
     ...registerAllCommands(context),
   );
 
+  await startInterceptor(context.globalStorageUri.fsPath);
+
+  log.info('Estimating Carbon activated');
+
   return {
     budg: extensionState.budg,
     isInterceptorRunning: () => state.runningInterceptor,
@@ -57,7 +66,6 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export async function deactivate() {
-  if (extensionState.proxyServer) {
-    await extensionState.proxyServer.stop();
-  }
+  logger.info('Estimating Carbon deactivating...');
+  await stopInterceptor();
 }

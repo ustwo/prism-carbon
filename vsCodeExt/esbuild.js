@@ -31,7 +31,7 @@ const esbuildProblemMatcherPlugin = {
 
 async function main() {
   const ctx = await esbuild.context({
-    entryPoints: ["src/extension.ts", "src/serverWorker.ts"],
+    entryPoints: ["src/extension.ts", "src/proxy/serverWorker.ts"],
     bundle: true,
     format: "cjs",
     minify: production,

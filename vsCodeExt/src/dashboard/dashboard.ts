@@ -7,7 +7,7 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as budget from './budget';
+import * as budget from '../core/budget';
 
 // created interface for comparison data to be used in the comparisons 
 // widget of the dashboard when implemented - 

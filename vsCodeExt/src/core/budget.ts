@@ -5,6 +5,7 @@
  **********************************************/
 
 import { Memento } from "vscode";
+import { logger } from '../utils/logger';
 
 export interface Call {
     //File: string;
@@ -32,6 +33,7 @@ export class budget {
     async resetBudget(): Promise<void> {
         //Instead of wiping the entire store, we can just reset the budget and the start time for the current budget window. This way, we can maintain the call history while starting a new budget tracking period.
         await this.callStore.update("budgetWindowStart", Date.now());
+        logger.info('Budget window reset');
     }
 
     getBudgetWindowStart(): number {
@@ -51,7 +53,7 @@ export class budget {
         this.calls = this.callStore.get<Call[]>(this.storeKey, []) || [];
         var emissions: number[] = this.getEmissionsFromCalls(this.calls);
         emissions.sort((a, b) => a - b);
-        console.log(emissions);
+        logger.debug(`Emissions for median calculation: [${emissions.join(', ')}]`);
         var mid: number = emissions.length / 2;
         if (emissions.length === 0) {
             return 0;
@@ -68,6 +70,7 @@ export class budget {
         this.calls = this.callStore.get<Call[]>(this.storeKey, []) || [];
         this.calls.push(newCall);
         this.callStore.update(this.storeKey, this.calls);
+        logger.trace(`Call stored — total calls: ${this.calls.length}`);
     }
     getCalls(): Call[] {
         this.calls = this.callStore.get<Call[]>(this.storeKey, []) || [];

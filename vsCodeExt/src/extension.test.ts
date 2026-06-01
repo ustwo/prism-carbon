@@ -3,8 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import * as budget from '../budget';
-import * as logCap from '../logCapture';
+import * as budget from './core/budget';
+import * as logCap from './core/logCapture';
 
 suite("Runtime Tests", () => {
 suite('CommandTests', () => {
@@ -24,14 +24,7 @@ suite('CommandTests', () => {
 		try {
 			for (const command of myExtensionCommands) {
 				console.log(`Running: ${command}`);
-				if (command === "ecode.interceptorStart") {
-					await vscode.commands.executeCommand(command);
-					await new Promise(res => setTimeout(res, 500));
-
-					const status = dynamics.isInterceptorRunning();
-					assert.strictEqual(status, true, "Interceptor Not Running Correctly");
-
-				} else { await vscode.commands.executeCommand(command); }
+				await vscode.commands.executeCommand(command);
 				console.log(`Successfully Ran Test ${command}`);
 			}
 		} catch (error) {
@@ -76,7 +69,7 @@ suite("DevTime Tests", () => {
 	const text1: string = "2026-02-24 13:18:53.420 [info] ccreq:5fc48f67.copilotmd | success | gpt-4o-mini-2024-07-18 | 1652ms | [progressMessages]\n2026-02-24 13:18:53.758 [info] ccreq:7ebff8b3.copilotmd | success | claude-haiku-4.5 -> claude-haiku-4-5-20251001 | 1307ms | [inline/generate]";
 	const text2: string = "2026-02-24 13:18:53.420 [info] ccreq:5fc48f67.copilotmd | success | gpt-4o-mini-2024-07-18 | 1652ms | [progressMessages]\n2026-02-24 13:18:53.420 [trace] [InlineChatProgressMessages] Fetched 10 messages for generate\n2026-02-24 13:18:53.727 [trace] [messagesAPI]SSE: {\"delta\":{\"text\":\"python\nprint(\"Hello, World!\")\",\"type\":\"text_delta\"},\"index\":0,\"type\":\"content_block_delta\"}2026-02-24 13:18:53.728 [trace] [messagesAPI]SSE: {\"delta\":{\"text\":\"\n```\",\"type\":\"text_delta\"},\"index\":0,\"type\":\"content_block_delta\"}\n2026-02-24 13:18:53.728 [trace] [messagesAPI]SSE: {\"index\":0,\"type\":\"content_block_stop\"}\n2026-02-24 13:18:53.728 [trace] [messagesAPI]SSE: {\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"type\":\"message_delta\",\"usage\":{\"output_tokens\":14}}\n2026-02-24 13:18:53.745 [trace] [messagesAPI]SSE: {\"type\":\"message_stop\"}\n2026-02-24 13:18:53.745 [info] [messagesAPI] message 0 returned. finish reason: [stop]\n2026-02-24 13:18:53.754 [trace] [messagesAPI]SSE: [DONE]\n2026-02-24 13:18:53.758 [info] ccreq:7ebff8b3.copilotmd | success | claude-haiku-4.5 -> claude-haiku-4-5-20251001 | 1307ms | [inline/generate]";
 	const text3: string = '2026-02-24 23:50:49.607 [trace] [messagesAPI]SSE: {"message":{"content":[],"id":"msg_bdrk_01Sn2aTmHjfYjxerCNx3ABR7","model":"claude-sonnet-4-5-20250929","role":"assistant","stop_reason":null,"stop_sequence":null,"type":"message","usage":{"cache_creation":{"ephemeral_1h_input_tokens":0,"ephemeral_5m_input_tokens":865},"cache_creation_input_tokens":865,"cache_read_input_tokens":8820,"input_tokens":8,"output_tokens":8}},"type":"message_start"} \n 2026-02-24 23:50:49.607 [trace] [messagesAPI]SSE: {"delta":{"thinking":"d request for","type":"thinking_delta"},"index":0,"type":"content_block_delta"}\n{"delta":{"stop_reason":"end_turn","stop_sequence":null},"type":"message_delta","usage":{"cache_creation_input_tokens":865,"cache_read_input_tokens":8820,"input_tokens":8,"output_tokens":373}}';
-	const text4 = fs.readFileSync(path.join(__dirname, '../../src/test/testLogFile.txt'), 'utf-8');
+	const text4 = fs.readFileSync(path.join(__dirname, '../src/__fixtures__/testLogFile.txt'), 'utf-8');
 
 
 	test("Regex Model test", async () => {

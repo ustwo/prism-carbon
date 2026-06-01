@@ -13,14 +13,12 @@ import { registerInterceptorCommands } from './interceptor';
 import { registerMenu } from './menu';
 
 export function registerAllCommands(context: vscode.ExtensionContext): vscode.Disposable[] {
-    const interceptorDisposables = registerInterceptorCommands(context.globalStorageUri.fsPath);
-
     return [
         registerClearStore(),
         registerOpenDashboard(context.extensionUri),
         registerRefreshLogs(context),
         registerInputDisplay(),
-        ...interceptorDisposables,
+        ...registerInterceptorCommands(),
         registerMenu(),
     ];
 }

@@ -5,11 +5,13 @@
  ****************************************************************/
 
 import * as vscode from 'vscode';
-import { CarbonDashboardPanel } from '../dashboard';
+import { CarbonDashboardPanel } from '../dashboard/dashboard';
 import { extensionState } from '../extensionState';
+import { logger } from '../utils/logger';
 
 export function registerClearStore(): vscode.Disposable {
     return vscode.commands.registerCommand('ecode.clearStore', async () => {
+        logger.info('User triggered store reset');
         await extensionState.budg!.resetBudget();
         extensionState.tree!.clearTree();
         extensionState.bar!.updateBar(0);

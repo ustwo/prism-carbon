@@ -9,7 +9,8 @@
 import * as cp from 'child_process';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import * as budget from './budget';
+import * as budget from '../core/budget';
+import { logger } from '../utils/logger';
 
 // manages a background process running the proxy server
 // spawns server and worker, communicates via IPC messages
@@ -35,7 +36,7 @@ export class InterceptorProxy {
             let mod: string = " ";
             let cost: number = 0;
             // point to compiled serverWorker
-            const workerPath = path.join(__dirname, 'serverWorker.js');
+            const workerPath = path.join(__dirname, 'proxy', 'serverWorker.js');
 
             // fork  new node process to run proxy worker
             // give current environment variables
@@ -54,30 +55,28 @@ export class InterceptorProxy {
                 } else if (msg.type === 'log') {
                     let fullCall = false;
 
-                    // check message content, and show popups. 
                     this.logger.appendLine(msg.message);
                     if (msg.message.includes('>> DateTime:')) {
                         id = msg.message.slice(16);
-                        console.log(`id: ${id}`);
+                        logger.trace(`Proxy call datetime: ${id}`);
                     }
                     if (msg.message.includes('>> Model:')) {
                         mod = msg.message.slice(13);
-                        console.log(`model: ${mod}`);
+                        logger.trace(`Proxy call model: ${mod}`);
                     }
                     if (msg.message.includes('>> Emissions:')) {
                         cost = msg.message.slice(17);
                         fullCall = true;
-                        console.log(`cost: ${cost}`);
                     }
                     if (fullCall === true) {
-                        console.log(`id: ${id}, model: ${mod}, cost: ${cost}`);
+                        logger.debug(`Proxy call complete — model: ${mod}, emissions: ${cost}g CO₂e`);
                         var call: budget.Call = { DateTime: new Date(id).getTime(), Model: mod, Emissions: +cost };
-                        // fire callback to register the cost
                         this.onCallRecorded(call);
                     }
-                } 
+                }
                 // display error message if the worker crashes
                 else if (msg.type === 'error') {
+                    logger.error(`Proxy worker error: ${msg.message}`);
                     vscode.window.showErrorMessage(`Proxy Error: ${msg.message}`);
                     reject(msg.message);
                 }
@@ -90,8 +89,8 @@ export class InterceptorProxy {
             //handles unexpected exits of worker process
             this.child.on('exit', (code) => {
                 if (code !== 0) {
+                    logger.error(`Proxy worker exited unexpectedly with code ${code}`);
                     reject(new Error(`Worker exited with code ${code}`));
-                    console.log(`Worker exited with code ${code}`);
                 };
             });
 

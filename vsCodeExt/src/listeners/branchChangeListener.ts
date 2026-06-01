@@ -6,8 +6,9 @@
 
 import * as childProcess from 'child_process';
 import * as vscode from 'vscode';
-import { CarbonDashboardPanel } from '../dashboard';
+import { CarbonDashboardPanel } from '../dashboard/dashboard';
 import { extensionState } from '../extensionState';
+import { logger } from '../utils/logger';
 
 export function registerBranchChangeListener(): vscode.Disposable {
     let lastKnownBranch = '';
@@ -18,9 +19,10 @@ export function registerBranchChangeListener(): vscode.Disposable {
             if (!cwd) { return; }
             const currentBranch = childProcess.execSync('git rev-parse --abbrev-ref HEAD', { cwd, encoding: 'utf8' }).trim();
             if (currentBranch !== lastKnownBranch) {
+                logger.info(`Branch changed: ${lastKnownBranch} → ${currentBranch}`);
                 lastKnownBranch = currentBranch;
                 CarbonDashboardPanel.sendData(extensionState.budg!);
             }
-        } catch { /* branch detection failed, skip */ }
+        } catch { logger.debug('Branch detection failed — workspace may not be a git repo'); }
     });
 }
