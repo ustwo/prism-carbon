@@ -91,13 +91,39 @@
       },
       {
         "command": "ecode.clearStore",
-        "title": "Estimating Carbon: Clear stored calls"
+        "title": "Estimating Carbon: Reset budget window"
       },
       {
         "command": "ecode.inputdisplay",
         "title": "Estimating Carbon: Input Display"
+      },
+      {
+        "command": "ecode.purgeStore",
+        "title": "Estimating Carbon: Purge all stored logs",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "ecode.deleteCall",
+        "title": "Delete log entry",
+        "icon": "$(trash)"
       }
     ],
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "ecode.deleteCall",
+          "when": "view == myPrimaryView && viewItem == callEntry",
+          "group": "inline"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "ecode.purgeStore",
+          "when": "view == myPrimaryView",
+          "group": "navigation"
+        }
+      ]
+    },
     "configuration": {
       "title": "Estimating Carbon",
       "properties": {

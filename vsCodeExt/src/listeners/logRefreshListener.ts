@@ -49,6 +49,7 @@ export function registerLogRefreshListener(context: vscode.ExtensionContext): vs
     }
 
     _stop = stop;
+    captureFromLogs(context); // immediate capture on activation
     start();
 
     const configListener = vscode.workspace.onDidChangeConfiguration(e => {

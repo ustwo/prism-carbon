@@ -11,13 +11,19 @@ import { getCurrentBranch } from '../utils/gitUtils';
 import { logger } from '../utils/logger';
 
 export function restoreCallHistory(budg: budget.budget) {
-    const pCalls = budg.getCalls();
-    logger.info(`Restoring ${pCalls.length} call(s) from history`);
-    for (const call of pCalls) {
-        extensionState.tree!.addMessage(
-            `Emissions: ${call.Emissions}g CO₂e - Model: ${call.Model} - Date: ${new Date(call.DateTime).toLocaleString()}`
-        );
-    }
+    const windowStart = budg.getBudgetWindowStart();
+    const allCalls = budg.getCalls();
+
+    const toItem = (c: budget.Call) => ({
+        label: `[${c.Source ?? 'Log'}] ${c.Model} — ${c.Emissions}g CO₂e — ${new Date(c.DateTime).toLocaleString()}`,
+        dateTime: c.DateTime,
+    });
+
+    const current  = allCalls.filter(c => c.DateTime >= windowStart).map(toItem);
+    const archived = allCalls.filter(c => c.DateTime <  windowStart).map(toItem);
+
+    logger.info(`Restoring ${current.length} current, ${archived.length} archived call(s)`);
+    extensionState.tree!.restore(current, archived);
 }
 
 export function updateTree(call: budget.Call) {
@@ -26,13 +32,17 @@ export function updateTree(call: budget.Call) {
     }
     extensionState.budg!.storeCall(call);
 
-    const source = call.Source ?? 'Unknown';
+    const source = call.Source ?? 'Log';
     logger.debug(`[${source}] model: ${call.Model}, emissions: ${call.Emissions}g CO₂e, branch: ${call.Branch}`);
-    extensionState.tree!.addMessage(
-        `[${source}] ${call.Model} — ${call.Emissions}g CO₂e — ${new Date(call.DateTime).toLocaleString()}`
-    );
 
-    extensionState.bar!.updateBar(call.Emissions);
+    const windowStart = extensionState.budg!.getBudgetWindowStart();
+    if (call.DateTime >= windowStart) {
+        extensionState.tree!.addMessage(
+            `[${source}] ${call.Model} — ${call.Emissions}g CO₂e — ${new Date(call.DateTime).toLocaleString()}`,
+            call.DateTime
+        );
+        extensionState.bar!.updateBar(call.Emissions);
+    }
     CarbonDashboardPanel.sendData(extensionState.budg!);
 }
 

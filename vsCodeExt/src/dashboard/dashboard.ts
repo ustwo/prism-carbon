@@ -45,16 +45,18 @@ export class CarbonDashboardPanel {
                    
                     case 'triggerReset':
                         vscode.window.showWarningMessage(
-
-                            'Are you sure you want to reset? The budget will track call from now onwards, all historical data is preserved',
+                            'Are you sure you want to reset? The budget will track calls from now onwards, all historical data is preserved',
                             {modal: true},
                             'Yes, Reset'
-                        ).then( selection =>{
+                        ).then(selection => {
                             if (selection === 'Yes, Reset') {
                                 vscode.commands.executeCommand('ecode.clearStore');
-
                             }
                         });
+                        return;
+
+                    case 'triggerPurge':
+                        vscode.commands.executeCommand('ecode.purgeStore');
                         return;
                 
                     case 'setBudget':
@@ -106,7 +108,7 @@ export class CarbonDashboardPanel {
     }
 
     // Call this from extension whenever a new call is recorded to keep the chart live
-    public static sendData(budg: any) {
+    public static sendData(_budg?: any) {
         if (CarbonDashboardPanel.currentPanel) {
             CarbonDashboardPanel.currentPanel._sendData();
         }
@@ -165,47 +167,29 @@ export class CarbonDashboardPanel {
 
         const dailyEmissions: Record<string, number> = {};
         for (const call of allCalls) {
-            let subDate = "";
-            const rawDateTime: unknown = call.DateTime;
-
-            let callDate = new Date(rawDateTime as string | number | Date);
-            if (isNaN(callDate.getTime()) && typeof rawDateTime === 'string') {
-                const parts = rawDateTime.split(/[,\s/:]+/);
-                if (parts.length >= 3) {
-                    const day = parseInt(parts[0], 10);
-                    const month = parseInt(parts[1], 10) - 1; // Months are 0-indexed
-                    const year = parseInt(parts[2], 10);
-                    callDate = new Date(year, month, day);
-                }
-            }
-
-            if (!isNaN(callDate.getTime())) {
-                subDate = callDate.toISOString().substring(0, 10);
-            } else {
-                subDate = new Date().toISOString().substring(0, 10);
-            }
+            const subDate = new Date(call.DateTime).toISOString().substring(0, 10);
             dailyEmissions[subDate] = (dailyEmissions[subDate] || 0) + call.Emissions;
         }
 
         const conversionData = CarbonDashboardPanel.createComparisons(totalEmissions);
 
-
         const heatMapData = [];
-        const endToday = new Date();
-        let myDateTime = new Date(new Date().setDate(endToday.getDate() - 365));
+        const now = new Date();
+        const endUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+        let myDateTime = new Date(endUTC.getTime() - 365 * 24 * 60 * 60 * 1000);
 
-        while (myDateTime <= endToday) {
+        while (myDateTime <= endUTC) {
             const subDate = myDateTime.toISOString().substring(0, 10);
-            let weekday = myDateTime.getDay();
-            weekday = (weekday + 6) % 7 + 1; // start the week from monday (why does anyone ever start it on a sunday????)
+            let weekday = myDateTime.getUTCDay();
+            weekday = (weekday + 6) % 7 + 1; // start the week from monday
 
             heatMapData.push({
                 x: subDate,
                 y: weekday.toString(),
                 d: subDate,
-                v: dailyEmissions[subDate] || 0 // default to 0 if no emission calls
+                v: dailyEmissions[subDate] || 0
             });
-            myDateTime = new Date(myDateTime.setDate(myDateTime.getDate() + 1));
+            myDateTime = new Date(myDateTime.getTime() + 24 * 60 * 60 * 1000);
         }
 
         // radar chart data collection
@@ -377,7 +361,9 @@ export class CarbonDashboardPanel {
                         style="padding: 5px 10px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 10px;">Set
                         Budget</button>
                     <button id="reset-btn"
-                        style="padding: 5px 10px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Reset</button>
+                        style="padding: 5px 10px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 10px;">Reset</button>
+                    <button id="purge-btn"
+                        style="padding: 5px 10px; background-color: #6c3483; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;" title="Permanently delete all stored logs">🗑 Purge Logs</button>
                 </div>
             </div>
 

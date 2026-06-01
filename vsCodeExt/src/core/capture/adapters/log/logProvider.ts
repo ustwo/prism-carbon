@@ -1,8 +1,8 @@
 /****************************************************************
  *                       LOGPROVIDER.TS                         *
  *  INTERFACE FOR LOG-BASED LLM CAPTURE PROVIDERS.             *
- *  EACH PROVIDER KNOWS WHERE ITS LOG FILE LIVES AND HOW TO    *
- *  PARSE IT. THE LOGADAPTER IS THE GENERIC MECHANISM —        *
+ *  EACH PROVIDER KNOWS WHERE ITS LOG FILES LIVE AND HOW TO    *
+ *  PARSE THEM. THE LOGADAPTER IS THE GENERIC MECHANISM —      *
  *  PROVIDERS ARE PLUGGED IN TO SUPPORT NEW TOOLS.             *
  ****************************************************************/
 
@@ -12,6 +12,8 @@ import { Call } from '../../../budget';
 export interface LogProvider {
     readonly id: string;
     readonly displayName: string;
-    getLogPath(context: vscode.ExtensionContext): string | null;
+    // Returns one or more log file paths. Multiple files are needed when a
+    // tool creates one file per session (e.g. Claude Code JSONL files).
+    getLogPaths(context: vscode.ExtensionContext): string[];
     parseLogs(content: string, afterTimestamp: number): Call[];
 }

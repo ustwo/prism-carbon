@@ -13,6 +13,7 @@ import { restoreCallHistory } from "./core/callManager";
 import { registerAllCommands } from "./commands/index";
 import { registerAllListeners } from "./listeners/index";
 import { startCapture, stopCapture } from "./core/capture/adapters/interceptor/interceptorAdapter";
+import { initializeLastAccess } from "./core/capture/adapters/log/logAdapter";
 import { stopLogRefresh } from "./listeners/logRefreshListener";
 import { state } from "./core/state";
 import { initLogger, logger } from "./utils/logger";
@@ -31,9 +32,17 @@ export async function activate(context: vscode.ExtensionContext) {
   restoreCallHistory(extensionState.budg);
   extensionState.bar.updateLimit(extensionState.budg.updateLimit());
 
-  const pastCalls = extensionState.budg.getCalls();
+  const allCalls = extensionState.budg.getCalls();
+  const windowStart = extensionState.budg.getBudgetWindowStart();
+  // Only initialize lastAccess from calls in the current session window.
+  // Using all-time latest would block capturing calls made after a clear.
+  const sessionCalls = allCalls.filter(c => c.DateTime >= windowStart);
+  // Use max(latest session call, windowStart) so that after a clear,
+  // lastAccess = windowStart and log capture only picks up new calls.
+  const latestSessionCall = sessionCalls.reduce((max, c) => c.DateTime > max ? c.DateTime : max, 0);
+  initializeLastAccess(Math.max(latestSessionCall, windowStart));
   extensionState.bar.updateBar(
-    pastCalls.length > 0 ? pastCalls[pastCalls.length - 1].Emissions : 0,
+    sessionCalls.length > 0 ? sessionCalls[sessionCalls.length - 1].Emissions : 0,
   );
 
   context.subscriptions.push(

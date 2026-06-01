@@ -17,15 +17,15 @@ export const copilotLogProvider: LogProvider = {
     id: 'copilot',
     displayName: 'GitHub Copilot Chat',
 
-    getLogPath(context: vscode.ExtensionContext): string | null {
+    getLogPaths(context: vscode.ExtensionContext): string[] {
         try {
-            return path.join(
+            return [path.join(
                 path.dirname(context.logPath),
                 'GitHub.copilot-chat',
                 'GitHub Copilot Chat.log',
-            );
+            )];
         } catch {
-            return null;
+            return [];
         }
     },
 

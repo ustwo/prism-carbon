@@ -9,8 +9,13 @@ import * as vscode from 'vscode';
 const MENU_ITEMS = [
     {
         label: '$(play) Reset Stored Session',
-        description: 'Resets the current record of carbon emissions',
+        description: 'Resets the budget window — history is preserved',
         command: 'ecode.clearStore',
+    },
+    {
+        label: '$(trash) Purge All Logs',
+        description: 'Permanently deletes all stored log history',
+        command: 'ecode.purgeStore',
     },
     {
         label: '$(play) Open Dashboard',

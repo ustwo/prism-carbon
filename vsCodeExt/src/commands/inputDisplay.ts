@@ -14,7 +14,7 @@ export function registerInputDisplay(): vscode.Disposable {
         const num = Number(limit);
         if (!Number.isNaN(num)) {
             const bumpedTime = new Date().getTime() + 5 * 60 * 60 * 1000;
-            const newCall: Call = { Emissions: num, Model: 'TEST', DateTime: bumpedTime };
+            const newCall: Call = { Emissions: num, Model: 'TEST', DateTime: bumpedTime, Source: 'Manual Test' };
             logger.debug(`Test call injected — emissions: ${num}g CO₂e`);
             updateTree(newCall);
             vscode.window.showInformationMessage(`Added ${num}g CO2e for today.`);

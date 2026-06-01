@@ -9,6 +9,8 @@ import { registerClearStore } from './clearStore';
 import { registerOpenDashboard } from './openDashboard';
 import { registerInputDisplay } from './inputDisplay';
 import { registerMenu } from './menu';
+import { registerPurgeStore } from './purgeStore';
+import { registerDeleteCall } from './deleteCall';
 
 export function registerAllCommands(context: vscode.ExtensionContext): vscode.Disposable[] {
     return [
@@ -16,5 +18,7 @@ export function registerAllCommands(context: vscode.ExtensionContext): vscode.Di
         registerOpenDashboard(context.extensionUri),
         registerInputDisplay(),
         registerMenu(),
+        registerPurgeStore(),
+        registerDeleteCall(),
     ];
 }
