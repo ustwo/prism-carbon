@@ -13,6 +13,7 @@ import { restoreCallHistory } from "./core/callManager";
 import { registerAllCommands } from "./commands/index";
 import { registerAllListeners } from "./listeners/index";
 import { startInterceptor, stopInterceptor } from "./proxy/proxyManager";
+import { stopAutoRefresh } from "./listeners/autoRefreshListener";
 import { state } from "./core/state";
 import { initLogger, logger } from "./utils/logger";
 
@@ -67,5 +68,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 export async function deactivate() {
   logger.info('Estimating Carbon deactivating...');
+  stopAutoRefresh();
   await stopInterceptor();
 }
