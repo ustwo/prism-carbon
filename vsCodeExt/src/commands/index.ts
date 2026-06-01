@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import { registerClearStore } from './clearStore';
 import { registerOpenDashboard } from './openDashboard';
 import { registerInputDisplay } from './inputDisplay';
-import { registerInterceptorCommands } from './interceptor';
 import { registerMenu } from './menu';
 
 export function registerAllCommands(context: vscode.ExtensionContext): vscode.Disposable[] {
@@ -16,7 +15,6 @@ export function registerAllCommands(context: vscode.ExtensionContext): vscode.Di
         registerClearStore(),
         registerOpenDashboard(context.extensionUri),
         registerInputDisplay(),
-        ...registerInterceptorCommands(),
         registerMenu(),
     ];
 }

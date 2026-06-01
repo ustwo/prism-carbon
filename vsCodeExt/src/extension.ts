@@ -12,29 +12,13 @@ import { statusBarManager } from "./ui/statusBar";
 import { restoreCallHistory } from "./core/callManager";
 import { registerAllCommands } from "./commands/index";
 import { registerAllListeners } from "./listeners/index";
-import { startInterceptor, stopInterceptor } from "./proxy/proxyManager";
-import { stopAutoRefresh } from "./listeners/autoRefreshListener";
+import { startCapture, stopCapture } from "./core/capture/interceptorAdapter";
 import { state } from "./core/state";
 import { initLogger, logger } from "./utils/logger";
 
 export async function activate(context: vscode.ExtensionContext) {
   const log = initLogger(context);
   log.info('Estimating Carbon activating...');
-
-  const copilotChat = vscode.extensions.getExtension("github.copilot-chat");
-  if (!copilotChat) {
-    vscode.window.showWarningMessage(
-      "GitHub Copilot Chat is not installed. Carbon emissions will not be tracked during development time!",
-    );
-  } else {
-    if (!copilotChat.isActive) {
-      await copilotChat.activate();
-    }
-    vscode.commands.executeCommand("workbench.action.setLogLevel");
-    vscode.window.showInformationMessage(
-      'Please Select "Github Copilot Chat" then "Trace" in the above command window',
-    );
-  }
 
   extensionState.budg = new budget.budget(context.workspaceState);
   extensionState.bar = new statusBarManager();
@@ -56,7 +40,7 @@ export async function activate(context: vscode.ExtensionContext) {
     ...registerAllCommands(context),
   );
 
-  await startInterceptor(context.globalStorageUri.fsPath);
+  await startCapture(context.globalStorageUri.fsPath);
 
   log.info('Estimating Carbon activated');
 
@@ -68,6 +52,5 @@ export async function activate(context: vscode.ExtensionContext) {
 
 export async function deactivate() {
   logger.info('Estimating Carbon deactivating...');
-  stopAutoRefresh();
-  await stopInterceptor();
+  await stopCapture();
 }

@@ -97,23 +97,7 @@
         "command": "ecode.inputdisplay",
         "title": "Estimating Carbon: Input Display"
       },
-      {
-        "command": "ecode.runtimeAnalysis",
-        "title": "Estimating Carbon: Analyse Runtime",
-        "category": "Interceptor"
-      }
-    ],
-    "configuration": {
-      "title": "Estimating Carbon",
-      "properties": {
-        "estimatingCarbon.refreshIntervalSeconds": {
-          "type": "number",
-          "default": 15,
-          "minimum": 0,
-          "markdownDescription": "How often (in seconds) to automatically refresh Copilot logs. Set to `0` to disable — logs will still refresh on every file save.\n\n| Interval | Impact |\n|---|---|\n| 1–10s | High CPU — only for active development |\n| 15s | Recommended — balanced |\n| 30–60s | Low CPU — suits background use |\n| 0 | Disabled — refreshes on file save only |"
-        }
-      }
-    }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
