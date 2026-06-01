@@ -26,9 +26,10 @@ export function updateTree(call: budget.Call) {
     }
     extensionState.budg!.storeCall(call);
 
-    logger.debug(`Call recorded — model: ${call.Model}, emissions: ${call.Emissions}g CO₂e, branch: ${call.Branch}`);
+    const source = call.Source ?? 'Unknown';
+    logger.debug(`[${source}] model: ${call.Model}, emissions: ${call.Emissions}g CO₂e, branch: ${call.Branch}`);
     extensionState.tree!.addMessage(
-        `Emissions: ${call.Emissions}g CO₂e - Model: ${call.Model} - Date: ${new Date(call.DateTime).toLocaleString()}`
+        `[${source}] ${call.Model} — ${call.Emissions}g CO₂e — ${new Date(call.DateTime).toLocaleString()}`
     );
 
     extensionState.bar!.updateBar(call.Emissions);

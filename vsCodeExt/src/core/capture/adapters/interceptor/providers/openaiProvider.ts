@@ -1,4 +1,4 @@
-import { CaptureProvider, TokenResult } from '../captureProvider';
+import { CaptureProvider, TokenResult } from '../../../captureProvider';
 
 // Covers OpenAI, GitHub Copilot (api.github.com/copilot) and Codex —
 // all use the same OpenAI response format.

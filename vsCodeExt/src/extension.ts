@@ -12,7 +12,7 @@ import { statusBarManager } from "./ui/statusBar";
 import { restoreCallHistory } from "./core/callManager";
 import { registerAllCommands } from "./commands/index";
 import { registerAllListeners } from "./listeners/index";
-import { startCapture, stopCapture } from "./core/capture/interceptorAdapter";
+import { startCapture, stopCapture } from "./core/capture/adapters/interceptor/interceptorAdapter";
 import { stopLogRefresh } from "./listeners/logRefreshListener";
 import { state } from "./core/state";
 import { initLogger, logger } from "./utils/logger";

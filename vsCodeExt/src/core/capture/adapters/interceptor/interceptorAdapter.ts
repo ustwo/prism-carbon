@@ -8,14 +8,14 @@
  ****************************************************************/
 
 import * as vscode from 'vscode';
-import { InterceptorProxy } from '../../proxy/proxyServer';
-import { state } from '../state';
-import { PROXY_PORT } from '../../extensionState';
-import { updateTree } from '../callManager';
-import { calculateEmission } from '../convert';
+import { InterceptorProxy } from '../../../../proxy/proxyServer';
+import { state } from '../../../state';
+import { PROXY_PORT } from '../../../../extensionState';
+import { updateTree } from '../../../callManager';
+import { calculateEmission } from '../../../convert';
 import { ALL_PROVIDERS } from './providers/index';
-import { isSSE, parseSseLines } from './sseParser';
-import { logger } from '../../utils/logger';
+import { isSSE, parseSseLines } from '../../sseParser';
+import { logger } from '../../../../utils/logger';
 
 let proxyServer: InterceptorProxy | undefined;
 let terminalListener: vscode.Disposable | undefined;
@@ -76,6 +76,7 @@ function onApiResponseText(url: string, bodyText: string): void {
         Model: parsed.model,
         Emissions: emissions,
         DateTime: Date.now(),
+        Source: `Proxy · ${provider.displayName}`,
     });
 }
 

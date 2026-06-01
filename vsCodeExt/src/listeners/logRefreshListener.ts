@@ -7,13 +7,13 @@
  ****************************************************************/
 
 import * as vscode from 'vscode';
-import { captureCopilotLogs } from '../core/capture/copilotLogCapture';
+import { captureFromLogs } from '../core/capture/adapters/log/logAdapter';
 import { logger } from '../utils/logger';
 
 const CONFIG_KEY = 'estimatingCarbon.logRefreshIntervalSeconds';
 
 function getIntervalMs(): number {
-    const seconds = vscode.workspace.getConfiguration().get<number>(CONFIG_KEY, 30);
+    const seconds = vscode.workspace.getConfiguration().get<number>(CONFIG_KEY, 15);
     return seconds * 1000;
 }
 
@@ -36,7 +36,7 @@ export function registerLogRefreshListener(context: vscode.ExtensionContext): vs
         logger.info(`Copilot log refresh started — interval: ${ms / 1000}s`);
         timer = setInterval(() => {
             logger.debug('Copilot log refresh tick');
-            captureCopilotLogs(context);
+            captureFromLogs(context);
         }, ms);
     }
 

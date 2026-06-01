@@ -1,4 +1,4 @@
-import { CaptureProvider, TokenResult } from '../captureProvider';
+import { CaptureProvider, TokenResult } from '../../../captureProvider';
 
 export const anthropicProvider: CaptureProvider = {
     id: 'anthropic',

@@ -1,4 +1,4 @@
-import { CaptureProvider } from '../captureProvider';
+import { CaptureProvider } from '../../../captureProvider';
 import { anthropicProvider } from './anthropicProvider';
 import { openaiProvider } from './openaiProvider';
 import { geminiProvider } from './geminiProvider';

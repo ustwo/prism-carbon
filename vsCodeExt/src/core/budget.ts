@@ -8,14 +8,11 @@ import { Memento } from "vscode";
 import { logger } from '../utils/logger';
 
 export interface Call {
-    //File: string;
     Model: string;
     DateTime: number;
-    //InputTokens: number;
-    //OutputTokens: number;
-    //TotalTokens: number;
     Emissions: number;
     Branch?: string;
+    Source?: string;  // e.g. "Copilot Log", "Proxy · Anthropic (Claude)"
 }
 
 var callStore: Memento;
