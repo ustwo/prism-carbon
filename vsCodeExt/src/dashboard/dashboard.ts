@@ -60,6 +60,15 @@ export class CarbonDashboardPanel {
                     this._selectedBranches = message.branches;
                     this._sendData();
                     return;
+
+                case 'setRefreshInterval': {
+                    const seconds = Number(message.seconds);
+                    if (!isNaN(seconds) && seconds >= 0) {
+                        vscode.workspace.getConfiguration()
+                            .update('estimatingCarbon.logRefreshIntervalSeconds', seconds, vscode.ConfigurationTarget.Global);
+                    }
+                    return;
+                }
             }
         }, null, this._disposables);
     }
@@ -100,8 +109,10 @@ export class CarbonDashboardPanel {
     // ── Data ─────────────────────────────────────────────────────
 
     private _sendData() {
-        const sessionBudget     = this._budget.getBudget();
-        const budgetWindowStart = this._budget.getBudgetWindowStart();
+        const sessionBudget      = this._budget.getBudget();
+        const budgetWindowStart  = this._budget.getBudgetWindowStart();
+        const refreshIntervalSec = vscode.workspace.getConfiguration()
+            .get<number>('estimatingCarbon.logRefreshIntervalSeconds', 15);
 
         // Calls in the current budget window
         const windowedCalls = this._budget.getCalls().filter(
@@ -165,7 +176,7 @@ export class CarbonDashboardPanel {
         this._panel.webview.postMessage({
             command: 'updateData',
             modelLabels, modelEmissions, heatMapData, sessionBudget,
-            averageEmission, totalRepoEmissions,
+            averageEmission, totalRepoEmissions, refreshIntervalSec,
             conversionData: createComparisons(totalEmissions),
             radarData: { labels: modelList, datasets: radarDataSets },
         });

@@ -65,6 +65,7 @@ body {
 header,
 section,
 #branchGraph,
+.prefs-panel,
 .dashboard-double-grid,
 .dashboard-triple-grid {
   padding-left:  var(--page-gutter);
@@ -1566,6 +1567,107 @@ button {
     .progress-bar-fill             { forced-color-adjust: none; background-color: Highlight; }
     .budget-tracker-container      { border: 1px solid ButtonText; }
     .scrollable-container          { border-color: ButtonText; }
+}
+
+/* ── Preferences panel ────────────────────────────────────────── */
+
+.prefs-panel {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.prefs-card {
+    background: var(--base-color);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 14px 18px;
+}
+
+.prefs-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+    color: var(--secondary-text);
+    margin: 0 0 12px;
+}
+
+.prefs-groups {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 20px;
+    row-gap: 10px;
+}
+
+.prefs-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    /* no per-group padding — alignment is purely via parent gap */
+}
+
+.prefs-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border-color);
+    flex-shrink: 0;
+    align-self: center;
+    /* hidden when it wraps alone onto its own line */
+}
+
+.prefs-group-label {
+    font-size: 0.82rem;
+    color: var(--secondary-text);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.pref-input {
+    width: 60px;
+    padding: 3px 6px;
+    background: var(--vscode-input-background, var(--base-variant));
+    color: var(--vscode-input-foreground, var(--text-color));
+    border: 1px solid var(--vscode-input-border, var(--border-color));
+    border-radius: 4px;
+    font-size: 0.82rem;
+    font-family: inherit;
+}
+
+.pref-input:focus {
+    outline: 2px solid var(--focus-border);
+    outline-offset: 1px;
+}
+
+.pref-unit {
+    font-size: 0.82rem;
+    color: var(--text-color);
+}
+
+.pref-hint {
+    font-size: 0.75rem;
+    color: var(--secondary-text);
+    opacity: 0.7;
+}
+
+.pref-save-btn {
+    padding: 3px 10px;
+    background: var(--primary-color);
+    color: var(--vscode-button-foreground, #fff);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    transition: opacity 0.15s ease;
+}
+
+.pref-save-btn:hover { opacity: 0.85; }
+
+.pref-saved {
+    font-size: 0.82rem;
+    color: var(--low-carbon);
+    min-width: 44px;
 }
 
 /* ── Heatmap range filter ─────────────────────────────────────── */

@@ -61,6 +61,27 @@
         return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
     }
 
+    // ── Log refresh interval control ────────────────────────────────
+    const intervalInput   = document.getElementById('interval-input');
+    const intervalSaveBtn = document.getElementById('interval-save-btn');
+    const intervalSavedMsg = document.getElementById('interval-saved-msg');
+
+    if (intervalSaveBtn && intervalInput) {
+        intervalSaveBtn.addEventListener('click', () => {
+            const seconds = parseInt(intervalInput.value, 10);
+            if (isNaN(seconds) || seconds < 0) { return; }
+            vscode.postMessage({ command: 'setRefreshInterval', seconds });
+            if (intervalSavedMsg) {
+                intervalSavedMsg.textContent = '✓ Saved';
+                setTimeout(() => { intervalSavedMsg.textContent = ''; }, 2000);
+            }
+        });
+
+        intervalInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter') { intervalSaveBtn.click(); }
+        });
+    }
+
     // click listener so reset button can be used
 
     const resetBtn = document.getElementById('reset-btn');
@@ -427,6 +448,11 @@ backgroundColor(c) {
             const avgCostEl = document.getElementById('average-cost-display');
             if (avgCostEl && message.averageEmission !== undefined) {
                 avgCostEl.innerText = message.averageEmission.toFixed(4);
+            }
+
+            // Populate the refresh interval input with the current setting value
+            if (message.refreshIntervalSec !== undefined && intervalInput) {
+                intervalInput.value = String(message.refreshIntervalSec);
             }
 
             if (message.sessionBudget !== undefined) {

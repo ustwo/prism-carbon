@@ -13,11 +13,38 @@
     <header id="header">
         <h1>Carbon Analysis Dashboard</h1>
         <p>Carbon impact of AI calls in the current budget window.</p>
-        <div id="dashboard-preferences-selector">
-            <h3>Preferences:</h3>
-            <div id="branch-selector-tool"></div>
-        </div>
     </header>
+
+    <!-- ── Preferences panel ─────────────────────────────────────── -->
+    <div class="prefs-panel">
+        <div class="prefs-card">
+            <p class="prefs-title">Preferences</p>
+            <div class="prefs-groups">
+
+                <div class="prefs-group">
+                    <span class="prefs-group-label">Branch filter</span>
+                    <div id="branch-selector-tool"></div>
+                </div>
+
+                <div class="prefs-divider" role="separator"></div>
+
+                <div class="prefs-group">
+                    <label for="interval-input" class="prefs-group-label">Log refresh</label>
+                    <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                        <input type="number" id="interval-input"
+                            min="0" max="3600" step="5"
+                            class="pref-input"
+                            aria-label="Log refresh interval in seconds (0 disables polling)" />
+                        <span class="pref-unit">s</span>
+                        <button id="interval-save-btn" class="pref-save-btn" aria-label="Save log refresh interval">Save</button>
+                        <span id="interval-saved-msg" class="pref-saved" aria-live="polite"></span>
+                        <span class="pref-hint">0 = disabled</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 
     <div id="branchGraph" style="height:350px;"></div>
 
