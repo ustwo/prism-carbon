@@ -7,6 +7,7 @@
 
 import * as vscode from 'vscode';
 import { CarbonDashboardPanel } from '../dashboard/dashboard';
+import { BudgetMiniViewProvider } from '../ui/budgetMiniView';
 import { extensionState } from '../extensionState';
 import { setLogAccessAfterReset } from '../core/capture/adapters/log/logAdapter';
 import { logger } from '../utils/logger';
@@ -27,5 +28,6 @@ export function registerPurgeStore(): vscode.Disposable {
         extensionState.tree!.clearTree();
         extensionState.bar!.updateBar(0);
         CarbonDashboardPanel.sendData();
+        BudgetMiniViewProvider.update(extensionState.budg!);
     });
 }

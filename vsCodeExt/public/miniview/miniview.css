@@ -1,0 +1,119 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overflow: hidden; /* sparkline flex fills remaining space — no scrollbar */
+}
+
+body {
+  font-family: var(--vscode-font-family, sans-serif);
+  font-size:   var(--vscode-font-size, 12px);
+  color:       var(--vscode-foreground);
+  background:  transparent;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Section label ── */
+.section-label {
+  font-size: 0.68em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: var(--vscode-descriptionForeground);
+  margin-bottom: 8px;
+}
+
+/* ── Progress bar ── */
+.progress-bg {
+  background: rgba(128, 128, 128, 0.15);
+  border-radius: 3px;
+  height: 6px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  width: 0%;
+  background: var(--vscode-progressBar-background, #0e70c0);
+  transition: width 0.35s ease, background 0.2s ease;
+}
+
+.progress-fill.safe    { background: var(--vscode-charts-green,  #89d185); }
+.progress-fill.warning { background: var(--vscode-charts-yellow, #e2c08d); }
+.progress-fill.danger  { background: var(--vscode-charts-red,    #f14c4c); }
+
+/* ── Stats row ── */
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+  gap: 4px;
+}
+
+.stat-main {
+  font-weight: 600;
+  font-size: 1em;
+  color: var(--vscode-foreground);
+}
+
+.stat-pct {
+  font-size: 0.88em;
+  color: var(--vscode-descriptionForeground);
+}
+
+.stat-limit {
+  font-size: 0.85em;
+  color: var(--vscode-descriptionForeground);
+  margin-left: auto;
+}
+
+/* ── Divider ── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.2));
+  margin: 8px 0;
+}
+
+/* ── Meta row ── */
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  color: var(--vscode-descriptionForeground);
+  font-size: 0.82em;
+  margin-bottom: 8px;
+}
+
+/* ── Sparkline — flex: 1 so it fills all leftover vertical space ── */
+#spark {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  flex: 1;
+  min-height: 24px;
+  padding-top: 2px;
+}
+
+.spark-bar {
+  flex: 1;
+  border-radius: 2px 2px 0 0;
+  min-height: 3px;
+  cursor: default;
+  transition: opacity 0.15s ease;
+}
+
+.spark-bar:hover { opacity: 0.7; }
+
+.empty {
+  color: var(--vscode-descriptionForeground);
+  font-size: 0.82em;
+  text-align: center;
+  padding: 14px 0;
+  opacity: 0.6;
+  align-self: center;
+  width: 100%;
+}

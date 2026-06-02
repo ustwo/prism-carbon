@@ -6,6 +6,7 @@
 
 import * as budget from './budget';
 import { CarbonDashboardPanel } from '../dashboard/dashboard';
+import { BudgetMiniViewProvider } from '../ui/budgetMiniView';
 import { extensionState } from '../extensionState';
 import { getCurrentBranch } from '../utils/gitUtils';
 import { logger } from '../utils/logger';
@@ -77,6 +78,7 @@ export function updateTree(call: budget.Call) {
         extensionState.bar!.updateBar(call.Emissions);
     }
     CarbonDashboardPanel.sendData(extensionState.budg!);
+    BudgetMiniViewProvider.update(extensionState.budg!);
 }
 
 export function wrappedGetCall() {

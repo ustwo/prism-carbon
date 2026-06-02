@@ -82,6 +82,13 @@
           "name": "Carbon Estimates",
           "icon": "$(eye)"
         }
+      ],
+      "explorer": [
+        {
+          "id": "ecode.budgetMiniView",
+          "type": "webview",
+          "name": "Budget Overview"
+        }
       ]
     },
     "commands": [

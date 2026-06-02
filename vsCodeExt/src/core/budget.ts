@@ -36,7 +36,7 @@ export class budget {
         return this.callStore.get<number>("budgetWindowStart",0);
     }
     getBudget(): number {
-    return this.callStore.get<number>("budget", 5);
+        return this.callStore.get<number>("budget", 1000);
     }
 
     async setBudget(newBudget: number): Promise<void> {
