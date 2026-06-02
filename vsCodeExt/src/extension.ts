@@ -28,7 +28,11 @@ export async function activate(context: vscode.ExtensionContext) {
   extensionState.tree = new MyTreeDataProvider();
   extensionState.lastAccess = 0;
 
-  vscode.window.registerTreeDataProvider("myPrimaryView", extensionState.tree);
+  extensionState.treeView = vscode.window.createTreeView("myPrimaryView", {
+    treeDataProvider: extensionState.tree,
+    showCollapseAll: true,
+  });
+  context.subscriptions.push(extensionState.treeView);
 
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(

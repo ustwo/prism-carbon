@@ -2,11 +2,26 @@
     'use strict';
 
     const vscode = acquireVsCodeApi();
-
-    // Signal the extension that the webview is ready.
-    // The provider responds immediately with current budget data.
     vscode.postMessage({ command: 'ready' });
 
+    // ── Custom tooltip overlay ─────────────────────────────────────
+    const tip = document.createElement('div');
+    tip.id = 'tip';
+    document.body.appendChild(tip);
+
+    function showTip(el, html) {
+        tip.innerHTML = html;
+        tip.style.display = 'block';
+        const r    = el.getBoundingClientRect();
+        const tw   = tip.offsetWidth;
+        const left = Math.min(r.left + r.width / 2 - tw / 2, window.innerWidth - tw - 4);
+        tip.style.left = Math.max(4, left) + 'px';
+        tip.style.top  = (r.top - tip.offsetHeight - 6) + 'px';
+    }
+
+    function hideTip() { tip.style.display = 'none'; }
+
+    // ── Message handler ────────────────────────────────────────────
     window.addEventListener('message', ({ data: msg }) => {
         if (msg.command !== 'update') { return; }
         render(msg.data);
@@ -34,25 +49,42 @@
 
         // Sparkline
         const spark = document.getElementById('spark');
-        const bars  = d.recentEmissions;
+        const calls = d.recentCalls;
 
-        if (!bars.length) {
+        if (!calls || !calls.length) {
             spark.innerHTML = '<span class="empty">No calls yet</span>';
             return;
         }
 
-        const max = Math.max(...bars, 1e-9);
+        const max = Math.max(...calls.map(c => c.emissions), 1e-9);
         spark.innerHTML = '';
-        bars.forEach(val => {
+
+        calls.forEach(call => {
             const el = document.createElement('div');
-            el.className = 'spark-bar';
-            el.style.height = Math.max(3, (val / max) * 100) + '%';
-            const ratio = d.budgetLimit > 0 ? (val / d.budgetLimit) * 100 : 0;
+            el.className    = 'spark-bar';
+            el.style.height = Math.max(3, (call.emissions / max) * 100) + '%';
+
+            const ratio = d.budgetLimit > 0 ? (call.emissions / d.budgetLimit) * 100 : 0;
             el.style.background =
                 ratio >= 66.6 ? 'var(--vscode-charts-red,    #f14c4c)'
               : ratio >= 33.3 ? 'var(--vscode-charts-yellow, #e2c08d)'
               :                 'var(--vscode-charts-green,  #89d185)';
-            el.title = val.toFixed(4) + ' g CO₂e';
+
+            const model  = call.model  || 'Unknown';
+            const source = call.source ? `<br><span class="tip-dim">${call.source}</span>` : '';
+            const tipHtml =
+                `<span class="tip-em">${call.emissions.toFixed(4)} g CO₂e</span><br>` +
+                `<span class="tip-dim">${model}</span>` +
+                source;
+
+            el.addEventListener('mouseenter', () => showTip(el, tipHtml));
+            el.addEventListener('mouseleave', hideTip);
+            el.addEventListener('click', () => {
+                hideTip();
+                vscode.postMessage({ command: 'selectCall', dateTime: call.dateTime });
+            });
+            el.style.cursor = 'pointer';
+
             spark.appendChild(el);
         });
     }

@@ -11,13 +11,20 @@ import * as path from 'path';
 import type { budget } from '../core/budget';
 import { getMiniviewContent } from '../dashboard/webviewContent';
 
+interface SparkCall {
+    emissions: number;
+    model:     string;
+    source?:   string;
+    dateTime:  number;
+}
+
 interface MiniStats {
     totalEmissions:  number;
     budgetLimit:     number;
     percent:         number;
     average:         number;
     callCount:       number;
-    recentEmissions: number[]; // last ≤20 calls for the sparkline
+    recentCalls:     SparkCall[]; // last ≤20 calls for the sparkline
 }
 
 export class BudgetMiniViewProvider implements vscode.WebviewViewProvider {
@@ -59,9 +66,12 @@ export class BudgetMiniViewProvider implements vscode.WebviewViewProvider {
             this._extensionUri,
         );
 
-        // The webview posts 'ready' once its JS has loaded; respond with current data.
         webviewView.webview.onDidReceiveMessage(msg => {
-            if (msg.command === 'ready') { this._refresh(this._latestBudg); }
+            if (msg.command === 'ready') {
+                this._refresh(this._latestBudg);
+            } else if (msg.command === 'selectCall') {
+                vscode.commands.executeCommand('ecode.selectCall', msg.dateTime);
+            }
         });
     }
 
@@ -76,10 +86,15 @@ export class BudgetMiniViewProvider implements vscode.WebviewViewProvider {
         const stats: MiniStats = {
             totalEmissions,
             budgetLimit,
-            percent:         budgetLimit > 0 ? (totalEmissions / budgetLimit) * 100 : 0,
-            average:         windowedCalls.length > 0 ? totalEmissions / windowedCalls.length : 0,
-            callCount:       windowedCalls.length,
-            recentEmissions: windowedCalls.slice(-20).map(c => c.Emissions),
+            percent:     budgetLimit > 0 ? (totalEmissions / budgetLimit) * 100 : 0,
+            average:     windowedCalls.length > 0 ? totalEmissions / windowedCalls.length : 0,
+            callCount:   windowedCalls.length,
+            recentCalls: windowedCalls.slice(-20).map(c => ({
+                emissions: c.Emissions,
+                model:     c.Model,
+                source:    c.Source,
+                dateTime:  c.DateTime,
+            })),
         };
 
         this._view.webview.postMessage({ command: 'update', data: stats });

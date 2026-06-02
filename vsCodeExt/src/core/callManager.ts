@@ -12,6 +12,17 @@ import { getCurrentBranch } from '../utils/gitUtils';
 import { logger } from '../utils/logger';
 import { normalizeModel } from '../utils/callId';
 
+function buildTooltip(call: budget.Call): string {
+    const lines: string[] = [
+        `Model:     ${call.Model}`,
+        `Emissions: ${call.Emissions.toFixed(4)} g CO₂e`,
+    ];
+    if (call.Source) { lines.push(`Source:    ${call.Source}`); }
+    if (call.Branch) { lines.push(`Branch:    ${call.Branch}`); }
+    lines.push(`Time:      ${new Date(call.DateTime).toLocaleString()}`);
+    return lines.join('\n');
+}
+
 // Fallback window when callId is absent (e.g. interceptor captures).
 // Covers response streaming time: JSONL records stream-start, Copilot log
 // records stream-end — gap equals response generation time (up to ~60 s).
@@ -40,8 +51,9 @@ export function restoreCallHistory(budg: budget.budget) {
     const allCalls = budg.getCalls();
 
     const toItem = (c: budget.Call) => ({
-        label: `[${c.Source ?? 'Log'}] ${c.Model} — ${c.Emissions}g CO₂e — ${new Date(c.DateTime).toLocaleString()}`,
+        label:   `[${c.Source ?? 'Log'}] ${c.Model} — ${c.Emissions}g CO₂e — ${new Date(c.DateTime).toLocaleString()}`,
         dateTime: c.DateTime,
+        tooltip:  buildTooltip(c),
     });
 
     const current  = allCalls.filter(c => c.DateTime >= windowStart).map(toItem);
@@ -73,7 +85,8 @@ export function updateTree(call: budget.Call) {
     if (call.DateTime >= windowStart) {
         extensionState.tree!.addMessage(
             `[${source}] ${call.Model} — ${call.Emissions}g CO₂e — ${new Date(call.DateTime).toLocaleString()}`,
-            call.DateTime
+            call.DateTime,
+            buildTooltip(call),
         );
         extensionState.bar!.updateBar(call.Emissions);
     }
