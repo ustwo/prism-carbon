@@ -1,73 +1,80 @@
-:root{
-    --base-color: #ffffff;
-    --base-variant: #ffffff;
-    --text-color: var(--vscode-editor-text);
-    --text-color:#000000;
-    --secondary-text: #000000;
-    --primary-color: #ffffff;
-    --low-carbon: #2e7d32;
-    --avg-carbon: #ef6c00;
-    --high-carbon: #c62828;
-    --theme-button-bg: #000000;
-    --theme-button-icon: #ffffff;
-    --grid-border: #2e7d32;
-    --chart-text: #666666;
-    --green-start: #dcfce7;
-    --green-end:   #15803d;
-    --yellow-start: #fef9c3;
-    --yellow-end:   #ca8a04;
-    --red-start: #fee2e2;
-    --red-end:   #991b1b;
+/* ── Theme tokens ───────────────────────────────────────────
+   Default to VSCode CSS variables so the webview inherits the
+   active editor theme automatically. Hard-coded fallbacks keep
+   things readable if variables aren't injected (e.g. browser).
+   The manual .darkmode class still works as an override.
+────────────────────────────────────────────────────────────── */
+/* ── Theme tokens ─────────────────────────────────────────────────
+   All values come from VSCode's CSS variables so the webview
+   automatically matches whatever theme the user has active.
+   Hard-coded fallbacks are only for rare edge-cases (e.g. browser preview).
+   No light / dark split needed — VSCode injects the right values.
+─────────────────────────────────────────────────────────────────── */
+:root {
+    /* Surfaces */
+    --base-color:     var(--vscode-editor-background,             #1e1e1e);
+    --base-variant:   var(--vscode-sideBar-background,            #252526);
+    /* Text */
+    --text-color:     var(--vscode-editor-foreground,             #cccccc);
+    --secondary-text: var(--vscode-descriptionForeground,         #8e8e8e);
+    /* Interactive */
+    --primary-color:  var(--vscode-button-background,             #0e639c);
+    --border-color:   var(--vscode-panel-border,                  #454545);
+    --focus-border:   var(--vscode-focusBorder,                   #007fd4);
+    /* Chart text / grid  */
+    --chart-text:     var(--vscode-charts-foreground,             var(--vscode-editor-foreground, #cccccc));
+    --grid-border:    var(--vscode-panel-border,                  #454545);
+    /* Carbon semantic colours — use VSCode's chart palette */
+    --low-carbon:     var(--vscode-charts-green,                  #89d185);
+    --avg-carbon:     var(--vscode-charts-yellow,                 #e2c08d);
+    --high-carbon:    var(--vscode-charts-red,                    #f14c4c);
 }
 
-.darkmode{
-    --base-color:#070b1d;
-    --base-variant:#03050e;
-    --text-color:#ffffff;
-    --secondary-text: #a4a5b8;
-    --primary-color: #3a435d;
-    --low-carbon: #66bb6a;
-    --avg-carbon: #ffca28;
-    --high-carbon: #ef5350;
-    --theme-button-bg: #ffffff;
-    --theme-button-icon: #000000;
-    --grid-border: #39FF14;
-    --chart-text: #ffffff;
-    --green-start: #15803d;
-    --green-end:   #63f699;
-    --yellow-start: #c48705;
-    --yellow-end:   #f4d67d;
-    --red-start: #991b1b;
-    --red-end:   #f16a6a;
+body.vscode-high-contrast,
+body.vscode-high-contrast-light {
+    --border-color: ButtonText;
+    --focus-border: Highlight;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--vscode-font-family, sans-serif);
+  font-size: var(--vscode-font-size, 13px);
 }
 
 html, body {
   height: 100%;
-  margin: 0;
-  padding: 0;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-}
-
-html{
-  font-family: sans-serif;
-}
-
-body{
+body {
   min-height: 100vh;
+  overflow-x: hidden;
+  max-width: 100vw;
   background-color: var(--base-variant);
   color: var(--text-color);
+  /* Single source of truth for horizontal gutters */
+  --page-gutter: min(32px, 4%);
 }
 
-div{
-  justify-content: center;
+/* Every top-level block uses the same horizontal inset */
+header,
+section,
+#branchGraph,
+.prefs-panel,
+.dashboard-double-grid,
+.dashboard-triple-grid {
+  padding-left:  var(--page-gutter);
+  padding-right: var(--page-gutter);
 }
 
-header, section{
-  padding: 70px min(50px, 7%);
+header, section {
+  padding-top: 24px;
+  padding-bottom: 24px;
 }
 section{
   background-color: var(--base-variant);
@@ -77,35 +84,7 @@ p{
   color: var(--secondary-text);
 }
 
-#theme-switch{
-  height: 50px;
-  width: 50px;
-  padding: 0;
-  border-radius: 50%;
-  background-color: var(--theme-button-bg);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 9999;
-}
-
-#theme-switch svg{
-  fill: var(--primary-color);
-}
-#theme-switch svg:last-child{
-  display: none;
-}
-.darkmode #theme-switch svg:first-child{
-  display: none;
-}
-.darkmode #theme-switch svg:last-child{
-  display: block;
-}
+/* #theme-switch removed — theming now handled by VSCode CSS vars */
 
 .chart-container {
    margin-top: 20px;
@@ -118,89 +97,67 @@ p{
 }
 
 #main-view {
-    padding-top: 50px;
+    padding-top: 12px;
+    padding-bottom: 24px;
 }
-.chart-container {
-   margin-top: 20px;
-                position: relative;
-                height: 300px;
-                width: 100%;
-                max-width: 800px;
-                margin: 0 auto;
-            }
-            .chart-wrapper{
-            flex: 1;
-            min-width: 300px;
-            max-width: 500px;
-            }
-            .dashboard-triple-grid{
-            display: flex;
-            flex-wrap:wrap;
-            justify-content: space-around;
-            gap: 20px;
-            padding: 20px;
-            }
+
 h2 { text-align: center; font-weight: normal; margin-bottom: 15px; }
-            .chart-container p, #drilldown-view p { color: var(--secondary-text); margin-bottom: 20px; }
 
-            #drilldown-view {
-                display: none;
-                text-align: center;
-                background-color: var(--base-variant);
-                min-height: 500px;
-            }
-
-            .back-btn {
-                padding: 10px 20px;
-                margin-bottom: 20px;
-                background-color: var(--primary-color);
-                color: rgb(0, 0, 0);
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-            }
-header .chartMenu {
-     width: 100vw;
-        height: 40px;
-        background: #1A1A1A;
-        color: rgba(54, 162, 235, 1);
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
 }
 
-header .chartMenu p {
-    padding: 10px;
-    font-size: 20px;
+.chart-wrapper {
+    flex: 1;
+    min-width: 280px;
 }
 
-header .chartCard {
-   width: 100vw;
-        height: calc(100vh - 40px);
-        background: rgba(54, 162, 235, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+.chart-container p,
+#drilldown-view p { color: var(--secondary-text); margin-bottom: 20px; }
+
+#drilldown-view {
+    display: none;
+    text-align: center;
+    background-color: var(--base-variant);
+    min-height: 500px;
 }
 
-header .chartBox {
-    width: 700px;
-    height: 100px;
-        padding: 20px;
-        border-radius: 20px;
-        border: solid 3px rgba(54, 162, 235, 1);
-        background: white;
-
+.back-btn {
+    padding: 8px 16px;
+    margin-bottom: 20px;
+    background-color: var(--primary-color);
+    color: var(--vscode-button-foreground, #fff);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .budget-tracker-container {
     flex: 1;
     min-width: 300px;
     max-width: 500px;
-    background-color: var(--base-color);  
+    background-color: var(--base-color);
     padding: 25px;
     border-radius: 10px;
+    border: 1px solid var(--border-color); /* makes rounded corners visible regardless of bg */
+    overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+
+/* .grid-item is also used as a chart-canvas wrapper inside budget-tracker-containers.
+   In that context it must NOT have its own background, shadow or square aspect-ratio. */
+.budget-tracker-container .grid-item {
+    background-color: transparent;
+    box-shadow: none;
+    aspect-ratio: unset;
+    border-radius: 6px;
+    flex: 1;
+    min-height: 180px;
 }
 
 .budget-header h2 {
@@ -222,22 +179,15 @@ header .chartBox {
 
 .progress-bar-fill {
     height: 100%;
-    background-color: #72aee6;
+    background-color: var(--vscode-progressBar-background, #0e70c0);
     width: 0%;
     border-radius: 5px;
     transition: width 0.4s ease-in-out, background-color 0.3s ease;
 }
 
-/* turns red when user gets too close to their budget */
-.progress-bar-fill.danger {
-    background-color: #e74c3c; 
-}
-.progress-bar-fill.warning {
-    background-color: #f39c12; 
-}
-.progress-bar-fill.safe {
-    background-color: #6ccc74;
-}
+.progress-bar-fill.danger  { background-color: var(--vscode-charts-red,    #f14c4c); }
+.progress-bar-fill.warning { background-color: var(--vscode-charts-yellow, #e2c08d); }
+.progress-bar-fill.safe    { background-color: var(--vscode-charts-green,  #89d185); }
 
 
 .budget-footer {
@@ -295,38 +245,58 @@ header .chartBox {
 
 .dashboard-triple-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); 
-  gap: 20px; 
-  width: 90%;
-  min-height: 400px;
-  align-items: center; 
-  justify-items: center; 
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  width: 100%;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  align-items: center;
+  justify-items: center;
 }
 
 .dashboard-double-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); 
-  gap: 20px; 
-  width: 90%;
-  min-height: 400px;
-  align-items: center; 
-  justify-items: center; 
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  width: 100%;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  align-items: start;
+  justify-items: center;
 }
 
+/* Card wrapper — vertical stack: animation stage on top, text below */
 .grid-item {
   width: 100%;
-  aspect-ratio: 1/1;
   display: flex;
-  justify-content: flex-start;
-  background-color: var(--base-color);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
-  border-radius: 12px;
-  align-items: center;
-  z-index: 200;
   flex-direction: column;
-  overflow:hidden;
-  container-type: inline-size;
+  align-items: center;
+  background-color: var(--base-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Square area that clips the animation and centres it */
+.animation-stage {
   position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* Label text sits outside the clipping area, always fully visible */
+.grid-item > p {
+  padding: 10px 12px 14px;
+  font-size: 0.82rem;
+  color: var(--secondary-text);
+  text-align: center;
+  width: 100%;
+  margin: 0;
 }
 .container {
   width: 100%;
@@ -1529,7 +1499,8 @@ header .chartBox {
 /* custom scrollbar*/
 .scrollable-container {
     max-height: 450px;
-    overflow-y: scroll;
+    overflow-y: auto;   /* scroll only when content actually overflows;
+                           'scroll' forces a scrollbar gutter that breaks border-radius */
     overflow-x: hidden;
 }
 
@@ -1543,10 +1514,192 @@ header .chartBox {
 }
 
 .scrollable-container::-webkit-scrollbar-thumb {
-    background-color: #40916C;
+    background-color: var(--border-color);
     border-radius: 3px;
 }
 
 .scrollable-container::-webkit-scrollbar-thumb:hover {
-    background-color: #52B788;
+    background-color: var(--secondary-text);
+}
+
+/* ── Accessibility ────────────────────────────────────────── */
+
+/* Visible focus ring for keyboard navigation */
+:focus-visible {
+    outline: 2px solid var(--focus-border);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* Button resets so graph.js <button> elements render cleanly */
+button {
+    font-family: inherit;
+    font-size: inherit;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+}
+
+/* Graph empty-state message */
+.graph-empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--secondary-text);
+    font-size: 13px;
+    text-align: center;
+    padding: 16px;
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High-contrast mode overrides */
+@media (forced-colors: active) {
+    .progress-bar-fill             { forced-color-adjust: none; background-color: Highlight; }
+    .budget-tracker-container      { border: 1px solid ButtonText; }
+    .scrollable-container          { border-color: ButtonText; }
+}
+
+/* ── Preferences panel ────────────────────────────────────────── */
+
+.prefs-panel {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.prefs-card {
+    background: var(--base-color);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 14px 18px;
+}
+
+.prefs-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+    color: var(--secondary-text);
+    margin: 0 0 12px;
+}
+
+.prefs-groups {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 20px;
+    row-gap: 10px;
+}
+
+.prefs-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    /* no per-group padding — alignment is purely via parent gap */
+}
+
+.prefs-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border-color);
+    flex-shrink: 0;
+    align-self: center;
+    /* hidden when it wraps alone onto its own line */
+}
+
+.prefs-group-label {
+    font-size: 0.82rem;
+    color: var(--secondary-text);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.pref-input {
+    width: 60px;
+    padding: 3px 6px;
+    background: var(--vscode-input-background, var(--base-variant));
+    color: var(--vscode-input-foreground, var(--text-color));
+    border: 1px solid var(--vscode-input-border, var(--border-color));
+    border-radius: 4px;
+    font-size: 0.82rem;
+    font-family: inherit;
+}
+
+.pref-input:focus {
+    outline: 2px solid var(--focus-border);
+    outline-offset: 1px;
+}
+
+.pref-unit {
+    font-size: 0.82rem;
+    color: var(--text-color);
+}
+
+.pref-hint {
+    font-size: 0.75rem;
+    color: var(--secondary-text);
+    opacity: 0.7;
+}
+
+.pref-save-btn {
+    padding: 3px 10px;
+    background: var(--primary-color);
+    color: var(--vscode-button-foreground, #fff);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    transition: opacity 0.15s ease;
+}
+
+.pref-save-btn:hover { opacity: 0.85; }
+
+.pref-saved {
+    font-size: 0.82rem;
+    color: var(--low-carbon);
+    min-width: 44px;
+}
+
+/* ── Heatmap range filter ─────────────────────────────────────── */
+
+.heatmap-range-control {
+    display: flex;
+    gap: 2px;
+    background: var(--base-variant);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 2px;
+}
+
+.heatmap-range-btn {
+    padding: 3px 10px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--secondary-text);
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 500;
+    transition: background 0.15s ease, color 0.15s ease;
+    letter-spacing: 0.03em;
+}
+
+.heatmap-range-btn:hover {
+    background: var(--vscode-list-hoverBackground, rgba(128,128,128,0.1));
+    color: var(--text-color);
+}
+
+.heatmap-range-btn.active {
+    background: var(--primary-color);
+    color: var(--vscode-button-foreground, #fff);
 }

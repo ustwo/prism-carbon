@@ -24,7 +24,7 @@ if (ref) {
     // container for everything
     container = document.createElement("div");
     container.id = "carbon-graph-wrapper";
-    container.style.width = "98%";
+    container.style.width = "100%";
     container.style.height = "300px";
     container.style.position = "relative";
     container.style.border = "1px solid var(--secondary-text)";
@@ -111,17 +111,16 @@ if (ref) {
     zoomButtonControls.style.gap = "6px";
 
     function makeZoomButton(symbol){
-        const button = document.createElement("div");
+        const button = document.createElement("button");
         button.textContent = symbol;
+        button.setAttribute("aria-label", symbol === "+" ? "Zoom in" : "Zoom out");
         button.style.padding = "4px 10px";
-        button.style.cursor = "pointer";
         button.style.border = "1px solid var(--secondary-text)";
         button.style.borderRadius = "6px";
-        button.style.userSelect = "none";
         button.style.fontSize = "13px";
-        button.style.transition = "all 0.15s ease";
-        button.addEventListener("mouseenter", () => { // hover effect
-            button.style.background = "rgba(255, 255, 255, 0.08)";
+        button.style.transition = "background 0.15s ease";
+        button.addEventListener("mouseenter", () => {
+            button.style.background = "rgba(128,128,128, 0.15)";
         });
         button.addEventListener("mouseleave", () => {
             button.style.background = "transparent";
@@ -442,7 +441,13 @@ function getCumulativeGraphData() { // converts data to cumulative data
 
 function drawCumulativeGraph(scrollRatio = 1) {
     const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
+    if (!pendingCommitDots || Object.keys(pendingCommitDots).length === 0) {
+        showEmptyState("No calls recorded in the current budget window.");
+        return;
+    }
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", "Cumulative carbon emissions chart");
     const height = mainGraphArea.clientHeight;
     const margin = { top: 20, right: 40, bottom: 40, left: 60 };
     let maxTime = 0;
@@ -582,12 +587,13 @@ function getCColor(carbon) {
     return "var(--high-carbon)";
 }
 
-function makeButtons(text, id) { // this is for the toggle buttons
-    const button = document.createElement("div");
+function makeButtons(text, id) { // toggle buttons
+    const button = document.createElement("button");
     button.innerText = text;
     button.id = id;
-    button.style.cssText = `padding:4px 10px; font-size:12px; color:var(--text-color); z-index:1; display:flex; align-items:center; 
-    justify-content:center; height:28px; font-weight:500; transition:color 0.2s ease;`;
+    button.setAttribute("aria-pressed", id === "timeline-button" ? "true" : "false");
+    button.style.cssText = `padding:4px 10px; font-size:12px; color:var(--text-color); z-index:1; display:flex; align-items:center;
+    justify-content:center; height:28px; font-weight:500; transition:color 0.2s ease; border:none; background:transparent; cursor:pointer;`;
     return button;
 }
 
@@ -595,37 +601,44 @@ function makeButtons(text, id) { // this is for the toggle buttons
 cumulativeGraphButton.addEventListener("click", () => {
     graphType = "cumulative";
     slider.style.transform = "translateX(100%)";
-
     cumulativeGraphButton.classList.add("toggle-active");
     cumulativeGraphButton.classList.remove("toggle-inactive");
-
+    cumulativeGraphButton.setAttribute("aria-pressed", "true");
     timelineGraphButton.classList.add("toggle-inactive");
     timelineGraphButton.classList.remove("toggle-active");
-
+    timelineGraphButton.setAttribute("aria-pressed", "false");
     drawGraphs();
 });
 
 timelineGraphButton.addEventListener("click", () => {
     graphType = "timeline";
     slider.style.transform = "translateX(0%)";
-
     timelineGraphButton.classList.add("toggle-active");
     timelineGraphButton.classList.remove("toggle-inactive");
-
+    timelineGraphButton.setAttribute("aria-pressed", "true");
     cumulativeGraphButton.classList.add("toggle-inactive");
     cumulativeGraphButton.classList.remove("toggle-active");
-
+    cumulativeGraphButton.setAttribute("aria-pressed", "false");
     drawGraphs();
 });
 
 
+function showEmptyState(msg) {
+    const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
+    if (!mainGraphArea) { return; }
+    mainGraphArea.innerHTML = `<div class="graph-empty-state" role="status" aria-live="polite">${msg}</div>`;
+}
+
 function drawCandleStickTimelineGraph(scrollRatio = 1){
-    if (selectedBranches.size === 0) {
+    const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
+    if (!mainGraphArea || !pendingCommitDots) {
+        showEmptyState("No data available for the current budget window.");
         return;
     }
-    const mainGraphArea = document.getElementById("carbon-usage-graph-main-area");
-    
-    if (!mainGraphArea || !pendingCommitDots) return;
+    if (selectedBranches.size === 0) {
+        showEmptyState("No branches selected. Use the branch selector above to show data.");
+        return;
+    }
     
     const allCommitsMap = new Map();
 
@@ -668,7 +681,10 @@ function drawCandleStickTimelineGraph(scrollRatio = 1){
         commit.cumulative = branchTotals[commit.branch];
     });
 
-    if (allCommits.length === 0) return;
+    if (allCommits.length === 0) {
+        showEmptyState("No calls recorded in the current budget window.");
+        return;
+    }
 
     let minTime = Infinity;
     let maxTime = -Infinity;
@@ -697,7 +713,10 @@ function drawCandleStickTimelineGraph(scrollRatio = 1){
     const margin = { top: 20, right: 60, bottom: 50, left: 60 };
 
     const timeDifference = maxTime - minTime;
-    const pixelsPerMilliseconds = (mainGraphArea.clientWidth / timeDifference) * zoom;
+    // Use the drawable area (minus margins) as the basis so that at zoom=1
+    // the SVG exactly fills the container without triggering a scroll bar.
+    const availableWidth = Math.max(mainGraphArea.clientWidth - margin.left - margin.right, 1);
+    const pixelsPerMilliseconds = (availableWidth / timeDifference) * zoom;
 
     const width = Math.max(mainGraphArea.clientWidth, (maxTime - minTime) * pixelsPerMilliseconds + margin.left + margin.right);
     const height = mainGraphArea.clientHeight;
@@ -707,6 +726,8 @@ function drawCandleStickTimelineGraph(scrollRatio = 1){
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("width", width);
     svg.setAttribute("height", height);
+    svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", "Carbon emissions timeline chart");
 
     allCommits.forEach(commit => { // draw each commit
         const xAxis = margin.left + (commit.time - minTime) * pixelsPerMilliseconds;
