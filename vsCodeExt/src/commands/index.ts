@@ -12,6 +12,7 @@ import { registerMenu } from './menu';
 import { registerPurgeStore } from './purgeStore';
 import { registerDeleteCall } from './deleteCall';
 import { registerCopyCall } from './copyCall';
+import { registerSelectCall } from './selectCall';
 
 export function registerAllCommands(context: vscode.ExtensionContext): vscode.Disposable[] {
     return [
@@ -22,5 +23,6 @@ export function registerAllCommands(context: vscode.ExtensionContext): vscode.Di
         registerPurgeStore(),
         registerDeleteCall(),
         registerCopyCall(),
+        registerSelectCall(),
     ];
 }

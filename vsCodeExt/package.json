@@ -82,12 +82,20 @@
           "name": "Carbon Estimates",
           "icon": "$(eye)"
         }
+      ],
+      "explorer": [
+        {
+          "id": "ecode.budgetMiniView",
+          "type": "webview",
+          "name": "Budget Overview"
+        }
       ]
     },
     "commands": [
       {
         "command": "ecode.openDashboard",
-        "title": "Estimating Carbon: Open Carbon Dashboard"
+        "title": "Estimating Carbon: Open Carbon Dashboard",
+        "icon": "$(graph)"
       },
       {
         "command": "ecode.clearStore",
@@ -138,9 +146,14 @@
       ],
       "view/title": [
         {
+          "command": "ecode.openDashboard",
+          "when": "view == myPrimaryView",
+          "group": "navigation@1"
+        },
+        {
           "command": "ecode.purgeStore",
           "when": "view == myPrimaryView",
-          "group": "navigation"
+          "group": "navigation@2"
         }
       ]
     },

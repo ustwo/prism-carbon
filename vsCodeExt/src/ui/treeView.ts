@@ -13,10 +13,11 @@ export class CallTreeItem extends vscode.TreeItem {
     constructor(
         label: string,
         public readonly callDateTime: number,
+        tooltip?: string,
     ) {
         super(label, vscode.TreeItemCollapsibleState.None);
         this.contextValue = 'callEntry';
-        this.tooltip = label;
+        this.tooltip = tooltip ?? label;
     }
 }
 
@@ -39,10 +40,22 @@ export class MyTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeIt
         return element;
     }
 
+    // Required by TreeView.reveal() — current items are at root level
+    getParent(_element: vscode.TreeItem): vscode.ProviderResult<vscode.TreeItem> {
+        return undefined;
+    }
+
+    findByDateTime(dateTime: number): CallTreeItem | undefined {
+        return this.currentItems.find(i => i.callDateTime === dateTime)
+            ?? this.archivedItems.find(i => i.callDateTime === dateTime);
+    }
+
     getChildren(element?: vscode.TreeItem): Thenable<vscode.TreeItem[]> {
         if (!element) {
+            const n = this.currentItems.length;
+            const header = n > 0 ? `Last ${n} call${n !== 1 ? 's' : ''}:` : 'Latest calls:';
             const roots: vscode.TreeItem[] = [
-                new vscode.TreeItem('Latest calls:', vscode.TreeItemCollapsibleState.None),
+                new vscode.TreeItem(header, vscode.TreeItemCollapsibleState.None),
                 ...this.currentItems,
             ];
             if (this.totalArchived > 0) {
@@ -66,22 +79,22 @@ export class MyTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeIt
     }
 
     // Real-time: add a single current-session call
-    addMessage(message: string, dateTime: number) {
-        this.currentItems.push(new CallTreeItem(message, dateTime));
+    addMessage(message: string, dateTime: number, tooltip?: string) {
+        this.currentItems.push(new CallTreeItem(message, dateTime, tooltip));
         this._onDidChangeTreeData.fire(undefined);
     }
 
     // Batch restore: sets both sections at once (one render)
     restore(
-        currentCalls: Array<{ label: string; dateTime: number }>,
-        archivedCalls: Array<{ label: string; dateTime: number }>
+        currentCalls:  Array<{ label: string; dateTime: number; tooltip?: string }>,
+        archivedCalls: Array<{ label: string; dateTime: number; tooltip?: string }>
     ) {
-        this.currentItems = currentCalls.map(c => new CallTreeItem(c.label, c.dateTime));
+        this.currentItems = currentCalls.map(c => new CallTreeItem(c.label, c.dateTime, c.tooltip));
         this.totalArchived = archivedCalls.length;
         // Show most recent archived calls (last N in chronological order)
         this.archivedItems = archivedCalls
             .slice(-MAX_ARCHIVED_SHOWN)
-            .map(c => new CallTreeItem(c.label, c.dateTime));
+            .map(c => new CallTreeItem(c.label, c.dateTime, c.tooltip));
         this._onDidChangeTreeData.fire(undefined);
     }
 

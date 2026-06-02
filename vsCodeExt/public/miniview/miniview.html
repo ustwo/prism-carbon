@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="{{STYLE_URI}}" rel="stylesheet">
+</head>
+<body>
+
+    <p class="section-label">Session Budget</p>
+
+    <div class="progress-bg">
+        <div class="progress-fill" id="fill"></div>
+    </div>
+
+    <div class="stats-row">
+        <span class="stat-main"  id="used">0.0000g</span>
+        <span class="stat-pct"   id="pct">0%</span>
+        <span class="stat-limit" id="limit">/ 1000g</span>
+    </div>
+
+    <hr class="divider">
+
+    <div class="meta-row">
+        <span id="calls">0 calls</span>
+        <span id="avg">avg —</span>
+    </div>
+
+    <div id="spark"><span class="empty">No calls yet</span></div>
+
+    <script src="{{SCRIPT_URI}}"></script>
+</body>
+</html>

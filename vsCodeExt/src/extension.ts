@@ -9,6 +9,7 @@ import * as budget from "./core/budget";
 import { extensionState } from "./extensionState";
 import { MyTreeDataProvider } from "./ui/treeView";
 import { statusBarManager } from "./ui/statusBar";
+import { BudgetMiniViewProvider } from "./ui/budgetMiniView";
 import { restoreCallHistory } from "./core/callManager";
 import { registerAllCommands } from "./commands/index";
 import { registerAllListeners } from "./listeners/index";
@@ -27,7 +28,18 @@ export async function activate(context: vscode.ExtensionContext) {
   extensionState.tree = new MyTreeDataProvider();
   extensionState.lastAccess = 0;
 
-  vscode.window.registerTreeDataProvider("myPrimaryView", extensionState.tree);
+  extensionState.treeView = vscode.window.createTreeView("myPrimaryView", {
+    treeDataProvider: extensionState.tree,
+    showCollapseAll: true,
+  });
+  context.subscriptions.push(extensionState.treeView);
+
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(
+      BudgetMiniViewProvider.viewType,
+      new BudgetMiniViewProvider(extensionState.budg!, context.extensionUri),
+    )
+  );
 
   restoreCallHistory(extensionState.budg);
   extensionState.bar.updateLimit(extensionState.budg.updateLimit());

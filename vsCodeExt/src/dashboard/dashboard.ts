@@ -89,7 +89,7 @@ export class CarbonDashboardPanel {
             column ?? vscode.ViewColumn.One,
             {
                 enableScripts: true,
-                localResourceRoots: [vscode.Uri.file(path.join(extensionUri.fsPath, 'public'))],
+                localResourceRoots: [vscode.Uri.file(path.join(extensionUri.fsPath, 'public', 'dashboard'))],
             }
         );
 
