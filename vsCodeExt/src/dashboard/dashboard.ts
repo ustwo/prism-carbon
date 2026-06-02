@@ -45,16 +45,18 @@ export class CarbonDashboardPanel {
                    
                     case 'triggerReset':
                         vscode.window.showWarningMessage(
-
-                            'Are you sure you want to reset? The budget will track call from now onwards, all historical data is preserved',
+                            'Are you sure you want to reset? The budget will track calls from now onwards, all historical data is preserved',
                             {modal: true},
                             'Yes, Reset'
-                        ).then( selection =>{
+                        ).then(selection => {
                             if (selection === 'Yes, Reset') {
                                 vscode.commands.executeCommand('ecode.clearStore');
-
                             }
                         });
+                        return;
+
+                    case 'triggerPurge':
+                        vscode.commands.executeCommand('ecode.purgeStore');
                         return;
                 
                     case 'setBudget':
@@ -106,7 +108,7 @@ export class CarbonDashboardPanel {
     }
 
     // Call this from extension whenever a new call is recorded to keep the chart live
-    public static sendData(budg: any) {
+    public static sendData(_budg?: any) {
         if (CarbonDashboardPanel.currentPanel) {
             CarbonDashboardPanel.currentPanel._sendData();
         }
@@ -124,35 +126,28 @@ export class CarbonDashboardPanel {
     }
 
     private _sendData() {
-
-        
-        // Aggregate emissions by model from stored calls
-
-        const sessionBudget = this._budget.getBudget();
-        const allCalls = this._budget.getCalls();
-        
-
+        const sessionBudget     = this._budget.getBudget();
         const budgetWindowStart = this._budget.getBudgetWindowStart();
 
-        // Branch-filtered calls for pie chart, average
-        const calls = this._selectedBranches === null
-            ? allCalls
-            : allCalls.filter((c: any) => this._selectedBranches!.includes(c.Branch || "Unknown Branch"));
-
-        // Windowed calls  only those after the budget reset point --> for budget bar only
-        const windowedCalls = allCalls.filter((c: any) => {
-            const callTime = new Date(c.DateTime).getTime();
-            return callTime >= budgetWindowStart;
-        });
-        const totalRepoEmissions = windowedCalls.reduce(
-            (sum: number, call: any) => sum + call.Emissions, 0
+        // All calls in the current budget window (post-reset)
+        const windowedCalls = this._budget.getCalls().filter(
+            (c: any) => c.DateTime >= budgetWindowStart
         );
 
-        
-        
-        
-            // calculate mean average of all calls
-        const totalEmissions = calls.reduce((sum: number, call: any) => sum + call.Emissions, 0);
+        // Branch-filtered view (pie chart, average, heatmap, radar)
+        const calls = this._selectedBranches === null
+            ? windowedCalls
+            : windowedCalls.filter((c: any) =>
+                this._selectedBranches!.includes(c.Branch || 'Unknown Branch')
+              );
+
+        // Budget bar: total over the full window regardless of branch filter
+        const totalRepoEmissions = windowedCalls.reduce(
+            (sum: number, c: any) => sum + c.Emissions, 0
+        );
+
+        // Charts
+        const totalEmissions = calls.reduce((sum: number, c: any) => sum + c.Emissions, 0);
         const averageEmission = calls.length > 0 ? totalEmissions / calls.length : 0;
 
         const modelMap: Record<string, number> = {};
@@ -160,74 +155,46 @@ export class CarbonDashboardPanel {
             const model = call.Model || 'Unknown';
             modelMap[model] = (modelMap[model] || 0) + call.Emissions;
         }
-        const modelLabels = Object.keys(modelMap);
+        const modelLabels    = Object.keys(modelMap);
         const modelEmissions = modelLabels.map(k => modelMap[k]);
 
+        // Heatmap: daily totals from the branch-filtered window
         const dailyEmissions: Record<string, number> = {};
-        for (const call of allCalls) {
-            let subDate = "";
-            const rawDateTime: unknown = call.DateTime;
-
-            let callDate = new Date(rawDateTime as string | number | Date);
-            if (isNaN(callDate.getTime()) && typeof rawDateTime === 'string') {
-                const parts = rawDateTime.split(/[,\s/:]+/);
-                if (parts.length >= 3) {
-                    const day = parseInt(parts[0], 10);
-                    const month = parseInt(parts[1], 10) - 1; // Months are 0-indexed
-                    const year = parseInt(parts[2], 10);
-                    callDate = new Date(year, month, day);
-                }
-            }
-
-            if (!isNaN(callDate.getTime())) {
-                subDate = callDate.toISOString().substring(0, 10);
-            } else {
-                subDate = new Date().toISOString().substring(0, 10);
-            }
+        for (const call of calls) {
+            const subDate = new Date(call.DateTime).toISOString().substring(0, 10);
             dailyEmissions[subDate] = (dailyEmissions[subDate] || 0) + call.Emissions;
         }
 
         const conversionData = CarbonDashboardPanel.createComparisons(totalEmissions);
 
-
+        const now    = new Date();
+        const endUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+        let myDateTime = new Date(endUTC.getTime() - 365 * 24 * 60 * 60 * 1000);
         const heatMapData = [];
-        const endToday = new Date();
-        let myDateTime = new Date(new Date().setDate(endToday.getDate() - 365));
 
-        while (myDateTime <= endToday) {
+        while (myDateTime <= endUTC) {
             const subDate = myDateTime.toISOString().substring(0, 10);
-            let weekday = myDateTime.getDay();
-            weekday = (weekday + 6) % 7 + 1; // start the week from monday (why does anyone ever start it on a sunday????)
-
-            heatMapData.push({
-                x: subDate,
-                y: weekday.toString(),
-                d: subDate,
-                v: dailyEmissions[subDate] || 0 // default to 0 if no emission calls
-            });
-            myDateTime = new Date(myDateTime.setDate(myDateTime.getDate() + 1));
+            let weekday = myDateTime.getUTCDay();
+            weekday = (weekday + 6) % 7 + 1;
+            heatMapData.push({ x: subDate, y: weekday.toString(), d: subDate, v: dailyEmissions[subDate] || 0 });
+            myDateTime = new Date(myDateTime.getTime() + 24 * 60 * 60 * 1000);
         }
 
-        // radar chart data collection
-        const modelList = Array.from(new Set(allCalls.map((call: any) => call.Model || 'Unknown Model')));
-        const branchList = Array.from(new Set(allCalls.map((call: any) => call.Branch || 'Unknown Branch')));
-        
+        // Radar: model × branch breakdown within window
+        const modelList  = Array.from(new Set(windowedCalls.map((c: any) => c.Model  || 'Unknown Model')));
+        const branchList = Array.from(new Set(windowedCalls.map((c: any) => c.Branch || 'Unknown Branch')));
+
         const radarDataSets = branchList.map(branch => {
-            const branchCalls = allCalls.filter((call: any) => (call.Branch || 'Unknown Branch') === branch);
-            const modelEmissionsForBranch = modelList.map(model => {
-                return branchCalls
-                    .filter((call: any) => (call.Model || 'Unknown Model') === model)
-                    .reduce((sum: number, call: any) => sum + call.Emissions, 0);
-            });
+            const branchCalls = windowedCalls.filter((c: any) => (c.Branch || 'Unknown Branch') === branch);
             return {
                 label: branch,
-                data: modelEmissionsForBranch};
-        });    
-        
-
-
-        console.log("BACKEND: Sending updateData command.");
-        console.log("BACKEND: HeatMap payload length:", heatMapData.length, "Sample:", heatMapData[heatMapData.length - 1]);
+                data: modelList.map(model =>
+                    branchCalls
+                        .filter((c: any) => (c.Model || 'Unknown Model') === model)
+                        .reduce((sum: number, c: any) => sum + c.Emissions, 0)
+                ),
+            };
+        });
 
         this._panel.webview.postMessage({
             command: 'updateData',
@@ -235,45 +202,32 @@ export class CarbonDashboardPanel {
             modelEmissions,
             heatMapData,
             sessionBudget,
-            averageEmission, // this is the average emission value calculated from all calls, sent to the frontend to be displayed on the dashboard
-            totalRepoEmissions, // this is the total emissions from all calls, sent to the frontend to be displayed on the dashboard
+            averageEmission,
+            totalRepoEmissions,
             conversionData,
-            radarData: {
-                labels: modelList,
-                datasets: radarDataSets
-            }
+            radarData: { labels: modelList, datasets: radarDataSets },
         });
-        
+
+        // Branch timeline graph — windowed
         const branchMap: Record<string, any[]> = {};
-        const branchCounts: Record<string, number> = {};
-
-        for (const call of allCalls) {
-            const branch = call.Branch || "Unknown Branch";
-            if (!branchMap[branch]) {
-                branchMap[branch] = [];
-                branchCounts[branch] = 0;
-            }
-            const time = new Date(call.DateTime).getTime();
-            branchMap[branch].push(
-                {
-                    xAxis: time,
-                    carbon: call.Emissions,
-                    timeStamp: call.DateTime
-                });
-
-            branchCounts[branch]++;
+        for (const call of windowedCalls) {
+            const branch = call.Branch || 'Unknown Branch';
+            if (!branchMap[branch]) { branchMap[branch] = []; }
+            branchMap[branch].push({
+                xAxis: call.DateTime,
+                carbon: call.Emissions,
+                timeStamp: call.DateTime,
+            });
         }
 
         const workspaceBranches = Object.keys(branchMap);
-
         this._panel.webview.postMessage({
-            command: "workspaceBranches",
-            data: workspaceBranches.length > 0 ? workspaceBranches : ["Unknown Branch"]
+            command: 'workspaceBranches',
+            data: workspaceBranches.length > 0 ? workspaceBranches : ['Unknown Branch'],
         });
-
         this._panel.webview.postMessage({
-            command: "commitDots",
-            data: Object.keys(branchMap).length > 0 ? branchMap : { "Unknown Branch": [] }
+            command: 'commitDots',
+            data: Object.keys(branchMap).length > 0 ? branchMap : { 'Unknown Branch': [] },
         });
     }
 
@@ -377,7 +331,9 @@ export class CarbonDashboardPanel {
                         style="padding: 5px 10px; background-color: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 10px;">Set
                         Budget</button>
                     <button id="reset-btn"
-                        style="padding: 5px 10px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Reset</button>
+                        style="padding: 5px 10px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 10px;">Reset</button>
+                    <button id="purge-btn"
+                        style="padding: 5px 10px; background-color: #6c3483; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;" title="Permanently delete all stored logs">🗑 Purge Logs</button>
                 </div>
             </div>
 

@@ -91,26 +91,67 @@
       },
       {
         "command": "ecode.clearStore",
-        "title": "Estimating Carbon: Clear stored calls"
+        "title": "Estimating Carbon: Reset budget window"
       },
       {
         "command": "ecode.inputdisplay",
         "title": "Estimating Carbon: Input Display"
       },
       {
-        "command": "ecode.runtimeAnalysis",
-        "title": "Estimating Carbon: Analyse Runtime",
-        "category": "Interceptor"
+        "command": "ecode.purgeStore",
+        "title": "Estimating Carbon: Purge all stored logs",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "ecode.deleteCall",
+        "title": "Delete log entry",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "ecode.copyCall",
+        "title": "Copy log entry",
+        "icon": "$(copy)"
       }
     ],
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "ecode.copyCall",
+          "when": "view == myPrimaryView && viewItem == callEntry",
+          "group": "inline@1"
+        },
+        {
+          "command": "ecode.deleteCall",
+          "when": "view == myPrimaryView && viewItem == callEntry",
+          "group": "inline@2"
+        },
+        {
+          "command": "ecode.copyCall",
+          "when": "view == myPrimaryView && viewItem == callEntry",
+          "group": "9_copy"
+        },
+        {
+          "command": "ecode.deleteCall",
+          "when": "view == myPrimaryView && viewItem == callEntry",
+          "group": "9_delete"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "ecode.purgeStore",
+          "when": "view == myPrimaryView",
+          "group": "navigation"
+        }
+      ]
+    },
     "configuration": {
       "title": "Estimating Carbon",
       "properties": {
-        "estimatingCarbon.refreshIntervalSeconds": {
+        "estimatingCarbon.logRefreshIntervalSeconds": {
           "type": "number",
           "default": 15,
           "minimum": 0,
-          "markdownDescription": "How often (in seconds) to automatically refresh Copilot logs. Set to `0` to disable — logs will still refresh on every file save.\n\n| Interval | Impact |\n|---|---|\n| 1–10s | High CPU — only for active development |\n| 15s | Recommended — balanced |\n| 30–60s | Low CPU — suits background use |\n| 0 | Disabled — refreshes on file save only |"
+          "markdownDescription": "How often (in seconds) to poll the Copilot Chat log file for new AI interactions. Set to `0` to disable — logs will still refresh on every file save.\n\n| Interval | Impact |\n|---|---|\n| 1–10s | High CPU — only for active development |\n| 15s | Recommended — balanced |\n| 30–60s | Low CPU — suits background use |\n| 0 | Disabled — refreshes on file save only |"
         }
       }
     }

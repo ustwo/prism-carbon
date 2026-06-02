@@ -8,14 +8,14 @@ import * as vscode from 'vscode';
 
 const MENU_ITEMS = [
     {
-        label: '$(play) Open Runtime Terminal',
-        description: 'Opens a terminal with proxy env vars set to capture LLM API calls',
-        command: 'ecode.runtimeAnalysis',
+        label: '$(play) Reset Stored Session',
+        description: 'Resets the budget window — history is preserved',
+        command: 'ecode.clearStore',
     },
     {
-        label: '$(play) Reset Stored Session',
-        description: 'Resets the current record of carbon emissions',
-        command: 'ecode.clearStore',
+        label: '$(trash) Purge All Logs',
+        description: 'Permanently deletes all stored log history',
+        command: 'ecode.purgeStore',
     },
     {
         label: '$(play) Open Dashboard',

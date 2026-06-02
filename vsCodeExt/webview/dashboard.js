@@ -47,6 +47,13 @@
         });
     }
 
+    const purgeBtn = document.getElementById('purge-btn');
+    if (purgeBtn) {
+        purgeBtn.addEventListener('click', () => {
+            vscode.postMessage({ command: 'triggerPurge' });
+        });
+    }
+
     const btn = document.getElementById('theme-switch');
     btn.addEventListener('click', () => { document.body.classList.toggle('darkmode'); 
 
@@ -62,33 +69,30 @@
     // --- heat map here ---
 
     function isoDayOfWeek(dt) {
-        let wd = dt.getDay(); // 0...6 from sunday to saturday
+        let wd = dt.getUTCDay(); // 0...6 from sunday to saturday (UTC)
         wd = (wd + 6) % 7 + 1; // 1...7 starting week monday
-        return '' + wd;// get parsed
-
+        return '' + wd;
     }
- //generates empty data for heatmap   
+ //generates empty data for heatmap
    function generateEmptyData() {
-    const today = new Date();
-    const end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const start = new Date(end);
-    start.setDate(start.getDate() - 365);
+    const now = new Date();
+    const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const start = new Date(end.getTime() - 365 * 24 * 60 * 60 * 1000);
 
     const data2 = [];
-    let dt = new Date(start);
+    let dt = new Date(start.getTime());
 
     while (dt <= end) {
         const iso = dt.toISOString().substring(0, 10);
 
         data2.push({
-            // Change x to the ISO date string so the time scale can read it
-            x: iso, 
+            x: iso,
             y: isoDayOfWeek(dt),
             d: iso,
             v: 0
         });
 
-        dt.setDate(dt.getDate() + 1);
+        dt = new Date(dt.getTime() + 24 * 60 * 60 * 1000);
     }
     return data2;
 }
@@ -221,7 +225,7 @@ backgroundColor(c) {
         autoSkip: true,
         callback: function(value, index, values) {
             const date = new Date(value);
-            date.setDate(date.getDate() + 6 );
+            date.setUTCDate(date.getUTCDate() + 6);
             return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
         },
         font: { size: 8 }
@@ -437,10 +441,9 @@ backgroundColor(c) {
 
 
                 //budget progess bar update logic
-                // calculate total session emissions by summing the array
-                const totalEmissions = message.modelEmissions.reduce((sum, current) => sum + current, 0);
-
-                // Hardcoding a budget limit for testing  
+                // Use totalRepoEmissions (windowed by budgetWindowStart) for the budget bar,
+                // not the sum of modelEmissions (which includes all historical calls).
+                const totalEmissions = message.totalRepoEmissions ?? 0;
 
                 const SESSION_BUDGET = message.sessionBudget !== undefined ? message.sessionBudget : 5;
 

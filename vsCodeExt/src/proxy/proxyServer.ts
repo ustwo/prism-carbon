@@ -1,109 +1,71 @@
 /*********************************************************************************
  *                                PROXYSERVER.TS                                 *
- * CREATES AND MANAGES A BACKGROUND PROCESS RUNNING THE INTERCEPTOR PROXY SERVER *
- *    SPAWNS SERVER AND WORKER PROCESSES, COMMUNICATES VIA IPC MESSAGES, AND     *
- *        DISPLAYS LOGS WHILST EXTRACTING AI USAGE METRICS TO BE RECORDED        *
+ *  MANAGES THE FORKED SERVERWORKER CHILD PROCESS VIA IPC.                       *
+ *  FORWARDS apiResponse MESSAGES TO THE INTERCEPTORADAPTER FOR PARSING.         *
  *********************************************************************************/
-
 
 import * as cp from 'child_process';
 import * as path from 'path';
 import * as vscode from 'vscode';
-import * as budget from '../core/budget';
 import { logger } from '../utils/logger';
 
-// manages a background process running the proxy server
-// spawns server and worker, communicates via IPC messages
-// displays logs in VSCode and extracts AI usage metrics
 export class InterceptorProxy {
     private child?: cp.ChildProcess;
-    private port: number;
-    private logger: vscode.OutputChannel;
-    public certPath: string = "";
-    private onCallRecorded:(call: budget.Call) => void;
+    private readonly port: number;
+    private readonly proxyLog: vscode.OutputChannel;
+    private readonly onApiResponse: (url: string, bodyText: string) => void;
+    public certPath: string = '';
 
-    constructor(port: number, onCallRecorded:(call: budget.Call) => void) {
+    constructor(port: number, onApiResponse: (url: string, bodyText: string) => void) {
         this.port = port;
-        this.onCallRecorded = onCallRecorded;
-        // create output channel for logs
-        this.logger = vscode.window.createOutputChannel("Interceptor");
+        this.onApiResponse = onApiResponse;
+        this.proxyLog = vscode.window.createOutputChannel('Estimating Carbon — Proxy');
     }
 
     public async start(storagePath: string): Promise<void> {
         return new Promise((resolve, reject) => {
-            // hold parsed data to be sent to be recorded as a call after logging
-            let id: string = " ";
-            let mod: string = " ";
-            let cost: number = 0;
-            // point to compiled serverWorker
             const workerPath = path.join(__dirname, 'proxy', 'serverWorker.js');
 
-            // fork  new node process to run proxy worker
-            // give current environment variables
             this.child = cp.fork(workerPath, [], {
                 env: { ...process.env },
-                execArgv: []
+                execArgv: [],
             });
-            
-            //Listen for IPC messages from worker process
+
             this.child.on('message', (msg: any) => {
                 if (msg.type === 'started') {
                     this.certPath = msg.certPath;
-                    this.logger.show(true);
-                    this.logger.appendLine(`Interceptor Proxy running on port ${this.port}`);
+                    this.proxyLog.appendLine(`Proxy running on port ${this.port}`);
                     resolve();
                 } else if (msg.type === 'log') {
-                    let fullCall = false;
-
-                    this.logger.appendLine(msg.message);
-                    if (msg.message.includes('>> DateTime:')) {
-                        id = msg.message.slice(16);
-                        logger.trace(`Proxy call datetime: ${id}`);
-                    }
-                    if (msg.message.includes('>> Model:')) {
-                        mod = msg.message.slice(13);
-                        logger.trace(`Proxy call model: ${mod}`);
-                    }
-                    if (msg.message.includes('>> Emissions:')) {
-                        cost = msg.message.slice(17);
-                        fullCall = true;
-                    }
-                    if (fullCall === true) {
-                        logger.debug(`Proxy call complete — model: ${mod}, emissions: ${cost}g CO₂e`);
-                        var call: budget.Call = { DateTime: new Date(id).getTime(), Model: mod, Emissions: +cost };
-                        this.onCallRecorded(call);
-                    }
-                }
-                // display error message if the worker crashes
-                else if (msg.type === 'error') {
+                    this.proxyLog.appendLine(msg.message);
+                } else if (msg.type === 'apiResponse') {
+                    logger.debug(`API response intercepted: ${msg.url}`);
+                    this.onApiResponse(msg.url, msg.bodyText);
+                } else if (msg.type === 'error') {
                     logger.error(`Proxy worker error: ${msg.message}`);
                     vscode.window.showErrorMessage(`Proxy Error: ${msg.message}`);
                     reject(msg.message);
                 }
             });
-            // handles process level errors
-            this.child.on('error', (err) => {
-                reject(err);
-            });
-            
-            //handles unexpected exits of worker process
+
+            this.child.on('error', reject);
+
             this.child.on('exit', (code) => {
                 if (code !== 0) {
                     logger.error(`Proxy worker exited unexpectedly with code ${code}`);
                     reject(new Error(`Worker exited with code ${code}`));
-                };
+                }
             });
 
-            // start server
             this.child.send({ command: 'start', port: this.port, storagePath });
         });
     }
-    // gracefully stop proxy server
-    public async stop() {
+
+    public async stop(): Promise<void> {
         if (this.child) {
             this.child.send({ command: 'stop' });
-            this.child.kill(); // ensure stopped
-            this.logger.appendLine('Interceptor Proxy stopped');
+            this.child.kill();
+            this.proxyLog.appendLine('Proxy stopped');
         }
     }
 }

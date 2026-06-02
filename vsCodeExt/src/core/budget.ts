@@ -8,18 +8,13 @@ import { Memento } from "vscode";
 import { logger } from '../utils/logger';
 
 export interface Call {
-    //File: string;
     Model: string;
     DateTime: number;
-    //InputTokens: number;
-    //OutputTokens: number;
-    //TotalTokens: number;
     Emissions: number;
     Branch?: string;
+    Source?: string;  // e.g. "Copilot Log", "Proxy · Anthropic (Claude)"
+    callId?: string;  // content fingerprint: normalizedModel|input|output|cacheCreation|cacheRead
 }
-
-var callStore: Memento;
-let dateTime = new Date();
 
 export class budget {
     callStore: Memento;
@@ -72,9 +67,26 @@ export class budget {
         this.callStore.update(this.storeKey, this.calls);
         logger.trace(`Call stored — total calls: ${this.calls.length}`);
     }
+
     getCalls(): Call[] {
         this.calls = this.callStore.get<Call[]>(this.storeKey, []) || [];
         return this.calls;
+    }
+
+    async purgeCalls(): Promise<void> {
+        this.calls = [];
+        await this.callStore.update(this.storeKey, []);
+        logger.info('All stored calls purged');
+    }
+
+    async removeCallByDateTime(dateTime: number): Promise<void> {
+        this.calls = this.callStore.get<Call[]>(this.storeKey, []) || [];
+        const idx = this.calls.findIndex(c => c.DateTime === dateTime);
+        if (idx !== -1) {
+            this.calls.splice(idx, 1);
+            await this.callStore.update(this.storeKey, this.calls);
+            logger.debug(`Call at DateTime ${dateTime} removed`);
+        }
     }
 
     getEmissionsFromCalls(pCalls: Call[]): number[] {

@@ -1,16 +1,15 @@
 /****************************************************************
  *                       SAVELISTENER.TS                        *
- *   TRIGGERS A COPILOT LOG REFRESH WHENEVER A FILE IS SAVED,  *
- *          KEEPING THE SIDEBAR CALL HISTORY UP TO DATE         *
+ *   TRIGGERS A COPILOT LOG READ WHENEVER A FILE IS SAVED.      *
  ****************************************************************/
 
 import * as vscode from 'vscode';
-import { getLogs } from '../core/callManager';
+import { captureFromLogs } from '../core/capture/adapters/log/logAdapter';
 import { logger } from '../utils/logger';
 
 export function registerSaveListener(context: vscode.ExtensionContext): vscode.Disposable {
     return vscode.workspace.onDidSaveTextDocument((doc) => {
-        logger.debug(`File saved — refreshing logs (${doc.fileName.split('/').pop()})`);
-        getLogs(context);
+        logger.debug(`File saved — refreshing Copilot logs (${doc.fileName.split('/').pop()})`);
+        captureFromLogs(context);
     });
 }

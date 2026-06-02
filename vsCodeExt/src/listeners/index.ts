@@ -1,20 +1,22 @@
 /****************************************************************
  *                      LISTENERS/INDEX.TS                      *
- *  ENTRY POINT FOR ALL EVENT LISTENERS. REGISTERS SAVE,        *
- *  BRANCH-CHANGE, AUTO-REFRESH LISTENERS AND THE LAUNCH BUTTON *
+ *  ENTRY POINT FOR ALL EVENT LISTENERS.                        *
+ *  - Branch change → refreshes dashboard                       *
+ *  - Save / interval → reads Copilot Chat logs                 *
+ *  - Launch button → status bar shortcut                       *
  ****************************************************************/
 
 import * as vscode from 'vscode';
-import { registerSaveListener } from './saveListener';
 import { registerBranchChangeListener } from './branchChangeListener';
 import { createLaunchButton } from './launchButton';
-import { registerAutoRefreshListener } from './autoRefreshListener';
+import { registerSaveListener } from './saveListener';
+import { registerLogRefreshListener } from './logRefreshListener';
 
 export function registerAllListeners(context: vscode.ExtensionContext): vscode.Disposable[] {
     return [
-        registerSaveListener(context),
         registerBranchChangeListener(),
         createLaunchButton(),
-        ...registerAutoRefreshListener(context),
+        registerSaveListener(context),
+        ...registerLogRefreshListener(context),
     ];
 }

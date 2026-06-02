@@ -8,15 +8,19 @@ import * as vscode from 'vscode';
 import { registerClearStore } from './clearStore';
 import { registerOpenDashboard } from './openDashboard';
 import { registerInputDisplay } from './inputDisplay';
-import { registerInterceptorCommands } from './interceptor';
 import { registerMenu } from './menu';
+import { registerPurgeStore } from './purgeStore';
+import { registerDeleteCall } from './deleteCall';
+import { registerCopyCall } from './copyCall';
 
 export function registerAllCommands(context: vscode.ExtensionContext): vscode.Disposable[] {
     return [
         registerClearStore(),
         registerOpenDashboard(context.extensionUri),
         registerInputDisplay(),
-        ...registerInterceptorCommands(),
         registerMenu(),
+        registerPurgeStore(),
+        registerDeleteCall(),
+        registerCopyCall(),
     ];
 }
