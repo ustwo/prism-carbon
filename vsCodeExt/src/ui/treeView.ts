@@ -41,8 +41,10 @@ export class MyTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeIt
 
     getChildren(element?: vscode.TreeItem): Thenable<vscode.TreeItem[]> {
         if (!element) {
+            const n = this.currentItems.length;
+            const header = n > 0 ? `Last ${n} call${n !== 1 ? 's' : ''}:` : 'Latest calls:';
             const roots: vscode.TreeItem[] = [
-                new vscode.TreeItem('Latest calls:', vscode.TreeItemCollapsibleState.None),
+                new vscode.TreeItem(header, vscode.TreeItemCollapsibleState.None),
                 ...this.currentItems,
             ];
             if (this.totalArchived > 0) {
