@@ -24,9 +24,32 @@ export const claudeCodeLogProvider: LogProvider = {
         if (!projectDir || !fs.existsSync(projectDir)) { return []; }
 
         try {
-            return fs.readdirSync(projectDir)
-                .filter(f => f.endsWith('.jsonl') && !fs.statSync(path.join(projectDir, f)).isDirectory())
-                .map(f => path.join(projectDir, f));
+            const paths: string[] = [];
+
+            for (const entry of fs.readdirSync(projectDir)) {
+                const fullPath = path.join(projectDir, entry);
+                const stat = fs.statSync(fullPath);
+
+                if (!stat.isDirectory() && entry.endsWith('.jsonl')) {
+                    // Root-level session JSONL (main conversation)
+                    paths.push(fullPath);
+                } else if (stat.isDirectory()) {
+                    // Session subdirectory — also read subagent JSONLs.
+                    // Claude Code spawns sub-agents (e.g. via the Agent tool) using
+                    // lighter models (Haiku) even when the main model is Sonnet.
+                    // Those calls have real emissions and should be tracked.
+                    const subagentsDir = path.join(fullPath, 'subagents');
+                    if (fs.existsSync(subagentsDir)) {
+                        for (const sub of fs.readdirSync(subagentsDir)) {
+                            if (sub.endsWith('.jsonl')) {
+                                paths.push(path.join(subagentsDir, sub));
+                            }
+                        }
+                    }
+                }
+            }
+
+            return paths;
         } catch {
             return [];
         }
