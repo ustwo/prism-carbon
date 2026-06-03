@@ -25,6 +25,11 @@ export const copilotLogProvider: LogProvider = {
     id: 'copilot',
     displayName: 'GitHub Copilot Chat',
 
+    getSourceForPath(_logPath: string): string {
+        // Copilot Chat uses a single log file — source is always the same.
+        return 'GitHub Copilot Chat';
+    },
+
     getLogPaths(context: vscode.ExtensionContext): string[] {
         try {
             return [path.join(

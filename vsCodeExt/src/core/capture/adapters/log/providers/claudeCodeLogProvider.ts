@@ -19,6 +19,10 @@ export const claudeCodeLogProvider: LogProvider = {
     id: 'claude-code',
     displayName: 'Claude Code',
 
+    getSourceForPath(logPath: string): string {
+        return logPath.includes('/subagents/') ? 'Claude Code · Subagent' : 'Claude Code';
+    },
+
     getLogPaths(context: vscode.ExtensionContext): string[] {
         const projectDir = getClaudeProjectDir();
         if (!projectDir || !fs.existsSync(projectDir)) { return []; }
