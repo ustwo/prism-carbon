@@ -78,9 +78,9 @@ export class MyTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeIt
         return Promise.resolve([]);
     }
 
-    // Real-time: add a single current-session call
+    // Real-time: add a single current-session call (newest at top)
     addMessage(message: string, dateTime: number, tooltip?: string) {
-        this.currentItems.push(new CallTreeItem(message, dateTime, tooltip));
+        this.currentItems.unshift(new CallTreeItem(message, dateTime, tooltip));
         this._onDidChangeTreeData.fire(undefined);
     }
 
@@ -89,12 +89,13 @@ export class MyTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeIt
         currentCalls:  Array<{ label: string; dateTime: number; tooltip?: string }>,
         archivedCalls: Array<{ label: string; dateTime: number; tooltip?: string }>
     ) {
-        this.currentItems = currentCalls.map(c => new CallTreeItem(c.label, c.dateTime, c.tooltip));
+        this.currentItems = currentCalls.map(c => new CallTreeItem(c.label, c.dateTime, c.tooltip)).reverse();
         this.totalArchived = archivedCalls.length;
-        // Show most recent archived calls (last N in chronological order)
+        // Show most recent archived calls (newest at top)
         this.archivedItems = archivedCalls
             .slice(-MAX_ARCHIVED_SHOWN)
-            .map(c => new CallTreeItem(c.label, c.dateTime, c.tooltip));
+            .map(c => new CallTreeItem(c.label, c.dateTime, c.tooltip))
+            .reverse();
         this._onDidChangeTreeData.fire(undefined);
     }
 
