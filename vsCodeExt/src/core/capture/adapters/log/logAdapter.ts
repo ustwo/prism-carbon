@@ -38,8 +38,10 @@ export async function captureFromLogs(context: vscode.ExtensionContext): Promise
                 const content = fs.readFileSync(logPath, 'utf-8');
                 const calls = provider.parseLogs(content, after);
 
+                const sourceLabel = provider.getSourceForPath(logPath);
+
                 for (const call of calls) {
-                    updateTree({ ...call, Source: `Log · ${provider.displayName}` });
+                    updateTree({ ...call, Source: `Log · ${sourceLabel}` });
                     if (call.DateTime > latestTimestamp) {
                         latestTimestamp = call.DateTime;
                     }

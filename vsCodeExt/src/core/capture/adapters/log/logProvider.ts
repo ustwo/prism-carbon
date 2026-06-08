@@ -16,4 +16,8 @@ export interface LogProvider {
     // tool creates one file per session (e.g. Claude Code JSONL files).
     getLogPaths(context: vscode.ExtensionContext): string[];
     parseLogs(content: string, afterTimestamp: number): Call[];
+    // Returns a human-readable source label for a specific log file path.
+    // Lets providers differentiate sub-types (e.g. main session vs subagent).
+    // Providers with a single file type can just return their displayName.
+    getSourceForPath(logPath: string): string;
 }
