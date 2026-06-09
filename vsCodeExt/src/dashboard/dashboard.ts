@@ -11,6 +11,17 @@ import * as budget from '../core/budget';
 import { createComparisons } from './dashboardData';
 import { getWebviewContent } from './webviewContent';
 
+function getColorConfig() {
+    const cfg = vscode.workspace.getConfiguration();
+    return {
+        neutral: cfg.get<string>('estimatingCarbon.colorNeutral',  '#888888'),
+        green:   cfg.get<string>('estimatingCarbon.colorGreen',    '#89d185'),
+        amber:   cfg.get<string>('estimatingCarbon.colorAmber',    '#e2c08d'),
+        red:     cfg.get<string>('estimatingCarbon.colorRed',      '#f14c4c'),
+        minLogs: cfg.get<number>('estimatingCarbon.colorMinLogs',  10),
+    };
+}
+
 export class CarbonDashboardPanel {
     public static currentPanel: CarbonDashboardPanel | undefined;
 
@@ -67,6 +78,24 @@ export class CarbonDashboardPanel {
                         vscode.workspace.getConfiguration()
                             .update('estimatingCarbon.logRefreshIntervalSeconds', seconds, vscode.ConfigurationTarget.Global);
                     }
+                    return;
+                }
+
+                case 'saveColors': {
+                    const cfg = vscode.workspace.getConfiguration();
+                    const keys: Array<[string, string]> = [
+                        ['estimatingCarbon.colorNeutral', message.neutral],
+                        ['estimatingCarbon.colorGreen',   message.green],
+                        ['estimatingCarbon.colorAmber',   message.amber],
+                        ['estimatingCarbon.colorRed',     message.red],
+                    ];
+                    for (const [key, val] of keys) {
+                        if (val) { cfg.update(key, val, vscode.ConfigurationTarget.Global); }
+                    }
+                    if (message.minLogs !== undefined && !isNaN(Number(message.minLogs))) {
+                        cfg.update('estimatingCarbon.colorMinLogs', Math.max(1, Number(message.minLogs)), vscode.ConfigurationTarget.Global);
+                    }
+                    this._sendData();
                     return;
                 }
             }
@@ -173,12 +202,23 @@ export class CarbonDashboardPanel {
             ),
         }));
 
+        const colorConfig = getColorConfig();
+        const allEmissionsSorted = calls.map((c: any) => c.Emissions).sort((a: number, b: number) => a - b);
+        const n = allEmissionsSorted.length;
+        const callThresholds = {
+            count: n,
+            p50: n >= 10 ? allEmissionsSorted[Math.floor(n * 0.5)] : null,
+            p90: n >= 10 ? allEmissionsSorted[Math.floor(n * 0.9)] : null,
+        };
+
         this._panel.webview.postMessage({
             command: 'updateData',
             modelLabels, modelEmissions, heatMapData, sessionBudget,
             averageEmission, totalRepoEmissions, refreshIntervalSec,
             conversionData: createComparisons(totalEmissions),
             radarData: { labels: modelList, datasets: radarDataSets },
+            colorConfig,
+            callThresholds,
         });
 
         // Branch timeline graph

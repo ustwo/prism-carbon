@@ -1,3 +1,11 @@
+:root {
+  /* Configurable impact colours — defaults overridden by JS from extension settings */
+  --carbon-neutral: #888888;
+  --carbon-green:   #89d185;
+  --carbon-amber:   #e2c08d;
+  --carbon-red:     #f14c4c;
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
@@ -42,9 +50,9 @@ body {
   transition: width 0.35s ease, background 0.2s ease;
 }
 
-.progress-fill.safe    { background: var(--vscode-charts-green,  #89d185); }
-.progress-fill.warning { background: var(--vscode-charts-yellow, #e2c08d); }
-.progress-fill.danger  { background: var(--vscode-charts-red,    #f14c4c); }
+.progress-fill.safe    { background: var(--carbon-green,  #89d185); }
+.progress-fill.warning { background: var(--carbon-amber,  #e2c08d); }
+.progress-fill.danger  { background: var(--carbon-red,    #f14c4c); }
 
 /* ── Stats row ── */
 .stats-row {

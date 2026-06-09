@@ -165,6 +165,32 @@
           "default": 15,
           "minimum": 0,
           "markdownDescription": "How often (in seconds) to poll the Copilot Chat log file for new AI interactions. Set to `0` to disable — logs will still refresh on every file save.\n\n| Interval | Impact |\n|---|---|\n| 1–10s | High CPU — only for active development |\n| 15s | Recommended — balanced |\n| 30–60s | Low CPU — suits background use |\n| 0 | Disabled — refreshes on file save only |"
+        },
+        "estimatingCarbon.colorNeutral": {
+          "type": "string",
+          "default": "#888888",
+          "description": "Colour shown for calls recorded before 10 logs exist (not enough data for percentile classification). Hex format, e.g. #888888."
+        },
+        "estimatingCarbon.colorGreen": {
+          "type": "string",
+          "default": "#89d185",
+          "description": "Colour for low-impact calls (below the 50th percentile of all recorded calls). Hex format, e.g. #89d185."
+        },
+        "estimatingCarbon.colorAmber": {
+          "type": "string",
+          "default": "#e2c08d",
+          "description": "Colour for medium-impact calls (between the 50th and 90th percentile). Hex format, e.g. #e2c08d."
+        },
+        "estimatingCarbon.colorRed": {
+          "type": "string",
+          "default": "#f14c4c",
+          "description": "Colour for high-impact calls (above the 90th percentile). Hex format, e.g. #f14c4c."
+        },
+        "estimatingCarbon.colorMinLogs": {
+          "type": "number",
+          "default": 10,
+          "minimum": 1,
+          "description": "Minimum number of recorded calls required before percentile colour classification activates. Below this count all calls are shown in the neutral colour."
         }
       }
     }
