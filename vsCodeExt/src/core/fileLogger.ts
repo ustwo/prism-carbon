@@ -1,11 +1,11 @@
-/****************************************************************
- *                       FILELOGGER.TS                          *
- *  WRITES ONE FILE PER CALL INTO .footprints/ AT THE           *
- *  WORKSPACE ROOT. FILENAME ENCODES ALL MEANINGFUL DATA SO     *
- *  THE ARTEFACTS ARE READABLE IN GIT HISTORY AND PRs.          *
- *                                                              *
- *  Format: GGGGGG-{modelname}-YYYY-MM-DD-ZZZZZ                  *
- *    GGGGGG — integer grams CO₂e, 0-padded to 6 digits         *
+/*****************************************************************
+ *                       FILELOGGER.TS                           *
+ *  WRITES ONE FILE PER CALL INTO .footprints/ AT THE            *
+ *  WORKSPACE ROOT. FILENAME ENCODES ALL MEANINGFUL DATA SO      *
+ *  THE ARTEFACTS ARE READABLE IN GIT HISTORY AND PRs.           *
+ *                                                           .   *
+ *  Format: GGGGGG-{modelname}-YYYY-MM-DD-ZZZZZ              .   *
+ *    GGGGGG — integer grams CO₂e, 0-padded to 6 digits      .   *
  *    ZZZZZ  — 5-char URL-safe base64 collision-avoidance suffix *
  ****************************************************************/
 
