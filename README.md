@@ -14,6 +14,7 @@
 - [User Stories](#user-stories)
 - [Stakeholders](#stakeholders)
 - [How To Run](#devIn)
+- [Installing on another machine](#installing-on-another-machine)
 - [Project Structure](#structure)
 - [Team Members](#team)
 
@@ -137,16 +138,48 @@ Inside the Extension Development Host:
 ### 5. Package the extension as a `.vsix` (optional)
 
 ```bash
-npm run release
+npm run build:vsix
 ```
 
-This produces an `ecode-<version>.vsix` file that can be installed manually in VS Code via **Extensions → Install from VSIX…**
+This compiles the source and produces `Estimating_Carbon.vsix` in `vsCodeExt/distExtension/`, ready to share with other developers.
 
 ### 6. Run tests
 
 ```bash
 npm test
 ```
+
+<br>
+
+## Installing on another machine
+
+If you have received a `Estimating_Carbon.vsix` file and want to install the extension without cloning the repo:
+
+### Prerequisites
+
+- [Visual Studio Code](https://code.visualstudio.com/) v1.74 or later (or [Cursor](https://www.cursor.com/))
+
+### Option A — VS Code UI
+
+1. Open VS Code.
+2. Go to the **Extensions** panel (`Cmd+Shift+X` / `Ctrl+Shift+X`).
+3. Click the **`···`** menu (top-right of the panel).
+4. Select **Install from VSIX…**
+5. Choose the `.vsix` file.
+6. Reload VS Code when prompted.
+
+### Option B — Terminal
+
+```bash
+code --install-extension "Estimating_Carbon.vsix"
+```
+
+For Cursor, replace `code` with `cursor`.
+
+### After installing
+
+- The **Estimating Carbon** icon appears in the Activity Bar (left sidebar).
+- No build step or Node.js required — the extension is fully bundled.
 
 <br>
 
