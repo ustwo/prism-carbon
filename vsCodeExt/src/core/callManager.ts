@@ -11,6 +11,7 @@ import { extensionState } from '../extensionState';
 import { getCurrentBranch } from '../utils/gitUtils';
 import { logger } from '../utils/logger';
 import { normalizeModel } from '../utils/callId';
+import { writeFootprintFile } from './fileLogger';
 
 function buildTooltip(call: budget.Call): string {
     const lines: string[] = [
@@ -77,6 +78,7 @@ export function updateTree(call: budget.Call) {
     }
 
     extensionState.budg!.storeCall(call);
+    writeFootprintFile(call);
 
     const source = call.Source ?? 'Log';
     logger.debug(`[${source}] model: ${call.Model}, emissions: ${call.Emissions}g CO₂e, branch: ${call.Branch}`);
