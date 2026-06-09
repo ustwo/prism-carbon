@@ -208,6 +208,7 @@ Please reference the "How to Use" in the ReadMe of the Extension [here](vsCodeEx
     ├── models.json                # emissions rates per model
     ├── esbuild.js                 # build script
     ├── tsconfig.json
+    ├── distExtension/             # packaged .vsix output (git-tracked folder, contents ignored)
     ├── public/                    # static frontend assets (served in webviews)
     │   ├── dashboard/             # carbon dashboard UI
     │   │   ├── dashboard.html
