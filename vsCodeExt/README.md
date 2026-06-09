@@ -127,6 +127,48 @@ Added skeleton support for GPT models up to and including GPT 4.1.
 Comprehensive dashboard rework - added more graphs and better session budget.
 
 
+### 1.0.0
+
+Major architectural overhaul and new features introduced across 7 pull requests.
+
+#### Architecture
+
+- Restructured `src/` into clear domain subdirectories: `core/`, `commands/`, `proxy/`, `ui/`, `utils/`, `listeners/`, `dashboard/`
+- Replaced passive polling model with an **event-driven capture architecture**
+- Introduced pluggable `captureProvider` system with two adapter types:
+  - **Interceptor adapter** — intercepts runtime HTTP calls via proxy; per-provider SSE parsers for Anthropic, OpenAI, and Gemini
+  - **Log adapter** — captures development-time usage from GitHub Copilot and Claude Code logs
+- Dashboard split into three focused modules: `dashboard.ts`, `dashboardData.ts`, `webviewContent.ts`
+- Moved frontend assets from `webview/` to `public/dashboard/`
+
+#### Features
+
+- **Auto-start proxy interceptor** — starts automatically on extension activation; no manual command required
+- **Auto-refresh logs** — log data refreshes automatically on file save; removed the manual "Refresh carbon data" command
+- **Claude Code log support** — captures AI usage from Claude Code alongside GitHub Copilot
+- **Sub-agent support** — log providers now aggregate usage from Claude Code and Copilot sub-agent calls
+- **Budget miniview panel** — compact carbon tracker embedded in the VS Code Explorer sidebar (`public/miniview/`), with color-coded carbon impact and tooltips
+- **Settings panel in dashboard** — configurable options accessible directly from the dashboard UI
+- **Session vs. archived call separation** — sidebar tree view now groups current-session calls separately from archived history, with an expandable archived section showing up to 200 entries
+- **Hash-based call deduplication** — unique IDs (`utils/callId.ts`) prevent duplicate entries from being recorded
+- **`copyCall` command** — copy call details to clipboard from the sidebar
+- **`deleteCall` command** — remove individual calls from the history
+- **`purgeStore` command** — clear all archived call data
+
+#### Bug Fixes
+
+- Fixed sidebar log sort order — newest calls now appear at the top
+- Fixed duplicate call entries caused by repeated log reads
+- Fixed dashboard failing to load in certain workspace configurations
+- Fixed edge cases in Copilot log parsing where some calls were missed
+- Fixed graph scroll/zoom not presenting a scrollable interface in some cases
+
+
+## Development Setup
+
+For full setup instructions see the [repository README](../README.md#devIn).
+
+---
 
 ## In case of error!
 

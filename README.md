@@ -14,6 +14,7 @@
 - [User Stories](#user-stories)
 - [Stakeholders](#stakeholders)
 - [How To Run](#devIn)
+- [Installing on another machine](#installing-on-another-machine)
 - [Project Structure](#structure)
 - [Team Members](#team)
 
@@ -94,25 +95,94 @@ We aim to design a toolkit that:
   </ul>
 <h2 id ="devIn">Dev instructions</h2>
 
-1. Clone Repository
-2. Open in VScode
-3. Run <code>npm install</code>
-4. Run <code>npm run compile</code>
-5. install Extension Test Runner in vscode
-6. Run extension.ts using `f5` to start the extension development environment window
-7. For runtime analysis, within the extension development environment:
-   - run "Start Proxy Interceptor" command
-   - run "Open Runtime Terminal" command
-   - In the "Runtime Terminal" that appears, run your file.
-   - The carbon costs and log will appear in the sidebar, and a coloured indicator in the status bar. They show the cost of using an LLM in real time, as each API call happens.
-8. For development time analysis, run "Developer: Set Log Level" :arrow_right: "GitHub Copilot Chat" :arrow_right: "Trace"
-9. Run the "Refresh carbon data" command to fetch the most recent data from Copilot. 
+### Prerequisites
 
-10. To access the dashboard, run "Open Carbon Dashboard" command.
+- [Node.js](https://nodejs.org/) v18 or later
+- [npm](https://www.npmjs.com/) (comes with Node.js)
+- [Visual Studio Code](https://code.visualstudio.com/) v1.74 or later
 
+### 1. Install dependencies
+
+From the `vsCodeExt/` directory:
+
+```bash
+npm run setup
+```
+
+This runs `npm install` and compiles the TypeScript source in one step.
+
+### 2. Run the extension in development mode
+
+Open the `vsCodeExt/` folder in VS Code, then press **F5** (or go to **Run → Start Debugging**).
+
+This launches a new **Extension Development Host** window with the extension loaded. Any changes to the source require restarting the host (`Ctrl+Shift+F5` / `Cmd+Shift+F5`) to take effect — or run in watch mode (step 3) to rebuild automatically.
+
+### 3. Watch mode (optional)
+
+To rebuild automatically on file changes:
+
+```bash
+npm run watch
+```
+
+Then restart the Extension Development Host after each rebuild.
+
+### 4. Test the extension manually
+
+Inside the Extension Development Host:
+
+- **Runtime analysis:** run **"Start Proxy Interceptor"** → **"Open Runtime Terminal"** → run your script in the terminal that opens. Carbon costs appear in the sidebar and status bar in real time.
+- **Development-time analysis:** run **"Developer: Set Log Level"** → **"GitHub Copilot Chat"** → **"Trace"**, then use **"Refresh carbon data"** to pull the latest Copilot usage.
+- **Dashboard:** run **"Open Carbon Dashboard"** to open the full visualisation.
+
+### 5. Package the extension as a `.vsix` (optional)
+
+```bash
+npm run build:vsix
+```
+
+This compiles the source and produces `Estimating_Carbon.vsix` in `vsCodeExt/distExtension/`, ready to share with other developers.
+
+### 6. Run tests
+
+```bash
+npm test
+```
 
 <br>
-   
+
+## Installing on another machine
+
+If you have received a `Estimating_Carbon.vsix` file and want to install the extension without cloning the repo:
+
+### Prerequisites
+
+- [Visual Studio Code](https://code.visualstudio.com/) v1.74 or later (or [Cursor](https://www.cursor.com/))
+
+### Option A — VS Code UI
+
+1. Open VS Code.
+2. Go to the **Extensions** panel (`Cmd+Shift+X` / `Ctrl+Shift+X`).
+3. Click the **`···`** menu (top-right of the panel).
+4. Select **Install from VSIX…**
+5. Choose the `.vsix` file.
+6. Reload VS Code when prompted.
+
+### Option B — Terminal
+
+```bash
+code --install-extension "Estimating_Carbon.vsix"
+```
+
+For Cursor, replace `code` with `cursor`.
+
+### After installing
+
+- The **Estimating Carbon** icon appears in the Activity Bar (left sidebar).
+- No build step or Node.js required — the extension is fully bundled.
+
+<br>
+
 ## User Instructions
 Please reference the "How to Use" in the ReadMe of the Extension [here](vsCodeExt/README.md)
 
@@ -120,31 +190,83 @@ Please reference the "How to Use" in the ReadMe of the Extension [here](vsCodeEx
     
 <h2 id="structure">Project Structure</h2>
 <pre>
-├── Images # architecture diagrams
-├── ProjectNotes # meeting minutes and other project notes
-├── README.md # main repo readme
-├── Methodology.md # documentation for carbon calculations
-└── vsCodeExt # main directory for VS Code extension
-    ├── package.json # config file containing extension metadata
-    ├── models.json # emissions conversion ratios for different models 
-    ├── LICENSE.md
-    ├── src
-    |   ├── budget.ts # interface for Call structure and usage calculations
-    |   ├── convert.ts # handles conversion of token data to carbon emissions
-    |   ├── dashboard.ts # main UI file
-    │   ├── extension.ts # main UI features and commands 
-    │   ├── logCapture.ts # handles collection and parsing of Copilot log files 
-    │   ├── proxyServer.ts # starts server, receives parsed information
-    │   ├── serverWorker.ts # listens on proxyServer and handles parsing
-    │   ├── state.ts # flag for runtime testing
-    ├── webview
-    |   ├── dashboard.js # functionality for dashboard
-    |   ├── style.css # styling for dashbord
-    |   ├── graph.js # logic for timeline graph
-    |   ├── darkmode.js # logic for darkmode
-    └── tsconfig.json
-    
-
+├── Images/                        # architecture diagrams
+├── ProjectNotes/                  # meeting minutes, research, and documents
+│   ├── Documents/                 # handover doc, methodology report
+│   ├── Meetings/                  # client meeting notes
+│   ├── Minutes/                   # weekly workshop minutes
+│   └── Research/                  # background research
+├── Releases/                      # packaged .vsix builds
+├── RunTimeTests/                  # sample scripts for testing runtime analysis
+│   ├── Gemini.py / Gemini.js
+│   ├── OpenAI.py
+│   └── WeatherAPI.py
+├── README.md                      # this file
+├── Methodology.md                 # carbon calculation documentation
+└── vsCodeExt/                     # VS Code extension (main deliverable)
+    ├── package.json               # extension manifest and scripts
+    ├── models.json                # emissions rates per model
+    ├── esbuild.js                 # build script
+    ├── tsconfig.json
+    ├── distExtension/             # packaged .vsix output (git-tracked folder, contents ignored)
+    ├── public/                    # static frontend assets (served in webviews)
+    │   ├── dashboard/             # carbon dashboard UI
+    │   │   ├── dashboard.html
+    │   │   ├── dashboard.js
+    │   │   ├── graph.js           # timeline graph logic
+    │   │   └── style.css
+    │   └── miniview/              # compact budget miniview panel
+    │       ├── miniview.html
+    │       ├── miniview.js
+    │       └── miniview.css
+    └── src/                       # TypeScript source
+        ├── extension.ts           # entry point — registers all commands and listeners
+        ├── extensionState.ts      # shared mutable state across the extension
+        ├── commands/              # VS Code command handlers
+        │   ├── menu.ts            # bottom-right menu
+        │   ├── openDashboard.ts
+        │   ├── clearStore.ts
+        │   ├── purgeStore.ts
+        │   ├── selectCall.ts
+        │   ├── deleteCall.ts
+        │   ├── copyCall.ts
+        │   └── inputDisplay.ts
+        ├── core/                  # business logic
+        │   ├── budget.ts          # Call type definitions and usage calculations
+        │   ├── callManager.ts     # session and archive call management
+        │   ├── convert.ts         # token counts → carbon emissions
+        │   ├── state.ts           # runtime interceptor flag
+        │   └── capture/           # data capture layer
+        │       ├── captureProvider.ts
+        │       ├── sseParser.ts   # SSE stream parsing for intercepted calls
+        │       └── adapters/
+        │           ├── interceptor/   # runtime proxy capture
+        │           │   ├── interceptorAdapter.ts
+        │           │   └── providers/ # per-provider parsers (Anthropic, OpenAI, Gemini)
+        │           └── log/           # development-time log capture
+        │               ├── logAdapter.ts
+        │               ├── logProvider.ts
+        │               └── providers/ # Copilot and Claude Code log parsers
+        ├── dashboard/             # dashboard webview host
+        │   ├── dashboard.ts
+        │   ├── dashboardData.ts
+        │   └── webviewContent.ts
+        ├── listeners/             # VS Code event listeners
+        │   ├── branchChangeListener.ts
+        │   ├── launchButton.ts
+        │   ├── logRefreshListener.ts
+        │   └── saveListener.ts
+        ├── proxy/                 # runtime HTTP proxy server
+        │   ├── proxyServer.ts
+        │   └── serverWorker.ts
+        ├── ui/                    # VS Code UI components
+        │   ├── treeView.ts        # sidebar call history tree
+        │   ├── statusBar.ts       # status bar carbon indicator
+        │   └── budgetMiniView.ts  # budget miniview panel
+        └── utils/
+            ├── callId.ts
+            ├── gitUtils.ts
+            └── logger.ts
 </pre>
 
 ## Documents
