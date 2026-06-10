@@ -8,4 +8,6 @@ dist/
 .vscode-test
 .vscode-test/
 *.vsix
+distExtension/*
+!distExtension/.gitkeep
 /coverage

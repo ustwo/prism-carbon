@@ -7,7 +7,7 @@
     "url": "https://github.com/mx-dv/Estimating-Carbon-For-UsTwo.git"
   },
   "description": "",
-  "version": "0.5.0",
+  "version": "1.1.0",
   "release": {
     "branches": [
       "main",
@@ -182,7 +182,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
     "test": "vscode-test --coverage --coverage-reporter lcov --coverage-reporter html --coverage-reporter text",
-    "release": "vsce package",
+    "release": "npx @vscode/vsce package --no-dependencies --out \"distExtension/Estimating_Carbon.vsix\"",
+    "publish": "npx @vscode/vsce publish --no-dependencies",
     "setup": "npm install && npm run compile"
   },
   "devDependencies": {
