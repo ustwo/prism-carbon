@@ -52,7 +52,7 @@ export function restoreCallHistory(budg: budget.budget) {
     const allCalls = budg.getCalls();
 
     const toItem = (c: budget.Call) => ({
-        label:   `[${c.Source ?? 'Log'}] ${c.Model} — ${c.Emissions}g CO₂e — ${new Date(c.DateTime).toLocaleString()}`,
+        label:   `${c.Emissions}g CO₂e — [${c.Source ?? 'Log'}] ${c.Model} — ${new Date(c.DateTime).toLocaleString()}`,
         dateTime: c.DateTime,
         tooltip:  buildTooltip(c),
     });
@@ -86,7 +86,7 @@ export function updateTree(call: budget.Call) {
     const windowStart = extensionState.budg!.getBudgetWindowStart();
     if (call.DateTime >= windowStart) {
         extensionState.tree!.addMessage(
-            `[${source}] ${call.Model} — ${call.Emissions}g CO₂e — ${new Date(call.DateTime).toLocaleString()}`,
+            `${call.Emissions}g CO₂e — [${source}] ${call.Model} — ${new Date(call.DateTime).toLocaleString()}`,
             call.DateTime,
             buildTooltip(call),
         );
