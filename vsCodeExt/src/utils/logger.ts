@@ -2,7 +2,7 @@
  *                          LOGGER.TS                           *
  *  CENTRALISED LOGGING VIA VSCODE'S NATIVE LOG OUTPUT CHANNEL *
  *  LEVELS: error / warn / info / debug / trace                 *
- *  VIEW IN: Output panel → "Estimating Carbon"                 *
+ *  VIEW IN: Output panel → "PRISM"                 *
  ****************************************************************/
 
 import * as vscode from 'vscode';
@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 let _channel: vscode.LogOutputChannel | undefined;
 
 export function initLogger(context: vscode.ExtensionContext): vscode.LogOutputChannel {
-    _channel = vscode.window.createOutputChannel('Estimating Carbon', { log: true });
+    _channel = vscode.window.createOutputChannel('PRISM', { log: true });
     context.subscriptions.push(_channel);
     return _channel;
 }

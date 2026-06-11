@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 
 export function createLaunchButton(): vscode.StatusBarItem {
     const button = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-    button.text = '$(list-unordered) Estimating Carbon';
+    button.text = '$(list-unordered) PRISM';
     button.tooltip = 'Click to see AI Analysis Options';
     button.command = 'ecode.menu';
     button.show();
