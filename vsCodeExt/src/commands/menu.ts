@@ -27,7 +27,7 @@ const MENU_ITEMS = [
 export function registerMenu(): vscode.Disposable {
     return vscode.commands.registerCommand('ecode.menu', async () => {
         const selection = await vscode.window.showQuickPick(MENU_ITEMS, {
-            placeHolder: 'Select an Estimating Carbon function',
+            placeHolder: 'Select a PRISM function',
         });
 
         if (selection) {

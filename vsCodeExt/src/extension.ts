@@ -21,7 +21,7 @@ import { initLogger, logger } from "./utils/logger";
 
 export async function activate(context: vscode.ExtensionContext) {
   const log = initLogger(context);
-  log.info('Estimating Carbon activating...');
+  log.info('PRISM activating...');
 
   extensionState.budg = new budget.budget(context.workspaceState);
   extensionState.bar = new statusBarManager();
@@ -68,7 +68,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   await startCapture(context.globalStorageUri.fsPath);
 
-  log.info('Estimating Carbon activated');
+  log.info('PRISM activated');
 
   return {
     budg: extensionState.budg,
@@ -77,7 +77,7 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 export async function deactivate() {
-  logger.info('Estimating Carbon deactivating...');
+  logger.info('PRISM deactivating...');
   stopLogRefresh();
   await stopCapture();
 }

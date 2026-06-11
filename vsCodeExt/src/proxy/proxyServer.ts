@@ -19,7 +19,7 @@ export class InterceptorProxy {
     constructor(port: number, onApiResponse: (url: string, bodyText: string) => void) {
         this.port = port;
         this.onApiResponse = onApiResponse;
-        this.proxyLog = vscode.window.createOutputChannel('Estimating Carbon — Proxy');
+        this.proxyLog = vscode.window.createOutputChannel('PRISM — Proxy');
     }
 
     public async start(storagePath: string): Promise<void> {
