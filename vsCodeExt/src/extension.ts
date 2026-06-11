@@ -42,7 +42,6 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   restoreCallHistory(extensionState.budg);
-  extensionState.bar.updateLimit(extensionState.budg.updateLimit());
 
   const allCalls = extensionState.budg.getCalls();
   const windowStart = extensionState.budg.getBudgetWindowStart();
@@ -53,9 +52,14 @@ export async function activate(context: vscode.ExtensionContext) {
   // lastAccess = windowStart and log capture only picks up new calls.
   const latestSessionCall = sessionCalls.reduce((max, c) => c.DateTime > max ? c.DateTime : max, 0);
   initializeLastAccess(Math.max(latestSessionCall, windowStart));
-  extensionState.bar.updateBar(
-    sessionCalls.length > 0 ? sessionCalls[sessionCalls.length - 1].Emissions : 0,
-  );
+
+  if (sessionCalls.length > 0) {
+    const lastCall = sessionCalls[sessionCalls.length - 1];
+    const sortedEmissions = sessionCalls.map(c => c.Emissions).sort((a, b) => a - b);
+    const minLogs = vscode.workspace.getConfiguration().get<number>('estimatingCarbon.colorMinLogs', 10);
+    const category = budget.budget.classify(lastCall.Emissions, sortedEmissions, minLogs);
+    extensionState.bar.updateBar(lastCall.Emissions, category);
+  }
 
   context.subscriptions.push(
     ...registerAllListeners(context),

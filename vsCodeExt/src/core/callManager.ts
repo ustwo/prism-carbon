@@ -4,6 +4,7 @@
  *  STATUS BAR, AND BUDGET HELPERS                              *
  ****************************************************************/
 
+import * as vscode from 'vscode';
 import * as budget from './budget';
 import { CarbonDashboardPanel } from '../dashboard/dashboard';
 import { BudgetMiniViewProvider } from '../ui/budgetMiniView';
@@ -90,7 +91,11 @@ export function updateTree(call: budget.Call) {
             call.DateTime,
             buildTooltip(call),
         );
-        extensionState.bar!.updateBar(call.Emissions);
+        const windowedCalls = extensionState.budg!.getCalls().filter(c => c.DateTime >= windowStart);
+        const sortedEmissions = windowedCalls.map(c => c.Emissions).sort((a, b) => a - b);
+        const minLogs = vscode.workspace.getConfiguration().get<number>('estimatingCarbon.colorMinLogs', 10);
+        const category = budget.budget.classify(call.Emissions, sortedEmissions, minLogs);
+        extensionState.bar!.updateBar(call.Emissions, category);
     }
     CarbonDashboardPanel.sendData(extensionState.budg!);
     BudgetMiniViewProvider.update(extensionState.budg!);

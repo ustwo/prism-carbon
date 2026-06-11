@@ -36,7 +36,7 @@ export class budget {
         return this.callStore.get<number>("budgetWindowStart",0);
     }
     getBudget(): number {
-        return this.callStore.get<number>("budget", 1000);
+        return this.callStore.get<number>("budget", 0);
     }
 
     async setBudget(newBudget: number): Promise<void> {
@@ -95,6 +95,24 @@ export class budget {
             ems.push(pCalls[i].Emissions);
         }
         return ems;
+    }
+
+    /**
+     * Classify a single emissions value relative to a sorted array of all values.
+     * Requires at least 10 data points; returns 'neutral' otherwise.
+     */
+    static classify(
+        emissions: number,
+        sortedAllEmissions: number[],
+        minLogs = 10,
+    ): 'neutral' | 'green' | 'amber' | 'red' {
+        const n = sortedAllEmissions.length;
+        if (n < minLogs) { return 'neutral'; }
+        const p50 = sortedAllEmissions[Math.floor(n * 0.5)];
+        const p90 = sortedAllEmissions[Math.floor(n * 0.9)];
+        if (emissions <= p50) { return 'green'; }
+        if (emissions <= p90) { return 'amber'; }
+        return 'red';
     }
 
 }

@@ -8,14 +8,26 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import type { budget } from '../core/budget';
+import { budget } from '../core/budget';
 import { getMiniviewContent } from '../dashboard/webviewContent';
+
+function getColorConfig() {
+    const cfg = vscode.workspace.getConfiguration();
+    return {
+        neutral: cfg.get<string>('estimatingCarbon.colorNeutral',  '#888888'),
+        green:   cfg.get<string>('estimatingCarbon.colorGreen',    '#89d185'),
+        amber:   cfg.get<string>('estimatingCarbon.colorAmber',    '#e2c08d'),
+        red:     cfg.get<string>('estimatingCarbon.colorRed',      '#f14c4c'),
+        minLogs: cfg.get<number>('estimatingCarbon.colorMinLogs',  10),
+    };
+}
 
 interface SparkCall {
     emissions: number;
     model:     string;
     source?:   string;
     dateTime:  number;
+    category:  'neutral' | 'green' | 'amber' | 'red';
 }
 
 interface MiniStats {
@@ -24,6 +36,7 @@ interface MiniStats {
     percent:         number;
     average:         number;
     callCount:       number;
+    colorConfig:     { neutral: string; green: string; amber: string; red: string };
     recentCalls:     SparkCall[]; // last ≤20 calls for the sparkline
 }
 
@@ -82,6 +95,9 @@ export class BudgetMiniViewProvider implements vscode.WebviewViewProvider {
         const windowedCalls  = budg.getCalls().filter(c => c.DateTime >= windowStart);
         const totalEmissions = windowedCalls.reduce((s, c) => s + c.Emissions, 0);
         const budgetLimit    = budg.getBudget();
+        const colorConfig    = getColorConfig();
+
+        const sortedEmissions = windowedCalls.map(c => c.Emissions).sort((a, b) => a - b);
 
         const stats: MiniStats = {
             totalEmissions,
@@ -89,11 +105,13 @@ export class BudgetMiniViewProvider implements vscode.WebviewViewProvider {
             percent:     budgetLimit > 0 ? (totalEmissions / budgetLimit) * 100 : 0,
             average:     windowedCalls.length > 0 ? totalEmissions / windowedCalls.length : 0,
             callCount:   windowedCalls.length,
+            colorConfig,
             recentCalls: windowedCalls.slice(-20).map(c => ({
                 emissions: c.Emissions,
                 model:     c.Model,
                 source:    c.Source,
                 dateTime:  c.DateTime,
+                category:  budget.classify(c.Emissions, sortedEmissions, colorConfig.minLogs),
             })),
         };
 

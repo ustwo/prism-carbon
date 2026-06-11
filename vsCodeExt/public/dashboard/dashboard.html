@@ -12,7 +12,7 @@
 <body>
     <header id="header">
         <h1>Carbon Analysis Dashboard</h1>
-        <p>Carbon impact of AI calls in the current budget window.</p>
+        <p>Cumulative carbon impact of AI calls in the current project window.</p>
     </header>
 
     <!-- ── Preferences panel ─────────────────────────────────────── -->
@@ -39,6 +39,37 @@
                         <button id="interval-save-btn" class="pref-save-btn" aria-label="Save log refresh interval">Save</button>
                         <span id="interval-saved-msg" class="pref-saved" aria-live="polite"></span>
                         <span class="pref-hint">0 = disabled</span>
+                    </div>
+                </div>
+
+                <div class="prefs-divider" role="separator"></div>
+
+                <div class="prefs-group">
+                    <span class="prefs-group-label">Impact colours</span>
+                    <div class="color-pickers-row">
+                        <label class="color-swatch-label" title="Colour shown before 10 calls are recorded">
+                            <input type="color" id="color-neutral" value="#888888" aria-label="Neutral colour" />
+                            Neutral
+                        </label>
+                        <label class="color-swatch-label" title="Low impact — below 50th percentile">
+                            <input type="color" id="color-green" value="#89d185" aria-label="Low impact colour" />
+                            Low (&lt;p50)
+                        </label>
+                        <label class="color-swatch-label" title="Medium impact — 50th to 90th percentile">
+                            <input type="color" id="color-amber" value="#e2c08d" aria-label="Medium impact colour" />
+                            Mid (p50–p90)
+                        </label>
+                        <label class="color-swatch-label" title="High impact — above 90th percentile">
+                            <input type="color" id="color-red" value="#f14c4c" aria-label="High impact colour" />
+                            High (&gt;p90)
+                        </label>
+                        <span style="display:flex;align-items:center;gap:4px;font-size:0.82rem;color:var(--secondary-text);">
+                            <label for="color-min-logs" style="white-space:nowrap;">Min logs</label>
+                            <input type="number" id="color-min-logs" min="1" max="1000" step="1" value="10"
+                                class="pref-input" style="width:52px;" aria-label="Minimum logs before colour classification activates" />
+                        </span>
+                        <button id="color-save-btn" class="pref-save-btn" aria-label="Save impact colours">Save</button>
+                        <span id="color-saved-msg" class="pref-saved" aria-live="polite"></span>
                     </div>
                 </div>
 
@@ -74,22 +105,24 @@
 
             <div class="budget-tracker-container">
                 <div class="budget-header">
-                    <h2>Session Budget</h2>
+                    <h2>Project Emissions</h2>
                 </div>
-                <div class="progress-bar-bg"
+                <div id="session-progress-wrap"
+                    class="progress-bar-bg"
                     role="progressbar"
                     aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"
-                    aria-label="Session budget used">
+                    aria-label="Budget used"
+                    style="display:none;">
                     <div class="progress-bar-fill" id="session-progress-fill"></div>
                 </div>
                 <div class="budget-footer">
-                    <span id="session-percent-used" class="budget-percent">0% used</span>
-                    <span id="session-text-right" class="budget-detail">0g / 0g</span>
+                    <span id="session-percent-used" class="budget-percent"></span>
+                    <span id="session-text-right" class="budget-detail">0g CO₂e</span>
                 </div>
                 <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:15px;">
-                    <button id="set-budget-btn" aria-label="Set session budget in gCO₂e"
+                    <button id="set-budget-btn" aria-label="Set optional project budget in gCO₂e"
                         style="padding:5px 10px; background:var(--vscode-button-background,#0e639c); color:var(--vscode-button-foreground,#fff); border:none; border-radius:4px; cursor:pointer; font-weight:bold;">Set Budget</button>
-                    <button id="reset-btn" aria-label="Reset budget window — prior calls move to Archived"
+                    <button id="reset-btn" aria-label="Reset window — prior calls move to Archived"
                         style="padding:5px 10px; background:var(--vscode-notificationsWarningIcon-foreground,#e74c3c); color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">Reset</button>
                     <button id="purge-btn" aria-label="Permanently delete all stored logs"
                         style="padding:5px 10px; background:#6c3483; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">🗑 Purge Logs</button>

@@ -4,32 +4,29 @@
     const vscode = acquireVsCodeApi();
     vscode.postMessage({ command: 'ready' });
 
-    // ── Heatmap colour helper (mirrors dashboard.js logic) ─────────
-    function hexToRgb(hex) {
-        const h = (hex || '#888').replace('#', '');
-        const n = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
-        return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    // ── Carbon impact colours (updated when colorConfig arrives) ───
+    const carbonColors = {
+        neutral: '#888888',
+        green:   '#89d185',
+        amber:   '#e2c08d',
+        red:     '#f14c4c',
+    };
+
+    function applyCarbonColors(cfg) {
+        if (!cfg) { return; }
+        carbonColors.neutral = cfg.neutral || carbonColors.neutral;
+        carbonColors.green   = cfg.green   || carbonColors.green;
+        carbonColors.amber   = cfg.amber   || carbonColors.amber;
+        carbonColors.red     = cfg.red     || carbonColors.red;
+        const r = document.documentElement;
+        r.style.setProperty('--carbon-neutral', carbonColors.neutral);
+        r.style.setProperty('--carbon-green',   carbonColors.green);
+        r.style.setProperty('--carbon-amber',   carbonColors.amber);
+        r.style.setProperty('--carbon-red',     carbonColors.red);
     }
 
-    function heatColor(emissions, budgetLimit) {
-        if (budgetLimit <= 0) { return 'var(--vscode-charts-green, #89d185)'; }
-        const s   = getComputedStyle(document.body);
-        const get = v => s.getPropertyValue(v).trim();
-
-        const percent = emissions / budgetLimit;
-        let hex, t;
-        if (percent <= 0.01) {
-            hex = get('--vscode-charts-green')  || '#89d185';
-            t   = percent / 0.01;
-        } else if (percent <= 0.05) {
-            hex = get('--vscode-charts-yellow') || '#e2c08d';
-            t   = (percent - 0.01) / 0.04;
-        } else {
-            hex = get('--vscode-charts-red')    || '#f14c4c';
-            t   = Math.min((percent - 0.05) / 0.2, 1);
-        }
-        const [r, g, b] = hexToRgb(hex);
-        return `rgba(${r},${g},${b},${(0.25 + t * 0.75).toFixed(2)})`;
+    function categoryToColor(cat) {
+        return carbonColors[cat] || carbonColors.neutral;
     }
 
     // ── Custom tooltip overlay ─────────────────────────────────────
@@ -56,26 +53,42 @@
     });
 
     function render(d) {
-        // Progress bar
+        // Apply colour config first so everything uses the right palette
+        if (d.colorConfig) { applyCarbonColors(d.colorConfig); }
+
+        // ── Budget bar (optional — only shown when budget is set) ──
+        const wrap = document.getElementById('budget-bar-wrap');
         const fill = document.getElementById('fill');
-        const pct  = Math.min(d.percent, 100);
-        fill.style.width = pct + '%';
-        fill.className   = 'progress-fill ' +
-            (pct >= 66.6 ? 'danger' : pct >= 33.3 ? 'warning' : 'safe');
+        const pct  = document.getElementById('pct');
+        const lim  = document.getElementById('limit');
 
-        // Stats
-        document.getElementById('used').textContent  = d.totalEmissions.toFixed(4) + 'g';
-        document.getElementById('pct').textContent   = d.percent.toFixed(1) + '%';
-        document.getElementById('limit').textContent = '/ ' + d.budgetLimit + 'g';
+        if (d.budgetLimit > 0) {
+            const pctVal = Math.min(d.percent, 100);
+            if (fill) {
+                fill.style.width = pctVal + '%';
+                fill.className = 'progress-fill ' +
+                    (pctVal >= 66.6 ? 'danger' : pctVal >= 33.3 ? 'warning' : 'safe');
+            }
+            if (wrap) { wrap.style.display = ''; }
+            if (pct)  { pct.textContent  = d.percent.toFixed(1) + '%'; }
+            if (lim)  { lim.textContent  = '/ ' + d.budgetLimit + 'g'; }
+        } else {
+            if (wrap) { wrap.style.display = 'none'; }
+            if (pct)  { pct.textContent  = ''; }
+            if (lim)  { lim.textContent  = ''; }
+        }
 
-        // Meta
+        // ── Stats ──────────────────────────────────────────────────
+        document.getElementById('used').textContent = d.totalEmissions.toFixed(4) + 'g';
+
+        // ── Meta ───────────────────────────────────────────────────
         const n = d.callCount;
         document.getElementById('calls').textContent =
             n + ' call' + (n !== 1 ? 's' : '');
         document.getElementById('avg').textContent =
             n > 0 ? 'avg ' + d.average.toFixed(4) + 'g' : 'avg —';
 
-        // Sparkline
+        // ── Sparkline ──────────────────────────────────────────────
         const spark = document.getElementById('spark');
         const calls = d.recentCalls;
 
@@ -92,7 +105,8 @@
             el.className    = 'spark-bar';
             el.style.height = Math.max(3, (call.emissions / max) * 100) + '%';
 
-            el.style.background = heatColor(call.emissions, d.budgetLimit);
+            // Colour driven by percentile category, not budget
+            el.style.background = categoryToColor(call.category || 'neutral');
 
             const model  = call.model  || 'Unknown';
             const source = call.source ? `<br><span class="tip-dim">${call.source}</span>` : '';

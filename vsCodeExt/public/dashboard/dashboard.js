@@ -15,9 +15,6 @@
     window.vscodeAPI = vscode;
 
     // ── Theme helpers ─────────────────────────────────────────────
-    // All colours come from VSCode's CSS variables so they match
-    // whatever theme the user has active. Called at init-time so
-    // getComputedStyle reflects the current theme immediately.
     const themeColors = (() => {
         const s = getComputedStyle(document.body);
         const get = v => s.getPropertyValue(v).trim();
@@ -36,6 +33,68 @@
             purple:     get('--vscode-charts-purple')          || '#b180d7',
         };
     })();
+
+    // ── Carbon impact colours (configurable, updated when colorConfig arrives) ──
+    const carbonColors = {
+        neutral: '#888888',
+        green:   '#89d185',
+        amber:   '#e2c08d',
+        red:     '#f14c4c',
+    };
+    let carbonMinLogs = 10;
+
+    function applyCarbonColors(cfg) {
+        carbonColors.neutral = cfg.neutral || carbonColors.neutral;
+        carbonColors.green   = cfg.green   || carbonColors.green;
+        carbonColors.amber   = cfg.amber   || carbonColors.amber;
+        carbonColors.red     = cfg.red     || carbonColors.red;
+        if (cfg.minLogs !== undefined) { carbonMinLogs = cfg.minLogs; }
+        const r = document.documentElement;
+        r.style.setProperty('--carbon-neutral', carbonColors.neutral);
+        r.style.setProperty('--carbon-green',   carbonColors.green);
+        r.style.setProperty('--carbon-amber',   carbonColors.amber);
+        r.style.setProperty('--carbon-red',     carbonColors.red);
+        // Sync color pickers and min-logs input
+        const n  = document.getElementById('color-neutral');
+        const g  = document.getElementById('color-green');
+        const a  = document.getElementById('color-amber');
+        const rd = document.getElementById('color-red');
+        const ml = document.getElementById('color-min-logs');
+        if (n)  { n.value  = carbonColors.neutral; }
+        if (g)  { g.value  = carbonColors.green; }
+        if (a)  { a.value  = carbonColors.amber; }
+        if (rd) { rd.value = carbonColors.red; }
+        if (ml) { ml.value = String(carbonMinLogs); }
+    }
+
+    // ── Percentile classification ─────────────────────────────────
+    // callThresholds is updated when updateData arrives
+    let callThresholds = { count: 0, p50: null, p90: null };
+
+    function classifyEmissions(emissions) {
+        if (!callThresholds.p50 || !callThresholds.p90 || callThresholds.count < carbonMinLogs) {
+            return 'neutral';
+        }
+        if (emissions <= callThresholds.p50) { return 'green'; }
+        if (emissions <= callThresholds.p90) { return 'amber'; }
+        return 'red';
+    }
+
+    function categoryToColor(cat) {
+        return carbonColors[cat] || carbonColors.neutral;
+    }
+
+    // Per-day heatmap percentiles (computed from heatmap data, not per-request)
+    let heatPercentiles = { count: 0, p50: null, p90: null };
+
+    function classifyDayEmissions(v) {
+        if (!heatPercentiles.p50 || !heatPercentiles.p90 || heatPercentiles.count < carbonMinLogs) {
+            return 'neutral';
+        }
+        if (v <= heatPercentiles.p50) { return 'green'; }
+        if (v <= heatPercentiles.p90) { return 'amber'; }
+        return 'red';
+    }
 
     // Palette for pie/radar — VSCode chart colours in order
     const palette = [
@@ -79,6 +138,26 @@
 
         intervalInput.addEventListener('keydown', e => {
             if (e.key === 'Enter') { intervalSaveBtn.click(); }
+        });
+    }
+
+    // ── Color config save ────────────────────────────────────────────
+    const colorSaveBtn  = document.getElementById('color-save-btn');
+    const colorSavedMsg = document.getElementById('color-saved-msg');
+
+    if (colorSaveBtn) {
+        colorSaveBtn.addEventListener('click', () => {
+            const neutral = document.getElementById('color-neutral')?.value;
+            const green   = document.getElementById('color-green')?.value;
+            const amber   = document.getElementById('color-amber')?.value;
+            const red     = document.getElementById('color-red')?.value;
+            const minLogs = parseInt(document.getElementById('color-min-logs')?.value || '10', 10);
+            vscode.postMessage({ command: 'saveColors', neutral, green, amber, red, minLogs });
+            applyCarbonColors({ neutral, green, amber, red, minLogs });
+            if (colorSavedMsg) {
+                colorSavedMsg.textContent = '✓ Saved';
+                setTimeout(() => { colorSavedMsg.textContent = ''; }, 2000);
+            }
         });
     }
 
@@ -154,39 +233,23 @@ const getChartTextColor = () => getComputedStyle(document.body).getPropertyValue
 backgroundColor(c) {
     const point = c.dataset.data[c.dataIndex];
     if (!point || point.v === 0) {
-        // Empty cell: very faint foreground tint
         const [r, g, b] = hexToRgbArr(themeColors.fg);
         return `rgba(${r},${g},${b},0.07)`;
     }
-    const SESSION_BUDGET = window.sessionBudget || 100;
-    const percent = point.v / SESSION_BUDGET;
-    // Within each zone opacity runs 0.25 → 1.0
-    let hex, t;
-    if (percent <= 0.01) {
-        hex = themeColors.green;  t = percent / 0.01;
-    } else if (percent <= 0.05) {
-        hex = themeColors.yellow; t = (percent - 0.01) / 0.04;
-    } else {
-        hex = themeColors.red;    t = Math.min((percent - 0.05) / 0.2, 1);
-    }
+    const cat = classifyDayEmissions(point.v);
+    const hex = categoryToColor(cat);
     const [r, g, b] = hexToRgbArr(hex);
-    return `rgba(${r},${g},${b},${(0.25 + t * 0.75).toFixed(2)})`;
+    // Opacity 0.35 (neutral / not enough data) or 0.5–1.0 (classified)
+    const opacity = cat === 'neutral' ? 0.35 : 0.55;
+    return `rgba(${r},${g},${b},${opacity})`;
 },
             borderColor(c) {
                 const point = c.dataset.data[c.dataIndex];
                 if (!point || point.v === 0) { return themeColors.editorBg; }
-                const SESSION_BUDGET = window.sessionBudget || 100;
-                const percent = point.v / SESSION_BUDGET;
-                let hex, t;
-                if (percent <= 0.01) {
-                    hex = themeColors.green;  t = percent / 0.01;
-                } else if (percent <= 0.05) {
-                    hex = themeColors.yellow; t = (percent - 0.01) / 0.04;
-                } else {
-                    hex = themeColors.red;    t = Math.min((percent - 0.05) / 0.2, 1);
-                }
+                const cat = classifyDayEmissions(point.v);
+                const hex = categoryToColor(cat);
                 const [r, g, b] = hexToRgbArr(hex);
-                return `rgba(${r},${g},${b},${(0.6 + t * 0.4).toFixed(2)})`;
+                return `rgba(${r},${g},${b},0.8)`;
             },
             borderRadius: 2,
             borderWidth: 1,
@@ -445,6 +508,16 @@ backgroundColor(c) {
     window.addEventListener('message', event => {
     const message = event.data;
     if (message.command === 'updateData') {
+            // Apply configurable carbon colours
+            if (message.colorConfig) {
+                applyCarbonColors(message.colorConfig);
+            }
+
+            // Update percentile thresholds for per-request classification
+            if (message.callThresholds) {
+                callThresholds = message.callThresholds;
+            }
+
             const avgCostEl = document.getElementById('average-cost-display');
             if (avgCostEl && message.averageEmission !== undefined) {
                 avgCostEl.innerText = message.averageEmission.toFixed(4);
@@ -455,12 +528,16 @@ backgroundColor(c) {
                 intervalInput.value = String(message.refreshIntervalSec);
             }
 
-            if (message.sessionBudget !== undefined) {
-        window.sessionBudget = message.sessionBudget;
-    }
-
             // live emission by model data from backend
             if (message.heatMapData && heatChart) {
+                // Compute per-day percentiles for heatmap colour classification
+                const nonZero = message.heatMapData.filter(d => d.v > 0).map(d => d.v).sort((a, b) => a - b);
+                const hn = nonZero.length;
+                heatPercentiles = {
+                    count: hn,
+                    p50: hn >= 10 ? nonZero[Math.floor(hn * 0.5)] : null,
+                    p90: hn >= 10 ? nonZero[Math.floor(hn * 0.9)] : null,
+                };
                 heatChart.data.datasets[0].data = message.heatMapData;
                 heatChart.update('none');
                 applyHeatmapRange(); // keep the selected time window
@@ -504,45 +581,40 @@ backgroundColor(c) {
                 modelEmissionsChart.update();
 
 
-                //budget progess bar update logic
-                // Use totalRepoEmissions (windowed by budgetWindowStart) for the budget bar,
-                // not the sum of modelEmissions (which includes all historical calls).
+                // ── Project Emissions tracker ──────────────────────────
                 const totalEmissions = message.totalRepoEmissions ?? 0;
+                const SESSION_BUDGET = message.sessionBudget || 0; // 0 = no budget set
 
-                const SESSION_BUDGET = message.sessionBudget !== undefined ? message.sessionBudget : 5;
-
-                // calculate percentage 
-                let percentUsed = 0;
-                if (SESSION_BUDGET > 0) {
-                    percentUsed = (totalEmissions / SESSION_BUDGET) * 100;
-                }
-
-                // capping visual width at 100% for display purposes
-                const visualWidth = Math.min(percentUsed, 100);
-
-                // update the progress bar and text elements
-                const fillEl = document.getElementById('session-progress-fill');
-                const pctEl = document.getElementById('session-percent-used');
+                const fillEl  = document.getElementById('session-progress-fill');
+                const wrapEl  = document.getElementById('session-progress-wrap');
+                const pctEl   = document.getElementById('session-percent-used');
                 const rightEl = document.getElementById('session-text-right');
 
-                fillEl.style.width = visualWidth + '%';
-                fillEl.parentElement?.setAttribute('aria-valuenow', Math.round(percentUsed).toString());
-                pctEl.innerText = percentUsed.toFixed(1) + '% used';
-                rightEl.innerText = totalEmissions.toFixed(5) + 'g / ' + SESSION_BUDGET + 'g CO₂e';
-
-                // change colour to red if over 90% of budget is used
-                if (percentUsed >= 66.6) {
-                    fillEl.classList.remove('warning');
-                    fillEl.classList.add('danger');
-                } else if (percentUsed >= 33.3) {
-                    fillEl.classList.remove('danger');
-                    fillEl.classList.add('warning');
+                if (SESSION_BUDGET > 0) {
+                    const percentUsed  = (totalEmissions / SESSION_BUDGET) * 100;
+                    const visualWidth  = Math.min(percentUsed, 100);
+                    if (fillEl) { fillEl.style.width = visualWidth + '%'; }
+                    if (wrapEl) {
+                        wrapEl.style.display = '';
+                        wrapEl.setAttribute('aria-valuenow', Math.round(percentUsed).toString());
+                    }
+                    if (pctEl)  { pctEl.innerText  = percentUsed.toFixed(1) + '% used'; }
+                    if (rightEl) { rightEl.innerText = totalEmissions.toFixed(5) + 'g / ' + SESSION_BUDGET + 'g CO₂e'; }
+                    if (fillEl) {
+                        if (percentUsed >= 66.6) {
+                            fillEl.className = 'progress-bar-fill danger';
+                        } else if (percentUsed >= 33.3) {
+                            fillEl.className = 'progress-bar-fill warning';
+                        } else {
+                            fillEl.className = 'progress-bar-fill safe';
+                        }
+                    }
                 } else {
-                    fillEl.classList.remove('danger');
-                    fillEl.classList.remove('warning');
-                    fillEl.classList.add('safe');
+                    if (wrapEl) { wrapEl.style.display = 'none'; }
+                    if (pctEl)  { pctEl.innerText  = ''; }
+                    if (rightEl) { rightEl.innerText = totalEmissions.toFixed(5) + 'g CO₂e total'; }
                 }
-                
+
                 // Update average emission display if data is available
                 if (message.averageEmission !== undefined) {
                     const avgEl = document.getElementById('average-cost-display');
