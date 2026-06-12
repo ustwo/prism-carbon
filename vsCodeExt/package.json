@@ -2,6 +2,7 @@
   "name": "prism",
   "displayName": "PRISM",
   "publisher": "ustwo",
+  "icon": "media/icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/mx-dv/Estimating-Carbon-For-UsTwo.git"
