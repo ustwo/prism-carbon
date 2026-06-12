@@ -5,7 +5,7 @@
   "icon": "media/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ustwo/ai-carbon-tracker.git"
+    "url": "https://github.com/ustwo/prism-carbon.git"
   },
   "description": "",
   "version": "1.0.0",
