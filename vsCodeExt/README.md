@@ -1,196 +1,109 @@
-# Estimating Carbon README
+# PRISM — AI Carbon Tracker
 
-This is the README for Estimating Carbon - the extension that monitors carbon costs associated with LLM and AI inputs and presents statistics on this data.
+PRISM estimates the carbon footprint of AI interactions in your IDE. It captures token usage from GitHub Copilot Chat, Claude Code, and runtime LLM API calls, then shows CO₂ equivalents in the sidebar, status bar, and a live dashboard.
 
-## How To Use:
+---
 
-On installation, you will be prompted to set the `Github Copilot Chat` log level to `Trace`. This is shown below:
-<video controls src="SetTraceLevel.mp4" title="Set Trace Level"></video>
+## What PRISM tracks
 
-The main way to use the extension is with the Estimating Carbon Menu at the right hand side of the taskbar (yellow circle). Average Carbon Cost for a session is shown at the left hand side of the taskbar (green circle)
-![alt text](<Interface Explanation.png>)
+| Source | How it's captured |
+|---|---|
+| GitHub Copilot Chat | Reads Copilot's log file (requires Trace log level — see setup below) |
+| Claude Code | Reads Claude Code's log file automatically |
+| Runtime LLM calls | HTTP proxy intercepts API calls in VS Code terminals |
 
-Carbon emissions are tracked during development when using copilot chat, or inline copilot generations (ctrl+i) with claude models. Tab autocompletes are not yet supported. 
+---
 
-To track emissions when running a file, use the menu to start runtime analysis. Within the terminal that opens, run your files as normal. The carbon cost is calculated in real time.
+## First-time setup
 
-A dashboard that shows information on the emissions produced and models used is openable through the menu and updates in real time.
+On activation, PRISM will prompt you to set GitHub Copilot Chat's log level to **Trace**. This is required for development-time log capture.
 
-A history of all carbon calls made within a session can be found using the Estimating Carbon view in the left hand panel. This shows a comprehensive dated log of carbon emissions and models used.
+1. Open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`).
+2. Run **Developer: Set Log Level…**
+3. Select **GitHub Copilot Chat** → **Trace**.
 
-<!-- ## Features
+Everything else starts automatically — no further configuration needed.
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+---
 
-For example if there is an image subfolder under your extension project workspace:
+## How to use
 
-\!\[feature X\]\(images/feature-x.png\)
+### Sidebar
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow. -->
+The **PRISM** panel in the Activity Bar shows a timestamped log of all captured calls, grouped into the current session and an expandable archive. Each entry shows the model used and its estimated CO₂ cost.
 
-<!-- ## Requirements
+### Status bar
 
-Dependencies are specified in the `package.json` file and can easily be installed by running 
-`npm install`
-in the extension root. -->
+The bottom status bar shows the carbon cost of the most recent call, colour-coded by percentile:
 
-## Extension Settings
+- **Green** — below the 50th percentile of your recorded calls
+- **Amber** — 50th–90th percentile
+- **Red** — above the 90th percentile
+- **Grey** — fewer than 10 calls recorded (not enough data to classify)
 
-The below settings can be used to manually force behaviours of the extension. They can be run using Ctrl+Shift+P and then typing in one of the below commands
+### Dashboard
 
-This extension contributes the following settings:
+Open the full dashboard via the Command Palette:
 
-* `ecode.openDashboard`: Opens the Carbon Dashboard to show carbon impact statistics
-* `ecode.clearStore`: Resets the stored carbon impact statistics for the session
-* `ecode.interceptorStart`: Start the runtime listener
-* `ecode.interceptorStop`: Stop the runtime listener
-* `ecode.interceptorOpenTerminal`: Open the runtime analysis terminal 
-* `ecode.refreshLogs`: Fetches the latest calls made during development time
+```
+PRISM: Open Carbon Dashboard
+```
 
-## Menu
+The dashboard shows a timeline graph, model breakdown, and cumulative session emissions. Colour thresholds and other preferences are configurable from the dashboard's settings panel.
 
-The menu on the bottom right is the main access interface for the Estimating Carbon extension. On launch, the user is prompted to set their GitHub Copilot Chat debug level to "Trace" to enable development time analysis functionality.
+### Runtime analysis
 
-## Known Issues
+Open any terminal in VS Code — PRISM automatically injects the proxy env vars. Run your scripts as normal; LLM API calls are captured and appear in the sidebar in real time.
 
-- Images don't produce a carbon cost - image json response doesn't give tokens, since pricing is done
-  by image size, quality, model used for generation, and quality. These fields have all been parsed,
-  but the research and implementation for carbon measuring is in progress.
-- In some cases, the zoom functionality on the timeline graph doesn't present the user with a scrollable interface. This results in the lack of granular analysis of data outside the view window
-- Text is tokenised for Gemini and older ChatGPT (< GPT 5) integration, caching prevents the capture of all interactions - for e.g. function calls.
-- Water usage data is currently missing from the registry limiting the analysis of environmental impact.
+---
 
+## Commands
 
-## Supported Models:
+| Command | Description |
+|---|---|
+| `PRISM: Open Carbon Dashboard` | Opens the dashboard |
+| `PRISM: Reset budget window` | Clears current session data |
+| `PRISM: Purge all stored logs` | Deletes all archived call history |
 
-### Open AI
-- GPT o1
-- GPT o3
-- GPT4o
-- GPT4o Mini
-- GPT 4
-- GPT 4.1
-- GPT 4 Turbo
-- GPT4.5
-- GPT5
-- GPT5 nano
-- GPT5 mini
+---
+
+## Supported models
+
+### GitHub Copilot
+- raptor-mini (free tier)
+
+### OpenAI
+- o1, o3, o3-mini, o4, o4-mini (all effort levels)
+- GPT-4o, GPT-4o Mini
+- GPT-4 Turbo, GPT-4.1, GPT-4.1 Mini, GPT-4.1 Nano
+- GPT-5 (all variants: high, medium, low, mini, nano)
 
 ### Anthropic
-- Claude Haiku 4.5
-- Claude Sonnet 4
-- Claude Sonnet 4.5
-- Claude Sonnet 4.6
-- Claude Opus 4.5
-- Claude Opus 4.6
-- Claude Opus 4.5
+- Claude Haiku, Sonnet, Opus (3.x and 4.x families)
 
+### Google
+- Gemini 2.5 Flash, Gemini 2.5 Pro
+- Gemini 3 Flash, Gemini 3.1 Pro
 
-### Gemini
-- Gemini 2.5 
-- Gemini 2.5 Pro
-- Gemini 3.1 Pro
-- Gemini 3 Flash
+> Models not in the list return zero emissions. Open an issue to request support for a new model.
 
+---
 
-### All other Claude, Gemini, and GPT models
- - Currently unsupported models are calculated using an average rate to reflect an estimation of emissions.
+## Known issues
 
+- **Images** — image API responses don't include token counts (pricing is by image size and quality), so image generation calls are not tracked.
+- **Timeline zoom** — in some cases the zoom control on the timeline graph doesn't produce a scrollable view, limiting granular analysis.
+- **Gemini / older GPT tokenisation** — text is tokenised client-side for Gemini and pre-GPT5 models; caching can prevent some calls (e.g. function calls) from being captured.
+- **Water usage** — water consumption data is not yet in the model registry.
 
-## Release Notes
+---
 
-
-### 0.0.1
-
-Initial release of Estimating Carbon, supports all Claude models.
-
-### 0.0.2
-
-Updated support for generic models
-Fixed issue with dashboard not loading correctly
-
-
-### 0.0.3
-
-Updated release readme.md to provide more comprehensive usage instructions
-
-### 0.0.4
-
-Added full support for GPT models from, and including, GPT 5.
-
-### 0.0.5
-
-Added skeleton support for GPT models up to and including GPT 4.1.
-
-### 0.0.6
-
-Comprehensive dashboard rework - added more graphs and better session budget.
-
-
-### 1.0.0
-
-Major architectural overhaul and new features introduced across 7 pull requests.
-
-#### Architecture
-
-- Restructured `src/` into clear domain subdirectories: `core/`, `commands/`, `proxy/`, `ui/`, `utils/`, `listeners/`, `dashboard/`
-- Replaced passive polling model with an **event-driven capture architecture**
-- Introduced pluggable `captureProvider` system with two adapter types:
-  - **Interceptor adapter** — intercepts runtime HTTP calls via proxy; per-provider SSE parsers for Anthropic, OpenAI, and Gemini
-  - **Log adapter** — captures development-time usage from GitHub Copilot and Claude Code logs
-- Dashboard split into three focused modules: `dashboard.ts`, `dashboardData.ts`, `webviewContent.ts`
-- Moved frontend assets from `webview/` to `public/dashboard/`
-
-#### Features
-
-- **Auto-start proxy interceptor** — starts automatically on extension activation; no manual command required
-- **Auto-refresh logs** — log data refreshes automatically on file save; removed the manual "Refresh carbon data" command
-- **Claude Code log support** — captures AI usage from Claude Code alongside GitHub Copilot
-- **Sub-agent support** — log providers now aggregate usage from Claude Code and Copilot sub-agent calls
-- **Budget miniview panel** — compact carbon tracker embedded in the VS Code Explorer sidebar (`public/miniview/`), with color-coded carbon impact and tooltips
-- **Settings panel in dashboard** — configurable options accessible directly from the dashboard UI
-- **Session vs. archived call separation** — sidebar tree view now groups current-session calls separately from archived history, with an expandable archived section showing up to 200 entries
-- **Hash-based call deduplication** — unique IDs (`utils/callId.ts`) prevent duplicate entries from being recorded
-- **`copyCall` command** — copy call details to clipboard from the sidebar
-- **`deleteCall` command** — remove individual calls from the history
-- **`purgeStore` command** — clear all archived call data
-
-#### Bug Fixes
-
-- Fixed sidebar log sort order — newest calls now appear at the top
-- Fixed duplicate call entries caused by repeated log reads
-- Fixed dashboard failing to load in certain workspace configurations
-- Fixed edge cases in Copilot log parsing where some calls were missed
-- Fixed graph scroll/zoom not presenting a scrollable interface in some cases
-
-
-## Development Setup
+## Development setup
 
 For full setup instructions see the [repository README](../README.md#devIn).
 
 ---
 
-## In case of error!
+## Issues and feedback
 
-This is still a project in development, and we encourage the discovery of issues, errors, and requests for improvements. Please reach out using the Bristol University x Ustwo Slack channel or by emailing cg24012@bristol.ac.uk . Thank you!
-
-<!-- ## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines) -->
-<!-- 
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!** -->
+PRISM is under active development. If you find a bug or want to request a feature, please open an issue on GitHub.
