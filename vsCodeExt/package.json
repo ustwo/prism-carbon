@@ -1,10 +1,11 @@
 {
-  "name": "prism",
+  "name": "prism-ustwo",
   "displayName": "PRISM",
   "publisher": "ustwo",
+  "icon": "media/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mx-dv/Estimating-Carbon-For-UsTwo.git"
+    "url": "https://github.com/ustwo/ai-carbon-tracker.git"
   },
   "description": "",
   "version": "1.1.0",
