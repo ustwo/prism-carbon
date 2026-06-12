@@ -106,15 +106,15 @@ function extractClaudeTokens(block: string): TokenCounts | null {
 }
 
 function extractGptTokens(block: string): TokenCounts | null {
-    const usageIdx = block.lastIndexOf('"usage":{"prompt_tokens"');
-    if (usageIdx === -1) { return null; }
+    // Use lastIndexOf on "prompt_tokens" so we always get the most recent usage block.
+    // Searching for the combined string "usage":{"prompt_tokens" misses logs that include
+    // whitespace in the JSON (e.g. Copilot free-tier: "usage": { "prompt_tokens": …).
+    const promptIdx = block.lastIndexOf('"prompt_tokens"');
+    if (promptIdx === -1) { return null; }
 
-    const usageEnd = block.indexOf('}', usageIdx);
-    if (usageEnd === -1) { return null; }
-
-    const usageStr = block.substring(usageIdx, usageEnd + 1);
+    const window = block.substring(Math.max(0, promptIdx - 50), promptIdx + 200);
     const get = (field: string) => {
-        const m = usageStr.match(new RegExp(`"${field}":(\\d+)`));
+        const m = window.match(new RegExp(`"${field}"\\s*:\\s*(\\d+)`));
         return m ? parseInt(m[1], 10) : 0;
     };
 

@@ -350,6 +350,19 @@
       }
     ]
   },
+  "raptor-mini": {
+    "name": "GitHub Copilot (raptor-mini)",
+    "tiers": [
+      {
+        "limit": 2000,
+        "energyPerToken": 1.65
+      },
+      {
+        "limit": "veryLarge",
+        "energyPerToken": 3.85
+      }
+    ]
+  },
   "gpt-4o-mini": {
     "name": "GPT4o mini",
     "tiers": [
