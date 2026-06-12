@@ -86,6 +86,9 @@ export const modelRegistry: Record<string, TieredModel> = {
     "gpt-5-mini": modelFromJson("gpt-5-mini"),
     "gpt-5": modelFromJson("gpt-5"),
 
+    // GitHub Copilot internal models
+    "raptor-mini": modelFromJson("raptor-mini"),
+
     // GPT 4 Models
     "gpt-4-turbo": modelFromJson("gpt-4-turbo"),
     "gpt-4.1-nano": modelFromJson("gpt-4.1-nano"),
