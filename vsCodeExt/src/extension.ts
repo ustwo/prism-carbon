@@ -10,6 +10,7 @@ import { extensionState } from "./extensionState";
 import { MyTreeDataProvider } from "./ui/treeView";
 import { statusBarManager } from "./ui/statusBar";
 import { BudgetMiniViewProvider } from "./ui/budgetMiniView";
+import { CarbonDashboardPanel } from "./dashboard/dashboard";
 import { restoreCallHistory } from "./core/callManager";
 import { registerAllCommands } from "./commands/index";
 import { registerAllListeners } from "./listeners/index";
@@ -64,6 +65,12 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     ...registerAllListeners(context),
     ...registerAllCommands(context),
+    vscode.workspace.onDidChangeConfiguration(e => {
+        if (!e.affectsConfiguration('estimatingCarbon')) { return; }
+        BudgetMiniViewProvider.update(extensionState.budg!);
+        CarbonDashboardPanel.sendData();
+        extensionState.bar?.refresh();
+    }),
   );
 
   await startCapture(context.globalStorageUri.fsPath);

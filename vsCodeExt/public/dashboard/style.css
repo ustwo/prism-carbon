@@ -1669,6 +1669,19 @@ button {
 
 .pref-save-btn:hover { opacity: 0.85; }
 
+.pref-reset-btn {
+    padding: 3px 10px;
+    background: transparent;
+    color: var(--secondary-text);
+    border: 1px solid var(--vscode-panel-border, rgba(128, 128, 128, 0.4));
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.pref-reset-btn:hover { opacity: 0.85; color: var(--text-color); }
+
 .pref-saved {
     font-size: 0.82rem;
     color: var(--carbon-green, var(--low-carbon));

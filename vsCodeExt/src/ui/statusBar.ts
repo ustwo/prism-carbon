@@ -6,8 +6,21 @@
 
 import * as vscode from 'vscode';
 
+function getColorConfig() {
+    const cfg = vscode.workspace.getConfiguration();
+    return {
+        neutral: cfg.get<string>('estimatingCarbon.colorNeutral', '#888888'),
+        green:   cfg.get<string>('estimatingCarbon.colorGreen',   '#89d185'),
+        amber:   cfg.get<string>('estimatingCarbon.colorAmber',   '#e2c08d'),
+        red:     cfg.get<string>('estimatingCarbon.colorRed',     '#f14c4c'),
+    };
+}
+
 export class statusBarManager {
     mainItem = vscode.window.createStatusBarItem();
+
+    private _lastInput    = 0;
+    private _lastCategory: 'neutral' | 'green' | 'amber' | 'red' = 'neutral';
 
     constructor() {
         this.mainItem.text = 'Last Request: 0 g CO₂e';
@@ -15,22 +28,19 @@ export class statusBarManager {
     }
 
     updateBar(input: number, category: 'neutral' | 'green' | 'amber' | 'red' = 'neutral') {
+        this._lastInput    = input;
+        this._lastCategory = category;
+
         this.mainItem.text = input > 0
             ? 'Last Request: ' + input.toFixed(4) + ' g CO₂e'
             : 'Last Request: 0 g CO₂e';
 
-        // VSCode status bar has no built-in green background:
-        // green/neutral = default (no highlight), amber = warning, red = error
-        switch (category) {
-            case 'red':
-                this.mainItem.backgroundColor = new vscode.ThemeColor('statusBarItem.errorBackground');
-                break;
-            case 'amber':
-                this.mainItem.backgroundColor = new vscode.ThemeColor('statusBarItem.warningBackground');
-                break;
-            default:
-                this.mainItem.backgroundColor = undefined;
-                break;
-        }
+        const colors = getColorConfig();
+        this.mainItem.color           = category !== 'neutral' ? colors[category] : undefined;
+        this.mainItem.backgroundColor = undefined;
+    }
+
+    refresh() {
+        this.updateBar(this._lastInput, this._lastCategory);
     }
 }

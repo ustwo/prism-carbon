@@ -95,7 +95,6 @@ export class CarbonDashboardPanel {
                     if (message.minLogs !== undefined && !isNaN(Number(message.minLogs))) {
                         cfg.update('estimatingCarbon.colorMinLogs', Math.max(1, Number(message.minLogs)), vscode.ConfigurationTarget.Global);
                     }
-                    this._sendData();
                     return;
                 }
             }
