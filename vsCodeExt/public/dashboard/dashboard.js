@@ -35,13 +35,20 @@
     })();
 
     // ── Carbon impact colours (configurable, updated when colorConfig arrives) ──
-    const carbonColors = {
+    const CARBON_DEFAULTS = {
         neutral: '#888888',
         green:   '#89d185',
         amber:   '#e2c08d',
         red:     '#f14c4c',
+        minLogs: 10,
     };
-    let carbonMinLogs = 10;
+    const carbonColors = {
+        neutral: CARBON_DEFAULTS.neutral,
+        green:   CARBON_DEFAULTS.green,
+        amber:   CARBON_DEFAULTS.amber,
+        red:     CARBON_DEFAULTS.red,
+    };
+    let carbonMinLogs = CARBON_DEFAULTS.minLogs;
 
     function applyCarbonColors(cfg) {
         carbonColors.neutral = cfg.neutral || carbonColors.neutral;
@@ -156,6 +163,19 @@
             applyCarbonColors({ neutral, green, amber, red, minLogs });
             if (colorSavedMsg) {
                 colorSavedMsg.textContent = '✓ Saved';
+                setTimeout(() => { colorSavedMsg.textContent = ''; }, 2000);
+            }
+        });
+    }
+
+    const colorResetBtn = document.getElementById('color-reset-btn');
+    if (colorResetBtn) {
+        colorResetBtn.addEventListener('click', () => {
+            const { neutral, green, amber, red, minLogs } = CARBON_DEFAULTS;
+            vscode.postMessage({ command: 'saveColors', neutral, green, amber, red, minLogs });
+            applyCarbonColors({ neutral, green, amber, red, minLogs });
+            if (colorSavedMsg) {
+                colorSavedMsg.textContent = '✓ Reset';
                 setTimeout(() => { colorSavedMsg.textContent = ''; }, 2000);
             }
         });
