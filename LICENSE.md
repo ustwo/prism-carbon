@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) [2026] [Estimating Carbon]
+Copyright (c) [2026] [ustwo London Ltd and University of Bristol]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
