@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import * as convert from '../core/convert';
+import * as convert from './convert';
 
 suite("Conversion Tests", () => {
     for (const [modelKey, model] of Object.entries(convert.modelRegistry)) {

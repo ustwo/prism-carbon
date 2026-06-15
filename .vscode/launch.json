@@ -6,11 +6,11 @@
       "type": "extensionHost",
       "request": "launch",
       "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}/vsCodeExt",
+        "--extensionDevelopmentPath=${workspaceFolder}/",
         "${workspaceFolder}"
       ],
       "outFiles": [
-        "${workspaceFolder}/vsCodeExt/dist/**/*.js"
+        "${workspaceFolder}/dist/**/*.js"
       ]
     }
   ]
