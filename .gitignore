@@ -4,10 +4,8 @@ package-lock.json
 out/
 dist/
 .node_modules
-.vscode/
-.vscode-test
+.vscode-test.*
 .vscode-test/
-.vscode*
 *.vsix
 distExtension/*
 !distExtension/.gitkeep
