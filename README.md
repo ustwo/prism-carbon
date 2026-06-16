@@ -1,6 +1,5 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=fff)](#)
 [![Visual Studio Code](https://img.shields.io/badge/VS%20Code-0078d7?logo=visualstudiocode&logoColor=white)](#)
-[![Cursor](https://custom-icon-badges.demolab.com/badge/Cursor-000000?logo=cursor-ai-white)](#)
 [![GitHub Copilot](https://img.shields.io/badge/GitHub%20Copilot-000?logo=githubcopilot&logoColor=fff)](#)
 
 # PRISM — AI Carbon Tracker
