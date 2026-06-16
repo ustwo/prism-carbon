@@ -8,11 +8,11 @@ PRISM is a VS Code extension that estimates the carbon footprint of AI interacti
 
 ## What PRISM tracks
 
-| Source | How it's captured |
-|---|---|
+| Source              | How it's captured                                                     |
+| ------------------- | --------------------------------------------------------------------- |
 | GitHub Copilot Chat | Reads Copilot's log file (requires Trace log level — see setup below) |
-| Claude Code | Reads Claude Code's log file automatically |
-| Runtime LLM calls | HTTP proxy intercepts API calls in VS Code terminals |
+| Claude Code         | Reads Claude Code's log file automatically                            |
+| Runtime LLM calls   | HTTP proxy intercepts API calls in VS Code terminals                  |
 
 ## Contents
 
@@ -84,10 +84,10 @@ Open any terminal in VS Code — PRISM automatically injects the proxy environme
 
 <h2 id="commands">Commands</h2>
 
-| Command | Description |
-|---|---|
-| `PRISM: Open Carbon Dashboard` | Opens the dashboard |
-| `PRISM: Reset budget window` | Clears current session data |
+| Command                        | Description                       |
+| ------------------------------ | --------------------------------- |
+| `PRISM: Open Carbon Dashboard` | Opens the dashboard               |
+| `PRISM: Reset budget window`   | Clears current session data       |
 | `PRISM: Purge all stored logs` | Deletes all archived call history |
 
 ---
@@ -95,18 +95,22 @@ Open any terminal in VS Code — PRISM automatically injects the proxy environme
 <h2 id="supported-models">Supported models</h2>
 
 ### GitHub Copilot
+
 - raptor-mini (free tier)
 
 ### OpenAI
+
 - o1, o3, o3-mini, o4, o4-mini (all effort levels)
 - GPT-4o, GPT-4o Mini
 - GPT-4 Turbo, GPT-4.1, GPT-4.1 Mini, GPT-4.1 Nano
 - GPT-5 (all variants: high, medium, low, mini, nano)
 
 ### Anthropic
+
 - Claude Haiku, Sonnet, Opus (3.x and 4.x families)
 
 ### Google
+
 - Gemini 2.5 Flash, Gemini 2.5 Pro
 - Gemini 3 Flash, Gemini 3.1 Pro
 
@@ -181,7 +185,7 @@ Use this to produce a self-contained `.vsix` file you can install on any machine
 
 - [Node.js](https://nodejs.org/) v18 or later
 - [npm](https://www.npmjs.com/) (comes with Node.js)
-- [Visual Studio Code](https://code.visualstudio.com/) v1.74 or later (or [Cursor](https://www.cursor.com/))
+- [Visual Studio Code](https://code.visualstudio.com/) v1.74 or later
 
 #### 1. Build the VSIX
 
@@ -209,8 +213,6 @@ This compiles the source and produces `PRISM-CARBON.vsix` inside `distExtension/
 ```bash
 code --install-extension "distExtension/PRISM-CARBON.vsix"
 ```
-
-For Cursor, replace `code` with `cursor`.
 
 #### After installing
 
