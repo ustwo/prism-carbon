@@ -162,6 +162,8 @@
             const minLogs = parseInt(document.getElementById('color-min-logs')?.value || '10', 10);
             vscode.postMessage({ command: 'saveColors', neutral, green, amber, red, minLogs });
             applyCarbonColors({ neutral, green, amber, red, minLogs });
+            // Re-render heatmap cells immediately (they read carbonColors directly)
+            if (heatChart) { heatChart.update('none'); }
             if (colorSavedMsg) {
                 colorSavedMsg.textContent = '✓ Saved';
                 setTimeout(() => { colorSavedMsg.textContent = ''; }, 2000);
@@ -175,6 +177,8 @@
             const { neutral, green, amber, red, minLogs } = CARBON_DEFAULTS;
             vscode.postMessage({ command: 'saveColors', neutral, green, amber, red, minLogs });
             applyCarbonColors({ neutral, green, amber, red, minLogs });
+            // Re-render heatmap cells immediately (they read carbonColors directly)
+            if (heatChart) { heatChart.update('none'); }
             if (colorSavedMsg) {
                 colorSavedMsg.textContent = '✓ Reset';
                 setTimeout(() => { colorSavedMsg.textContent = ''; }, 2000);
