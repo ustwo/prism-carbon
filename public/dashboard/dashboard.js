@@ -95,7 +95,8 @@
     let heatPercentiles = { count: 0, p50: null, p90: null };
 
     function classifyDayEmissions(v) {
-        if (!heatPercentiles.p50 || !heatPercentiles.p90 || heatPercentiles.count < carbonMinLogs) {
+        // Heatmap classifies as soon as percentiles exist — no minLogs gate.
+        if (!heatPercentiles.p50 || !heatPercentiles.p90) {
             return 'neutral';
         }
         if (v <= heatPercentiles.p50) { return 'green'; }
@@ -555,8 +556,8 @@ backgroundColor(c) {
                 const hn = nonZero.length;
                 heatPercentiles = {
                     count: hn,
-                    p50: hn >= 10 ? nonZero[Math.floor(hn * 0.5)] : null,
-                    p90: hn >= 10 ? nonZero[Math.floor(hn * 0.9)] : null,
+                    p50: hn >= 1 ? nonZero[Math.floor(hn * 0.5)] : null,
+                    p90: hn >= 1 ? nonZero[Math.floor(hn * 0.9)] : null,
                 };
                 heatChart.data.datasets[0].data = message.heatMapData;
                 heatChart.update('none');
