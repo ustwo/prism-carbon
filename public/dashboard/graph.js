@@ -17,6 +17,7 @@ let zoom = 1; // zoom controls
 const zoomGap = 1.5;
 const minZoom = 1;
 const maxZoom = 100;
+let carbonMinLogs = 10; // min commits before percentile colour classification kicks in
 
 const ref = document.getElementById("branchGraph"); // main container for graph
 
@@ -43,9 +44,9 @@ if (ref) {
     referenceStrip.style.fontSize = "12px";
     referenceStrip.style.alignItems = "center";
     [ // creates the reference strip
-        { label: "Low Emission", color: "var(--low-carbon)" },
-        { label: "Average Emission", color: "var(--avg-carbon)" },
-        { label: "High Emission", color: "var(--high-carbon)" },
+        { label: "Low (below p50)", color: "var(--carbon-green)" },
+        { label: "Average (p50–p90)", color: "var(--carbon-amber)" },
+        { label: "High (above p90)", color: "var(--carbon-red)" },
     ].forEach(strip => {
         const reference = document.createElement("div");
         reference.style.display = "flex";
@@ -302,6 +303,17 @@ if (ref) {
 
 window.addEventListener("message", event => { // receive data from backend
     const message = event.data;
+
+    // Keep the percentile threshold in sync with the configurable colour settings.
+    // Palette (--carbon-*) is applied to documentElement by dashboard.js and read live
+    // through var() references, so changing colours only requires a redraw here.
+    if (message.command === "updateData" && message.colorConfig) {
+        if (message.colorConfig.minLogs !== undefined) {
+            carbonMinLogs = message.colorConfig.minLogs;
+        }
+        if (pendingCommitDots) { drawGraphs(); }
+    }
+
     if (message.command === "commitDots") { // draw graph if data received
         pendingCommitDots = message.data;
         drawGraphs();
@@ -577,14 +589,37 @@ function drawCumulativeGraph(scrollRatio = 1) {
     }, 10);
 }
 
-function getCColor(carbon) {
-    if (carbon < 30) {
-        return "var(--low-carbon)";
+// Percentile thresholds over the drawn commits, mirroring the miniview/heatmap.
+// Returns neutral (null percentiles) until at least carbonMinLogs commits exist.
+function computeCommitPercentiles(commits) {
+    const vals = commits
+        .map(c => c.carbon)
+        .filter(v => v > 0)
+        .sort((a, b) => a - b);
+    const n = vals.length;
+    if (n < carbonMinLogs) {
+        return { count: n, p50: null, p90: null };
     }
-    if (carbon < 80) {
-        return "var(--avg-carbon)";
+    return {
+        count: n,
+        p50: vals[Math.floor(n * 0.5)],
+        p90: vals[Math.floor(n * 0.9)],
+    };
+}
+
+// Colour a commit by percentile category using the configurable carbon palette,
+// so the timeline graph matches the miniview/heatmap colours.
+function getCColor(carbon, percentiles) {
+    if (!percentiles || !percentiles.p50 || !percentiles.p90) {
+        return "var(--carbon-neutral)";
     }
-    return "var(--high-carbon)";
+    if (carbon <= percentiles.p50) {
+        return "var(--carbon-green)";
+    }
+    if (carbon <= percentiles.p90) {
+        return "var(--carbon-amber)";
+    }
+    return "var(--carbon-red)";
 }
 
 function makeButtons(text, id) { // toggle buttons
@@ -706,6 +741,8 @@ function drawCandleStickTimelineGraph(scrollRatio = 1){
         maxCarbon = 1;
     }
 
+    const carbonPercentiles = computeCommitPercentiles(allCommits);
+
     const startEdgePadding = (maxTime - minTime) * 0.08;
     minTime = minTime - startEdgePadding;
     maxTime = maxTime + startEdgePadding;
@@ -740,7 +777,7 @@ function drawCandleStickTimelineGraph(scrollRatio = 1){
         line.setAttribute("y1", bottomYSpace);
         line.setAttribute("y2", topYSpace);
 
-        line.setAttribute("stroke", getCColor(commit.carbon));
+        line.setAttribute("stroke", getCColor(commit.carbon, carbonPercentiles));
         line.setAttribute("stroke-width", "5.5");
 
         line.style.cursor = "pointer";

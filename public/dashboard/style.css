@@ -231,16 +231,14 @@ h2 { text-align: center; font-weight: normal; margin-bottom: 15px; }
 .legend-gradient {
     width: 100%;
     height: 100%;
+    /* Three discrete bands matching the heatmap's percentile categories
+       (green = below p50, amber = p50–p90, red = above p90). Uses the
+       configurable carbon palette so it stays in sync with the cells. */
     background: linear-gradient(
         to right,
-        rgb(0, 120, 0),     /* dark green (low) */
-        rgb(0, 255, 0),     /* bright green (400) */
-
-        rgb(180, 150, 0),   /* start yellow */
-        rgb(255, 255, 0),   /* bright yellow (2000) */
-
-        rgb(180, 0, 0),     /* start red */
-        rgb(255, 0, 0)      /* strong red (high) */
+        var(--carbon-green) 0%,    var(--carbon-green) 33.33%,
+        var(--carbon-amber) 33.33%, var(--carbon-amber) 66.66%,
+        var(--carbon-red)   66.66%, var(--carbon-red)   100%
     );
 }
 .legend-label {
