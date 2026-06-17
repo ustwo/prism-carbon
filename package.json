@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/ustwo/prism-carbon.git"
   },
-  "description": "",
+  "description": "PRISM is a VS Code extension that estimates the carbon footprint of AI interactions in your IDE. It captures token usage from GitHub Copilot Chat, Claude Code, and runtime LLM API calls, then estimates CO₂ equivalents and surfaces them in the sidebar, status bar, and a live dashboard.",
   "version": "1.0.1",
   "release": {
     "branches": [
