@@ -32,7 +32,7 @@ PRISM is a VS Code extension that estimates the carbon footprint of AI interacti
 
 PRISM captures AI token usage from two sources:
 
-- **Development-time** — reads log files from GitHub Copilot Chat and Claude Code automatically on every file save.
+- **Development-time** — reads GitHub Copilot Chat and Claude Code log files automatically at a configurable interval.
 - **Runtime** — an HTTP proxy intercepts outbound LLM API calls; proxy environment variables are injected into every new VS Code terminal so scripts run without any manual configuration.
 
 Results appear immediately in the sidebar tree, status bar, and dashboard.
