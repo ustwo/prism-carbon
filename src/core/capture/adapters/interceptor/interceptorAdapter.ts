@@ -1,10 +1,11 @@
 /****************************************************************
  *                    INTERCEPTORADAPTER.TS                     *
- *  THE SINGLE CAPTURE MECHANISM — AN HTTP PROXY THAT           *
- *  INTERCEPTS ALL LLM API CALLS. ROUTES EACH RESPONSE          *
- *  THROUGH THE REGISTERED PROVIDERS TO EXTRACT TOKEN DATA,     *
- *  CALCULATES EMISSIONS, AND EMITS A CALL.                     *
- *  AUTO-INJECTS PROXY ENV VARS INTO EVERY NEW TERMINAL.        *
+ *  OPTIONAL RUNTIME CAPTURE MECHANISM — AN HTTP PROXY THAT     *
+ *  INTERCEPTS LLM API CALLS MADE FROM VS CODE TERMINALS.       *
+ *  ONLY STARTED WHEN estimatingCarbon.enableRuntimeProxy IS    *
+ *  TRUE (OFF BY DEFAULT). USE THIS TO CAPTURE CALLS FROM YOUR  *
+ *  OWN SCRIPTS IN ADDITION TO IN-IDE TOOLS (CLAUDE CODE AND    *
+ *  COPILOT, WHICH ARE CAPTURED VIA LOG FILES WITHOUT A PROXY). *
  ****************************************************************/
 
 import * as vscode from 'vscode';

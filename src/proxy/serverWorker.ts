@@ -53,10 +53,18 @@ async function startServer(port: number, storagePath: string) {
 
         server = mockttp.getLocal({ https: httpsConfig });
 
-        // Forward all traffic — no body buffering here, stream reaches client immediately
-        await server.forAnyRequest().thenPassThrough({
-            ignoreHostHttpsErrors: true,
-        });
+        // Forward all traffic — no body buffering here, stream reaches client immediately.
+        // Honour any upstream corporate proxy already configured in the environment.
+        const upstreamProxyUrl =
+            process.env.HTTPS_PROXY || process.env.https_proxy ||
+            process.env.HTTP_PROXY  || process.env.http_proxy;
+        const noProxyList = (process.env.NO_PROXY || process.env.no_proxy)
+            ?.split(',').map(s => s.trim()).filter(Boolean);
+        const proxyConfig = upstreamProxyUrl
+            ? { proxyUrl: upstreamProxyUrl, noProxy: noProxyList }
+            : undefined;
+
+        await server.forAnyRequest().thenPassThrough({ proxyConfig });
 
         // Track AI request URLs by id so we can correlate with the response event
         const pendingAiRequests = new Map<string, string>(); // id -> url
