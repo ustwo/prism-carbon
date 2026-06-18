@@ -84,6 +84,17 @@ To enable, open Settings (`Cmd+,` / `Ctrl+,`), search for **PRISM**, and turn on
 
 Once enabled, open any terminal in VS Code — PRISM automatically injects the proxy environment variables. Run your scripts as normal; LLM API calls are captured and appear in the sidebar in real time.
 
+### Security considerations for Runtime Proxy
+
+⚠️ **IMPORTANT** — The runtime proxy intercepts HTTPS traffic. Before enabling, understand the following:
+
+- **HTTPS interception** — The proxy creates a self-signed certificate authority and installs it into terminal processes to decrypt API traffic. This allows the proxy to see the plaintext of all HTTPS requests and responses made from those terminals.
+- **Certificate storage** — The CA private key is stored on disk (`globalStorage/local-ca.key`). If your machine is compromised, an attacker could use this key to decrypt intercepted traffic.
+- **Response bodies captured** — Complete API response bodies are processed to extract token counts. While PRISM only records models and token usage, the raw response is briefly held in memory.
+- **Terminal environment pollution** — Proxy environment variables are injected into all new terminals. While PRISM targets only LLM APIs, misconfigured scripts could be affected.
+- **Unintended API interception** — Simple URL matching may inadvertently capture non-LLM API traffic (e.g., other GitHub API calls, general HTTPs requests).
+- **Recommendation** — Enable the proxy only if you understand these risks and trust PRISM. For production environments or sensitive work, consider disabling it or running PRISM in a sandboxed workspace.
+
 ---
 
 <h2 id="commands">Commands</h2>
