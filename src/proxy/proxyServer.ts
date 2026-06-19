@@ -22,6 +22,10 @@ export class InterceptorProxy {
         this.proxyLog = vscode.window.createOutputChannel('PRISM — Proxy');
     }
 
+    public get workerPid(): number | undefined {
+        return this.child?.pid;
+    }
+
     public async start(storagePath: string): Promise<void> {
         return new Promise((resolve, reject) => {
             const workerPath = path.join(__dirname, 'proxy', 'serverWorker.js');

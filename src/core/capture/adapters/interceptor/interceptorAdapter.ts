@@ -9,6 +9,8 @@
 
 import * as vscode from 'vscode';
 import * as cp from 'child_process';
+import * as fs from 'fs';
+import * as path from 'path';
 import { promisify } from 'util';
 import { InterceptorProxy } from '../../../../proxy/proxyServer';
 import { state } from '../../../state';
@@ -21,23 +23,38 @@ import { logger } from '../../../../utils/logger';
 
 const execAsync = promisify(cp.exec);
 
+const LOCK_FILE = 'proxy.lock';
+
+interface ProxyLock { hostPid: number; workerPid: number; port: number; }
+
 let proxyServer: InterceptorProxy | undefined;
 let terminalListener: vscode.Disposable | undefined;
+let storagePath: string | undefined;
 
 export async function startCapture(globalStoragePath: string): Promise<void> {
     if (state.runningInterceptor) {
         logger.debug('Capture already running — skipping start');
         return;
     }
+    storagePath = globalStoragePath;
     try {
-        // Guard against an orphaned worker from a previous session (e.g. a hard
-        // crash where deactivate never ran) still holding the port.
-        await freeProxyPort(PROXY_PORT);
+        // Reclaim the port only if it's free or held by a dead orphan. If another
+        // live VS Code window already owns the proxy, stand down — one shared
+        // proxy per machine, and we must not kill a sibling's worker.
+        if (!(await ensurePortReclaimable(PROXY_PORT, globalStoragePath))) {
+            logger.info('Proxy already owned by another VS Code window — this window will not start its own.');
+            return;
+        }
 
         logger.info(`Starting interceptor proxy on port ${PROXY_PORT}...`);
         proxyServer = new InterceptorProxy(PROXY_PORT, onApiResponseText);
         await proxyServer.start(globalStoragePath);
         state.runningInterceptor = true;
+        writeLock(globalStoragePath, {
+            hostPid: process.pid,
+            workerPid: proxyServer.workerPid ?? -1,
+            port: PROXY_PORT,
+        });
         logger.info(`Interceptor proxy started on port ${PROXY_PORT}`);
 
         injectProxyIntoExistingTerminals();
@@ -61,29 +78,94 @@ export async function stopCapture(): Promise<void> {
         await proxyServer.stop();
         proxyServer = undefined;
         state.runningInterceptor = false;
+        if (storagePath) { clearOwnLock(storagePath); }
         logger.info('Interceptor proxy stopped');
     }
 }
 
 /**
- * Kills any orphaned proxy still listening on `port` before we start a fresh
- * one. Only targets Node processes, so we never kill an unrelated service that
- * happens to use the same port. Best-effort: failures are logged, not thrown.
+ * Decides whether this window may take port `port`, and clears the way if so.
+ * Returns true when the port is free, or when it's held by an orphaned worker
+ * whose owning VS Code window is gone (hard crash) — in which case the orphan
+ * is killed. Returns false when a *live* sibling window owns the proxy, so we
+ * never kill a healthy sibling's worker. Best-effort: failures fall back to
+ * "reclaimable" so a transient check error never blocks capture.
  */
-async function freeProxyPort(port: number): Promise<void> {
+async function ensurePortReclaimable(port: number, storagePath: string): Promise<boolean> {
     try {
         const pids = await listeningPids(port);
+        if (pids.length === 0) {
+            clearLock(storagePath);
+            return true;
+        }
+
+        const lock = readLock(storagePath);
+        if (lock && lock.hostPid !== process.pid && isProcessAlive(lock.hostPid)) {
+            // Owner window is still running — leave its proxy alone.
+            return false;
+        }
+
+        // Orphan (owner host dead or no lock): reclaim the port. Only kill Node
+        // processes so we never touch an unrelated service on the same port.
         for (const pid of pids) {
             if (!(await isNodeProcess(pid))) {
                 logger.warn(`Port ${port} held by non-Node PID ${pid} — leaving it alone`);
                 continue;
             }
             logger.info(`Killing orphaned proxy (PID ${pid}) on port ${port}`);
-            process.kill(pid, 'SIGKILL');
+            try { process.kill(pid, 'SIGKILL'); } catch (e) { logger.debug(`kill ${pid} failed: ${e}`); }
         }
+        clearLock(storagePath);
+        return true;
     } catch (error) {
-        logger.debug(`freeProxyPort: nothing to clean up or check failed (${error})`);
+        logger.debug(`ensurePortReclaimable: check failed, assuming free (${error})`);
+        return true;
     }
+}
+
+function isProcessAlive(pid: number): boolean {
+    try {
+        process.kill(pid, 0);
+        return true;
+    } catch (e: any) {
+        // EPERM = process exists but we can't signal it; still "alive".
+        return e?.code === 'EPERM';
+    }
+}
+
+function lockPath(storagePath: string): string {
+    return path.join(storagePath, LOCK_FILE);
+}
+
+function readLock(storagePath: string): ProxyLock | null {
+    try {
+        const raw = fs.readFileSync(lockPath(storagePath), 'utf-8');
+        const parsed = JSON.parse(raw);
+        if (typeof parsed?.hostPid === 'number') { return parsed; }
+        return null;
+    } catch { return null; }
+}
+
+function writeLock(storagePath: string, lock: ProxyLock): void {
+    try {
+        fs.writeFileSync(lockPath(storagePath), JSON.stringify(lock));
+    } catch (e) {
+        logger.debug(`writeLock failed: ${e}`);
+    }
+}
+
+function clearLock(storagePath: string): void {
+    try {
+        fs.rmSync(lockPath(storagePath), { force: true });
+    } catch (e) {
+        logger.debug(`clearLock failed: ${e}`);
+    }
+}
+
+/** Remove the lock only if this window owns it. */
+function clearOwnLock(storagePath: string): void {
+    const lock = readLock(storagePath);
+    if (lock && lock.hostPid === process.pid) { clearLock(storagePath); }
 }
 
 async function listeningPids(port: number): Promise<number[]> {
