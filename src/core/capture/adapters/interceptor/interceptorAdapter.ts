@@ -46,6 +46,10 @@ export async function stopCapture(): Promise<void> {
     terminalListener?.dispose();
     terminalListener = undefined;
 
+    // Unset the proxy env vars from any terminal we injected into, so they
+    // don't keep pointing at the now-dead proxy after the extension stops.
+    cleanupProxyFromExistingTerminals();
+
     if (proxyServer) {
         logger.info('Stopping interceptor proxy...');
         await proxyServer.stop();
@@ -110,4 +114,14 @@ function injectProxyIntoTerminal(terminal: vscode.Terminal): void {
 
 function injectProxyIntoExistingTerminals(): void {
     vscode.window.terminals.forEach(injectProxyIntoTerminal);
+}
+
+function cleanupProxyFromTerminal(terminal: vscode.Terminal): void {
+    const keys = Object.keys(proxyEnv());
+    terminal.sendText(`unset ${keys.join(' ')}`, true);
+    logger.debug(`Proxy env unset from terminal: ${terminal.name}`);
+}
+
+function cleanupProxyFromExistingTerminals(): void {
+    vscode.window.terminals.forEach(cleanupProxyFromTerminal);
 }
