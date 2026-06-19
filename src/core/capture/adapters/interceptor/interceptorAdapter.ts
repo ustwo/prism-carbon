@@ -8,6 +8,8 @@
  ****************************************************************/
 
 import * as vscode from 'vscode';
+import * as cp from 'child_process';
+import { promisify } from 'util';
 import { InterceptorProxy } from '../../../../proxy/proxyServer';
 import { state } from '../../../state';
 import { PROXY_PORT } from '../../../../extensionState';
@@ -17,10 +19,10 @@ import { ALL_PROVIDERS } from './providers/index';
 import { isSSE, parseSseLines } from '../../sseParser';
 import { logger } from '../../../../utils/logger';
 
+const execAsync = promisify(cp.exec);
+
 let proxyServer: InterceptorProxy | undefined;
 let terminalListener: vscode.Disposable | undefined;
-
-const PROXY_URL = `http://127.0.0.1:${PROXY_PORT}`;
 
 export async function startCapture(globalStoragePath: string): Promise<void> {
     if (state.runningInterceptor) {
@@ -28,6 +30,10 @@ export async function startCapture(globalStoragePath: string): Promise<void> {
         return;
     }
     try {
+        // Guard against an orphaned worker from a previous session (e.g. a hard
+        // crash where deactivate never ran) still holding the port.
+        await freeProxyPort(PROXY_PORT);
+
         logger.info(`Starting interceptor proxy on port ${PROXY_PORT}...`);
         proxyServer = new InterceptorProxy(PROXY_PORT, onApiResponseText);
         await proxyServer.start(globalStoragePath);
@@ -56,6 +62,62 @@ export async function stopCapture(): Promise<void> {
         proxyServer = undefined;
         state.runningInterceptor = false;
         logger.info('Interceptor proxy stopped');
+    }
+}
+
+/**
+ * Kills any orphaned proxy still listening on `port` before we start a fresh
+ * one. Only targets Node processes, so we never kill an unrelated service that
+ * happens to use the same port. Best-effort: failures are logged, not thrown.
+ */
+async function freeProxyPort(port: number): Promise<void> {
+    try {
+        const pids = await listeningPids(port);
+        for (const pid of pids) {
+            if (!(await isNodeProcess(pid))) {
+                logger.warn(`Port ${port} held by non-Node PID ${pid} — leaving it alone`);
+                continue;
+            }
+            logger.info(`Killing orphaned proxy (PID ${pid}) on port ${port}`);
+            process.kill(pid, 'SIGKILL');
+        }
+    } catch (error) {
+        logger.debug(`freeProxyPort: nothing to clean up or check failed (${error})`);
+    }
+}
+
+async function listeningPids(port: number): Promise<number[]> {
+    const cmd = process.platform === 'win32'
+        ? `netstat -ano -p tcp | findstr LISTENING | findstr :${port}`
+        : `lsof -ti tcp:${port} -sTCP:LISTEN`;
+
+    const { stdout } = await execAsync(cmd);
+
+    if (process.platform === 'win32') {
+        // Last column of each matching line is the PID.
+        const pids = stdout.trim().split(/\r?\n/)
+            .map(line => Number(line.trim().split(/\s+/).pop()))
+            .filter(pid => Number.isInteger(pid) && pid > 0);
+        return [...new Set(pids)];
+    }
+
+    return [...new Set(
+        stdout.trim().split(/\r?\n/)
+            .map(Number)
+            .filter(pid => Number.isInteger(pid) && pid > 0)
+    )];
+}
+
+async function isNodeProcess(pid: number): Promise<boolean> {
+    try {
+        if (process.platform === 'win32') {
+            const { stdout } = await execAsync(`tasklist /fi "PID eq ${pid}" /fo csv /nh`);
+            return /node\.exe/i.test(stdout);
+        }
+        const { stdout } = await execAsync(`ps -p ${pid} -o comm=`);
+        return /node/i.test(stdout);
+    } catch {
+        return false;
     }
 }
 
