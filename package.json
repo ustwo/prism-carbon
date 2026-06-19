@@ -192,6 +192,11 @@
           "default": 10,
           "minimum": 1,
           "description": "Minimum number of recorded calls required before percentile colour classification activates. Below this count all calls are shown in the neutral colour."
+        },
+        "estimatingCarbon.enableRuntimeProxy": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enable the runtime HTTP proxy to capture LLM API calls made from VS Code terminals (e.g. from your own scripts using the OpenAI, Anthropic, or Gemini SDKs).\n\nWhen enabled, PRISM starts a local HTTPS interception proxy and injects proxy environment variables into every new terminal. This requires a self-signed CA certificate to be generated and trusted by terminal processes.\n\n**Disable** this if you only use Claude Code and GitHub Copilot Chat — those are captured via log files and do not require the proxy."
         }
       }
     }

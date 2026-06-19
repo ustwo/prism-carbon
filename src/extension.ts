@@ -73,7 +73,10 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
   );
 
-  await startCapture(context.globalStorageUri.fsPath);
+  const proxyEnabled = vscode.workspace.getConfiguration('estimatingCarbon').get<boolean>('enableRuntimeProxy', false);
+  if (proxyEnabled) {
+    await startCapture(context.globalStorageUri.fsPath);
+  }
 
   log.info('PRISM activated');
 
