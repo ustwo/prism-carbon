@@ -1,10 +1,13 @@
 /****************************************************************
  *                    INTERCEPTORADAPTER.TS                     *
- *  THE SINGLE CAPTURE MECHANISM — AN HTTP PROXY THAT           *
- *  INTERCEPTS ALL LLM API CALLS. ROUTES EACH RESPONSE          *
- *  THROUGH THE REGISTERED PROVIDERS TO EXTRACT TOKEN DATA,     *
- *  CALCULATES EMISSIONS, AND EMITS A CALL.                     *
- *  AUTO-INJECTS PROXY ENV VARS INTO EVERY NEW TERMINAL.        *
+ *  OPTIONAL RUNTIME CAPTURE MECHANISM — AN HTTP PROXY THAT     *
+ *  INTERCEPTS LLM API CALLS MADE FROM VS CODE TERMINALS.       *
+ *  ONLY STARTED WHEN estimatingCarbon.enableRuntimeProxy IS    *
+ *  TRUE (OFF BY DEFAULT). USE THIS TO CAPTURE CALLS FROM YOUR  *
+ *  OWN SCRIPTS IN ADDITION TO IN-IDE TOOLS (CLAUDE CODE AND    *
+ *  COPILOT, WHICH ARE CAPTURED VIA LOG FILES WITHOUT A PROXY). *
+ *  ROUTES EACH RESPONSE THROUGH THE REGISTERED PROVIDERS TO    *
+ *  EXTRACT TOKENS, AND AUTO-INJECTS PROXY ENV INTO TERMINALS.  *
  *  EACH VS CODE WINDOW RUNS ITS OWN PROXY ON ITS OWN PORT, SO  *
  *  CAPTURE IS INDEPENDENT AND CORRECTLY ATTRIBUTED PER WINDOW. *
  *  A PID REGISTRY GARBAGE-COLLECTS PROXIES LEFT BY CRASHED     *
@@ -45,6 +48,22 @@ export async function startCapture(globalStoragePath: string): Promise<void> {
     }
     storagePath = globalStoragePath;
     try {
+        // Show security warning before starting the proxy.
+        const acknowledged = await vscode.window.showWarningMessage(
+            '⚠️ PRISM Runtime Proxy — Security Warning',
+            {
+                modal: true,
+                detail: 'The runtime proxy intercepts HTTPS traffic to capture LLM API calls. This means:\n\n• Your HTTPS traffic is decrypted using a self-signed certificate stored on disk\n• Complete API responses are processed in memory before being analyzed\n• Terminal environment variables are modified to route traffic through the proxy\n\nEnable only if you understand and accept these risks. See README for details.'
+            },
+            'I understand and accept the risks',
+            'Cancel'
+        );
+
+        if (acknowledged !== 'I understand and accept the risks') {
+            logger.info('User cancelled proxy startup due to security warning');
+            return;
+        }
+
         // Clean up proxies left behind by VS Code windows that crashed without
         // running deactivate. Never touches a live sibling's worker.
         await gcOrphanedProxies(globalStoragePath);

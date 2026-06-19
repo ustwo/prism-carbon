@@ -8,11 +8,11 @@ PRISM is a VS Code extension that estimates the carbon footprint of AI interacti
 
 ## What PRISM tracks
 
-| Source              | How it's captured                                                     |
-| ------------------- | --------------------------------------------------------------------- |
-| GitHub Copilot Chat | Reads Copilot's log file (requires Trace log level — see setup below) |
-| Claude Code         | Reads Claude Code's log file automatically                            |
-| Runtime LLM calls   | HTTP proxy intercepts API calls in VS Code terminals                  |
+| Source              | How it's captured                                                                          |
+| ------------------- | ------------------------------------------------------------------------------------------ |
+| GitHub Copilot Chat | Reads Copilot's log file (requires Trace log level — see setup below)                      |
+| Claude Code         | Reads Claude Code's log file automatically                                                 |
+| Runtime LLM calls   | HTTP proxy intercepts API calls in VS Code terminals (opt-in — disabled by default)        |
 
 ## Contents
 
@@ -32,8 +32,8 @@ PRISM is a VS Code extension that estimates the carbon footprint of AI interacti
 
 PRISM captures AI token usage from two sources:
 
-- **Development-time** — reads GitHub Copilot Chat and Claude Code log files automatically at a configurable interval.
-- **Runtime** — an HTTP proxy intercepts outbound LLM API calls; proxy environment variables are injected into every new VS Code terminal so scripts run without any manual configuration.
+- **Development-time** — reads GitHub Copilot Chat and Claude Code log files automatically at a configurable interval. This is always active and requires no configuration beyond the Copilot log level step below.
+- **Runtime** *(opt-in)* — an HTTP proxy intercepts outbound LLM API calls made from your own scripts running in VS Code terminals. Disabled by default — enable it in settings if you want to track runtime API usage in addition to your in-IDE tools.
 
 Results appear immediately in the sidebar tree, status bar, and dashboard.
 
@@ -78,7 +78,22 @@ The dashboard shows a timeline graph, model breakdown, and cumulative session em
 
 ### Runtime analysis
 
-Open any terminal in VS Code — PRISM automatically injects the proxy environment variables. Run your scripts as normal; LLM API calls are captured and appear in the sidebar in real time.
+> **Disabled by default.** Runtime capture requires an HTTP proxy that intercepts terminal traffic and injects a trusted certificate into terminal processes. Enable it only if you want to track LLM API calls made by your own scripts, in addition to your in-IDE tools (Claude Code and Copilot Chat are always captured without this setting).
+
+To enable, open Settings (`Cmd+,` / `Ctrl+,`), search for **PRISM**, and turn on **Enable Runtime Proxy**.
+
+Once enabled, open any terminal in VS Code — PRISM automatically injects the proxy environment variables. Run your scripts as normal; LLM API calls are captured and appear in the sidebar in real time.
+
+### Security considerations for Runtime Proxy
+
+⚠️ **IMPORTANT** — The runtime proxy intercepts HTTPS traffic. Before enabling, understand the following:
+
+- **HTTPS interception** — The proxy creates a self-signed certificate authority and installs it into terminal processes to decrypt API traffic. This allows the proxy to see the plaintext of all HTTPS requests and responses made from those terminals.
+- **Certificate storage** — The CA private key is stored on disk (`globalStorage/local-ca.key`). If your machine is compromised, an attacker could use this key to decrypt intercepted traffic.
+- **Response bodies captured** — Complete API response bodies are processed to extract token counts. While PRISM only records models and token usage, the raw response is briefly held in memory.
+- **Terminal environment pollution** — Proxy environment variables are injected into all new terminals. While PRISM targets only LLM APIs, misconfigured scripts could be affected.
+- **Unintended API interception** — Simple URL matching may inadvertently capture non-LLM API traffic (e.g., other GitHub API calls, general HTTPs requests).
+- **Recommendation** — Enable the proxy only if you understand these risks and trust PRISM. For production environments or sensitive work, consider disabling it or running PRISM in a sandboxed workspace.
 
 ---
 

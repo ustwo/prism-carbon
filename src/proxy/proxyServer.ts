@@ -32,8 +32,13 @@ export class InterceptorProxy {
         return new Promise((resolve, reject) => {
             const workerPath = path.join(__dirname, 'proxy', 'serverWorker.js');
 
+            const { PATH, HOME, TMPDIR, TEMP, TMP,
+                    HTTP_PROXY, HTTPS_PROXY, http_proxy, https_proxy,
+                    NO_PROXY, no_proxy } = process.env;
             this.child = cp.fork(workerPath, [], {
-                env: { ...process.env },
+                env: { PATH, HOME, TMPDIR, TEMP, TMP,
+                       HTTP_PROXY, HTTPS_PROXY, http_proxy, https_proxy,
+                       NO_PROXY, no_proxy },
                 execArgv: [],
             });
 
