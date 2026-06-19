@@ -37,21 +37,7 @@ async function startServer(preferredPort: number | undefined, storagePath: strin
         const certPath = path.join(storagePath, 'local-ca.pem');
         const keyPath = path.join(storagePath, 'local-ca.key');
 
-        let httpsConfig;
-        if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
-            httpsConfig = {
-                key: fs.readFileSync(keyPath, 'utf-8'),
-                cert: fs.readFileSync(certPath, 'utf-8'),
-            };
-        } else {
-            const generated = await mockttp.generateCACertificate({
-                subject: { commonName: 'Ecode Proxy CA' },
-                bits: 2048,
-            });
-            fs.writeFileSync(keyPath, generated.key);
-            fs.writeFileSync(certPath, generated.cert);
-            httpsConfig = { key: generated.key, cert: generated.cert };
-        }
+        const httpsConfig = await ensureCaCert(certPath, keyPath);
 
         const boundPort = await bindServer(httpsConfig, preferredPort);
 
@@ -59,6 +45,72 @@ async function startServer(preferredPort: number | undefined, storagePath: strin
     } catch (error: any) {
         if (process.send) { process.send({ type: 'error', message: error.toString() }); }
     }
+}
+
+/**
+ * Returns the shared CA cert, generating it once if absent. Several VS Code
+ * windows share one globalStorage dir, so on a simultaneous first-ever cold
+ * start they could each generate a different CA and clobber the file — leaving a
+ * window serving one cert while its terminals are told to trust another (TLS
+ * failure). We avoid that by electing a single generator via an exclusive (wx)
+ * create of the key file; the rest wait for the cert (written last) and read the
+ * same pair. After the first run the fast path just reads the existing files.
+ */
+async function ensureCaCert(
+    certPath: string,
+    keyPath: string,
+    attempt = 0,
+): Promise<{ key: string; cert: string }> {
+    if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
+        return { key: fs.readFileSync(keyPath, 'utf-8'), cert: fs.readFileSync(certPath, 'utf-8') };
+    }
+
+    let fd: number;
+    try {
+        fd = fs.openSync(keyPath, 'wx'); // atomic election — only one worker wins
+    } catch (e: any) {
+        if (e.code !== 'EEXIST') { throw e; }
+        // Another worker is generating — wait for the cert (written last) to land.
+        try {
+            await waitForFile(certPath, 5000);
+        } catch {
+            // Stale key from a crashed generator — clear it and retry once.
+            if (attempt === 0) {
+                try { fs.rmSync(keyPath, { force: true }); } catch { /* ignore */ }
+                return ensureCaCert(certPath, keyPath, 1);
+            }
+            throw new Error('CA cert generation appears stuck');
+        }
+        return { key: fs.readFileSync(keyPath, 'utf-8'), cert: fs.readFileSync(certPath, 'utf-8') };
+    }
+
+    try {
+        const generated = await mockttp.generateCACertificate({
+            subject: { commonName: 'Ecode Proxy CA' },
+            bits: 2048,
+        });
+        fs.writeSync(fd, generated.key);
+        fs.closeSync(fd);
+        fs.writeFileSync(certPath, generated.cert); // cert written last = completion signal
+        return { key: generated.key, cert: generated.cert };
+    } catch (e) {
+        // Don't leave a stale empty key file blocking future runs.
+        try { fs.closeSync(fd); } catch { /* already closed */ }
+        try { fs.rmSync(keyPath, { force: true }); } catch { /* ignore */ }
+        throw e;
+    }
+}
+
+function waitForFile(file: string, timeoutMs: number): Promise<void> {
+    return new Promise((resolve, reject) => {
+        const startedAt = Date.now();
+        const tick = () => {
+            if (fs.existsSync(file)) { resolve(); return; }
+            if (Date.now() - startedAt > timeoutMs) { reject(new Error(`Timed out waiting for ${file}`)); return; }
+            setTimeout(tick, 50);
+        };
+        tick();
+    });
 }
 
 /**
