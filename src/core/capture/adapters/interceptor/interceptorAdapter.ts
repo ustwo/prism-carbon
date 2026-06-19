@@ -5,6 +5,10 @@
  *  THROUGH THE REGISTERED PROVIDERS TO EXTRACT TOKEN DATA,     *
  *  CALCULATES EMISSIONS, AND EMITS A CALL.                     *
  *  AUTO-INJECTS PROXY ENV VARS INTO EVERY NEW TERMINAL.        *
+ *  EACH VS CODE WINDOW RUNS ITS OWN PROXY ON ITS OWN PORT, SO  *
+ *  CAPTURE IS INDEPENDENT AND CORRECTLY ATTRIBUTED PER WINDOW. *
+ *  A PID REGISTRY GARBAGE-COLLECTS PROXIES LEFT BY CRASHED     *
+ *  WINDOWS, NEVER TOUCHING A LIVE SIBLING'S WORKER.            *
  ****************************************************************/
 
 import * as vscode from 'vscode';
@@ -23,13 +27,16 @@ import { logger } from '../../../../utils/logger';
 
 const execAsync = promisify(cp.exec);
 
-const LOCK_FILE = 'proxy.lock';
+// Directory of per-window lock files (one JSON per owning extension-host PID),
+// shared across windows via the extension's globalStorage path.
+const LOCK_DIR = 'proxy-locks';
 
 interface ProxyLock { hostPid: number; workerPid: number; port: number; }
 
 let proxyServer: InterceptorProxy | undefined;
 let terminalListener: vscode.Disposable | undefined;
 let storagePath: string | undefined;
+let activePort: number | undefined;
 
 export async function startCapture(globalStoragePath: string): Promise<void> {
     if (state.runningInterceptor) {
@@ -38,24 +45,21 @@ export async function startCapture(globalStoragePath: string): Promise<void> {
     }
     storagePath = globalStoragePath;
     try {
-        // Reclaim the port only if it's free or held by a dead orphan. If another
-        // live VS Code window already owns the proxy, stand down — one shared
-        // proxy per machine, and we must not kill a sibling's worker.
-        if (!(await ensurePortReclaimable(PROXY_PORT, globalStoragePath))) {
-            logger.info('Proxy already owned by another VS Code window — this window will not start its own.');
-            return;
-        }
+        // Clean up proxies left behind by VS Code windows that crashed without
+        // running deactivate. Never touches a live sibling's worker.
+        await gcOrphanedProxies(globalStoragePath);
 
-        logger.info(`Starting interceptor proxy on port ${PROXY_PORT}...`);
+        logger.info(`Starting interceptor proxy (preferred port ${PROXY_PORT})...`);
         proxyServer = new InterceptorProxy(PROXY_PORT, onApiResponseText);
         await proxyServer.start(globalStoragePath);
+        activePort = proxyServer.port;
         state.runningInterceptor = true;
-        writeLock(globalStoragePath, {
+        writeOwnLock(globalStoragePath, {
             hostPid: process.pid,
             workerPid: proxyServer.workerPid ?? -1,
-            port: PROXY_PORT,
+            port: activePort ?? -1,
         });
-        logger.info(`Interceptor proxy started on port ${PROXY_PORT}`);
+        logger.info(`Interceptor proxy started on port ${activePort}`);
 
         injectProxyIntoExistingTerminals();
         terminalListener = vscode.window.onDidOpenTerminal(injectProxyIntoTerminal);
@@ -77,6 +81,7 @@ export async function stopCapture(): Promise<void> {
         logger.info('Stopping interceptor proxy...');
         await proxyServer.stop();
         proxyServer = undefined;
+        activePort = undefined;
         state.runningInterceptor = false;
         if (storagePath) { clearOwnLock(storagePath); }
         logger.info('Interceptor proxy stopped');
@@ -84,42 +89,37 @@ export async function stopCapture(): Promise<void> {
 }
 
 /**
- * Decides whether this window may take port `port`, and clears the way if so.
- * Returns true when the port is free, or when it's held by an orphaned worker
- * whose owning VS Code window is gone (hard crash) — in which case the orphan
- * is killed. Returns false when a *live* sibling window owns the proxy, so we
- * never kill a healthy sibling's worker. Best-effort: failures fall back to
- * "reclaimable" so a transient check error never blocks capture.
+ * Scans the lock registry and kills any proxy worker whose owning VS Code
+ * window is no longer alive (e.g. a hard crash where deactivate never ran).
+ * Live siblings are left untouched. Each lock records its worker PID, so we
+ * kill by PID — no port scanning needed — and we verify the PID is still a Node
+ * process first, so a recycled PID can never make us kill an unrelated process.
+ * Best-effort: failures are logged, never thrown.
  */
-async function ensurePortReclaimable(port: number, storagePath: string): Promise<boolean> {
+async function gcOrphanedProxies(storagePath: string): Promise<void> {
+    const dir = path.join(storagePath, LOCK_DIR);
+    let files: string[];
     try {
-        const pids = await listeningPids(port);
-        if (pids.length === 0) {
-            clearLock(storagePath);
-            return true;
+        files = fs.readdirSync(dir);
+    } catch {
+        return; // no registry yet — nothing to collect
+    }
+
+    for (const file of files) {
+        const full = path.join(dir, file);
+        const lock = readLockFile(full);
+        if (!lock) { rmFile(full); continue; }
+
+        if (lock.hostPid === process.pid || isProcessAlive(lock.hostPid)) {
+            continue; // ours or a live sibling — leave it alone
         }
 
-        const lock = readLock(storagePath);
-        if (lock && lock.hostPid !== process.pid && isProcessAlive(lock.hostPid)) {
-            // Owner window is still running — leave its proxy alone.
-            return false;
+        // Owner window is gone — reclaim its worker.
+        if (lock.workerPid > 0 && await isNodeProcess(lock.workerPid)) {
+            logger.info(`Killing orphaned proxy worker (PID ${lock.workerPid}, port ${lock.port}) from dead window ${lock.hostPid}`);
+            try { process.kill(lock.workerPid, 'SIGKILL'); } catch (e) { logger.debug(`kill ${lock.workerPid} failed: ${e}`); }
         }
-
-        // Orphan (owner host dead or no lock): reclaim the port. Only kill Node
-        // processes so we never touch an unrelated service on the same port.
-        for (const pid of pids) {
-            if (!(await isNodeProcess(pid))) {
-                logger.warn(`Port ${port} held by non-Node PID ${pid} — leaving it alone`);
-                continue;
-            }
-            logger.info(`Killing orphaned proxy (PID ${pid}) on port ${port}`);
-            try { process.kill(pid, 'SIGKILL'); } catch (e) { logger.debug(`kill ${pid} failed: ${e}`); }
-        }
-        clearLock(storagePath);
-        return true;
-    } catch (error) {
-        logger.debug(`ensurePortReclaimable: check failed, assuming free (${error})`);
-        return true;
+        rmFile(full);
     }
 }
 
@@ -133,61 +133,36 @@ function isProcessAlive(pid: number): boolean {
     }
 }
 
-function lockPath(storagePath: string): string {
-    return path.join(storagePath, LOCK_FILE);
+function ownLockPath(storagePath: string): string {
+    return path.join(storagePath, LOCK_DIR, `${process.pid}.json`);
 }
 
-function readLock(storagePath: string): ProxyLock | null {
+function readLockFile(file: string): ProxyLock | null {
     try {
-        const raw = fs.readFileSync(lockPath(storagePath), 'utf-8');
-        const parsed = JSON.parse(raw);
-        if (typeof parsed?.hostPid === 'number') { return parsed; }
+        const parsed = JSON.parse(fs.readFileSync(file, 'utf-8'));
+        if (typeof parsed?.hostPid === 'number' && typeof parsed?.workerPid === 'number') {
+            return parsed;
+        }
         return null;
     } catch { return null; }
 }
 
-function writeLock(storagePath: string, lock: ProxyLock): void {
+function writeOwnLock(storagePath: string, lock: ProxyLock): void {
     try {
-        fs.writeFileSync(lockPath(storagePath), JSON.stringify(lock));
+        fs.mkdirSync(path.join(storagePath, LOCK_DIR), { recursive: true });
+        fs.writeFileSync(ownLockPath(storagePath), JSON.stringify(lock));
     } catch (e) {
-        logger.debug(`writeLock failed: ${e}`);
+        logger.debug(`writeOwnLock failed: ${e}`);
     }
 }
 
-function clearLock(storagePath: string): void {
-    try {
-        fs.rmSync(lockPath(storagePath), { force: true });
-    } catch (e) {
-        logger.debug(`clearLock failed: ${e}`);
-    }
+function rmFile(file: string): void {
+    try { fs.rmSync(file, { force: true }); } catch (e) { logger.debug(`rm ${file} failed: ${e}`); }
 }
 
-/** Remove the lock only if this window owns it. */
+/** Remove this window's own lock file. */
 function clearOwnLock(storagePath: string): void {
-    const lock = readLock(storagePath);
-    if (lock && lock.hostPid === process.pid) { clearLock(storagePath); }
-}
-
-async function listeningPids(port: number): Promise<number[]> {
-    const cmd = process.platform === 'win32'
-        ? `netstat -ano -p tcp | findstr LISTENING | findstr :${port}`
-        : `lsof -ti tcp:${port} -sTCP:LISTEN`;
-
-    const { stdout } = await execAsync(cmd);
-
-    if (process.platform === 'win32') {
-        // Last column of each matching line is the PID.
-        const pids = stdout.trim().split(/\r?\n/)
-            .map(line => Number(line.trim().split(/\s+/).pop()))
-            .filter(pid => Number.isInteger(pid) && pid > 0);
-        return [...new Set(pids)];
-    }
-
-    return [...new Set(
-        stdout.trim().split(/\r?\n/)
-            .map(Number)
-            .filter(pid => Number.isInteger(pid) && pid > 0)
-    )];
+    rmFile(ownLockPath(storagePath));
 }
 
 async function isNodeProcess(pid: number): Promise<boolean> {
@@ -229,7 +204,8 @@ function onApiResponseText(url: string, bodyText: string): void {
 }
 
 function proxyEnv(): Record<string, string> {
-    const proxyUrl = `http://127.0.0.1:${PROXY_PORT}`;
+    const port = activePort ?? PROXY_PORT;
+    const proxyUrl = `http://127.0.0.1:${port}`;
     const certPath = proxyServer?.certPath ?? '';
     return {
         HTTP_PROXY: proxyUrl,
@@ -242,7 +218,7 @@ function proxyEnv(): Record<string, string> {
         AWS_CA_BUNDLE: certPath,
         NODE_EXTRA_CA_CERTS: certPath,
         NODE_OPTIONS: '--use-env-proxy',
-        JAVA_TOOL_OPTIONS: `-Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=${PROXY_PORT} -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=${PROXY_PORT}`,
+        JAVA_TOOL_OPTIONS: `-Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=${port} -Dhttps.proxyHost=127.0.0.1 -Dhttps.proxyPort=${port}`,
     };
 }
 

@@ -11,13 +11,15 @@ import { logger } from '../utils/logger';
 
 export class InterceptorProxy {
     private child?: cp.ChildProcess;
-    private readonly port: number;
+    private readonly preferredPort: number;
     private readonly proxyLog: vscode.OutputChannel;
     private readonly onApiResponse: (url: string, bodyText: string) => void;
     public certPath: string = '';
+    /** The port the worker actually bound (may differ from preferred if it was busy). */
+    public port?: number;
 
-    constructor(port: number, onApiResponse: (url: string, bodyText: string) => void) {
-        this.port = port;
+    constructor(preferredPort: number, onApiResponse: (url: string, bodyText: string) => void) {
+        this.preferredPort = preferredPort;
         this.onApiResponse = onApiResponse;
         this.proxyLog = vscode.window.createOutputChannel('PRISM — Proxy');
     }
@@ -38,7 +40,8 @@ export class InterceptorProxy {
             this.child.on('message', (msg: any) => {
                 if (msg.type === 'started') {
                     this.certPath = msg.certPath;
-                    this.proxyLog.appendLine(`Proxy running on port ${this.port}`);
+                    this.port = msg.port;
+                    this.proxyLog.appendLine(`Proxy running on port ${msg.port}`);
                     resolve();
                 } else if (msg.type === 'log') {
                     this.proxyLog.appendLine(msg.message);
@@ -61,7 +64,7 @@ export class InterceptorProxy {
                 }
             });
 
-            this.child.send({ command: 'start', port: this.port, storagePath });
+            this.child.send({ command: 'start', preferredPort: this.preferredPort, storagePath });
         });
     }
 
