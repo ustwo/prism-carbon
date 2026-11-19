@@ -10,6 +10,7 @@ import * as path from 'path';
 import * as budget from '../core/budget';
 import { createComparisons } from './dashboardData';
 import { getWebviewContent } from './webviewContent';
+import { mockDays, generateMockCalls } from './mockData';
 
 function getColorConfig() {
     const cfg = vscode.workspace.getConfiguration();
@@ -143,9 +144,11 @@ export class CarbonDashboardPanel {
             .get<number>('estimatingCarbon.logRefreshIntervalSeconds', 15);
 
         // Calls in the current budget window
-        const windowedCalls = this._budget.getCalls().filter(
-            (c: any) => c.DateTime >= budgetWindowStart
-        );
+        // PRISM_MOCK_DATA (see "Run Extension (mock data)") swaps in fake calls
+        const mockDaysCount = mockDays();
+        const windowedCalls = mockDaysCount !== null
+            ? generateMockCalls(mockDaysCount)
+            : this._budget.getCalls().filter((c: any) => c.DateTime >= budgetWindowStart);
 
         // Branch-filtered subset (pie chart, average, heatmap, radar)
         const calls = this._selectedBranches === null

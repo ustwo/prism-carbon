@@ -14,8 +14,19 @@ PRISM is a VS Code extension that estimates the carbon footprint of AI interacti
 | Claude Code         | Reads Claude Code's log file automatically                                                 |
 | Runtime LLM calls   | HTTP proxy intercepts API calls in VS Code terminals (opt-in — disabled by default)        |
 
+## Quick start (run from source)
+
+```bash
+npm run setup        # install dependencies and compile
+```
+
+Then open this folder in VS Code and press **F5** (**Run → Start Debugging**, configuration **"Run Extension"**). A new **Extension Development Host** window opens with PRISM loaded — run **PRISM: Open Carbon Dashboard** from the Command Palette there.
+
+See [How to run PRISM](#devIn) for watch mode, debugging the dashboard, tests and building a `.vsix`.
+
 ## Contents
 
+- [Quick start](#quick-start-run-from-source)
 - [How it works](#how-it-works)
 - [First-time setup](#first-time-setup)
 - [How to use](#how-to-use)
@@ -168,13 +179,23 @@ npm run setup
 
 This runs `npm install` and compiles the TypeScript source in one step.
 
-#### 2. Launch the extension
+#### 2. Launch the extension (F5)
 
-Open the repository folder in VS Code, then press **F5** (or go to **Run → Start Debugging**).
+1. Open the repository folder in VS Code.
+2. Press **F5** — or open the **Run and Debug** panel (`Cmd+Shift+D` / `Ctrl+Shift+D`), select **"Run Extension"** and click ▶ (**Run → Start Debugging**).
+3. A new **Extension Development Host** window opens with PRISM loaded from your local folder. Use that window to test.
+4. In the Extension Development Host, open the Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`) and run **PRISM: Open Carbon Dashboard**.
 
-This opens a new **Extension Development Host** window with PRISM loaded. Changes to the source require restarting the host (`Ctrl+Shift+F5` / `Cmd+Shift+F5`) to take effect.
+> The launch configuration has no pre-launch build task, so make sure you have compiled first (`npm run setup` / `npm run compile`, or keep `npm run watch` running). Otherwise F5 starts an outdated build from `dist/`.
 
-#### 3. Watch mode (optional)
+> The dashboard and graphs only show data when the Extension Development Host has a git repository open with recorded AI calls. If the dashboard is empty, open a project that already has call history.
+
+#### 3. Iterating on changes
+
+| What you changed                                              | How to see it                                                                                                   |
+| ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| TypeScript in `src/`                                          | Rebuild (`npm run compile` or `npm run watch`), then restart the host (`Cmd+Shift+F5` / `Ctrl+Shift+F5`)          |
+| Webview assets in `public/` (dashboard, `graph.js`, miniview) | No rebuild needed — they're loaded from disk. Close and reopen the dashboard, or run **Developer: Reload Window** in the host |
 
 To rebuild automatically on every file save:
 
@@ -182,7 +203,9 @@ To rebuild automatically on every file save:
 npm run watch
 ```
 
-Restart the Extension Development Host after each rebuild to pick up changes.
+**Testing the charts with mock data:** in **Run and Debug**, pick **"Run Extension (mock data)"** and press **F5**. VS Code asks how many days of data to generate (1, 2, 7, 30, 90, 180 or 365 — default 90). The dashboard then shows generated calls across several branches and models for the last N days, always ending now. The dashboard ignores the budget window in this mode, and nothing is saved, so your real call history stays untouched. The sidebar and status bar keep showing real data. The generator lives in [`src/dashboard/mockData.ts`](src/dashboard/mockData.ts).
+
+**Debugging the dashboard:** in the Extension Development Host, run **Developer: Open Webview Developer Tools** from the Command Palette to get the console and element inspector for the dashboard webview. Extension-side breakpoints in `src/` work directly from the original VS Code window.
 
 #### 4. Run tests
 
@@ -210,7 +233,7 @@ From the repository root:
 npm run release
 ```
 
-This compiles the source and produces `PRISM-CARBON.vsix` inside `distExtension/`.
+This compiles the source and produces `PRISM-CARBON-TRACKER.vsix` inside `distExtension/`.
 
 #### 2. Install the VSIX
 
@@ -220,13 +243,13 @@ This compiles the source and produces `PRISM-CARBON.vsix` inside `distExtension/
 2. Go to the **Extensions** panel (`Cmd+Shift+X` / `Ctrl+Shift+X`).
 3. Click the **`···`** menu (top-right of the panel).
 4. Select **Install from VSIX…**
-5. Choose `PRISM-CARBON.vsix`.
+5. Choose `PRISM-CARBON-TRACKER.vsix`.
 6. Reload VS Code when prompted.
 
 **Via terminal:**
 
 ```bash
-code --install-extension "distExtension/PRISM-CARBON.vsix"
+code --install-extension "distExtension/PRISM-CARBON-TRACKER.vsix"
 ```
 
 #### After installing

@@ -814,82 +814,72 @@ function drawCandleStickTimelineGraph(scrollRatio = 1){
     svg.appendChild(xAxisLine);
 
 
-    const millisecondsPerPixel = 1 / pixelsPerMilliseconds;
-    const millisecondsGap = 100 * millisecondsPerPixel;
+    // Pick a tick interval so labels are at least ~70px apart. Sub-day ticks
+    // show hours (with a secondary row of dates); day+ ticks show dates only,
+    // so the two rows never repeat the same labels.
+    const HOUR = 60 * 60 * 1000;
+    const DAY = 24 * HOUR;
+    const minLabelGapMs = 70 / pixelsPerMilliseconds;
 
-    const intervals = [60 * 60 * 1000,
-        2 * 60 * 60 * 1000,
-        4 * 60 * 60 * 1000,
-        8 * 60 * 60 * 1000,
-        12 * 60 * 60 * 1000,
-        24 * 60 * 60 * 1000,
-    ];
+    const hourIntervals = [1, 2, 4, 8, 12].map(h => h * HOUR);
+    const dayIntervals = [1, 2, 3, 7, 14, 30, 60, 90];
 
-    let selectedInterval = intervals[intervals.length - 1];
-
-    for (let interval of intervals) {
-        if (interval >= millisecondsGap) {
-            selectedInterval = interval;
-            break;
-        }
-    }
-    let currentTime = Math.ceil(minTime / selectedInterval) * selectedInterval;
-
-    while (currentTime <= maxTime) {
-        const xMarkingsSpacing = margin.left + (currentTime - minTime) * pixelsPerMilliseconds;
-
-        const xAxisHeading = document.createElementNS("http://www.w3.org/2000/svg", "text");
-        xAxisHeading.setAttribute("x", xMarkingsSpacing);
-        xAxisHeading.setAttribute("y", height - margin.bottom + 18);
-        xAxisHeading.setAttribute("text-anchor", "middle");
-        xAxisHeading.setAttribute("font-size", "10");
-        xAxisHeading.setAttribute("fill", "var(--secondary-text)");
-
-        if(selectedInterval < 24 * 60 * 60 * 1000){
-            xAxisHeading.textContent = new Date(currentTime).toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false
-            });
-        }
-        else{
-            xAxisHeading.textContent = new Date(currentTime).toLocaleDateString([], {
-                day: "2-digit",
-                month: "short"
-            });
-        }
-        svg.appendChild(xAxisHeading);
-
-        currentTime = currentTime + selectedInterval;
+    let selectedHourInterval = hourIntervals.find(i => i >= minLabelGapMs) || null;
+    let selectedDayStep = null;
+    if (!selectedHourInterval) {
+        selectedDayStep = dayIntervals.find(d => d * DAY >= minLabelGapMs) || dayIntervals[dayIntervals.length - 1];
     }
 
-    let lastDisplayedDay = null;
-    currentTime = Math.ceil(minTime / (24 * 60 * 60 * 1000)) * (24 * 60 * 60 * 1000);
-
-    while (currentTime <= maxTime) {
-        const date = new Date(currentTime);
-        const day = date.toDateString();
-        const xMarkingsSpacing = margin.left + (currentTime - minTime) * pixelsPerMilliseconds;
-
-        if (day !== lastDisplayedDay) {
-            const dateHeading = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            dateHeading.setAttribute("x", xMarkingsSpacing);
-            dateHeading.setAttribute("y", height - margin.bottom + 34);
-            dateHeading.setAttribute("text-anchor", "start");
-            dateHeading.setAttribute("font-size", "10");
-            dateHeading.setAttribute("fill", "var(--text-color)");
-            dateHeading.setAttribute("font-weight", "500");
-            dateHeading.style.opacity = "0.8";
-
-            dateHeading.textContent = date.toLocaleDateString([], {
-                day: "2-digit",
-                month: "short"
-            });
-
-            svg.appendChild(dateHeading);
-            lastDisplayedDay = day;
+    // First local midnight at or after `t`.
+    const nextLocalMidnight = (t) => {
+        const d = new Date(t);
+        d.setHours(0, 0, 0, 0);
+        if (d.getTime() < t) {
+            d.setDate(d.getDate() + 1);
         }
-        currentTime = currentTime + (24 * 60 * 60 * 1000);
+        return d;
+    };
+
+    const formatDate = (d) => d.toLocaleDateString([], { day: "2-digit", month: "short" });
+
+    const addXLabel = (time, text, y, extra = {}) => {
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", margin.left + (time - minTime) * pixelsPerMilliseconds);
+        label.setAttribute("y", y);
+        label.setAttribute("text-anchor", extra.anchor || "middle");
+        label.setAttribute("font-size", "10");
+        label.setAttribute("fill", extra.fill || "var(--secondary-text)");
+        if (extra.weight) {
+            label.setAttribute("font-weight", extra.weight);
+            label.style.opacity = "0.8";
+        }
+        label.textContent = text;
+        svg.appendChild(label);
+    };
+
+    if (selectedHourInterval) {
+        // Primary row: hours. Align to local hour boundaries.
+        const start = new Date(minTime);
+        start.setMinutes(0, 0, 0);
+        const stepHours = selectedHourInterval / HOUR;
+        while (start.getTime() < minTime || start.getHours() % stepHours !== 0) {
+            start.setHours(start.getHours() + 1);
+        }
+        for (const d = start; d.getTime() <= maxTime; d.setHours(d.getHours() + stepHours)) {
+            addXLabel(d.getTime(), d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false }),
+                height - margin.bottom + 18);
+        }
+
+        // Secondary row: one date per local day (days are >= 70px apart here).
+        for (const d = nextLocalMidnight(minTime); d.getTime() <= maxTime; d.setDate(d.getDate() + 1)) {
+            addXLabel(d.getTime(), formatDate(d), height - margin.bottom + 34,
+                { anchor: "start", fill: "var(--text-color)", weight: "500" });
+        }
+    } else {
+        // Single row: dates every N local days.
+        for (const d = nextLocalMidnight(minTime); d.getTime() <= maxTime; d.setDate(d.getDate() + selectedDayStep)) {
+            addXLabel(d.getTime(), formatDate(d), height - margin.bottom + 18);
+        }
     }
 
     const yAxisLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
