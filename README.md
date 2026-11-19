@@ -203,6 +203,8 @@ To rebuild automatically on every file save:
 npm run watch
 ```
 
+**Testing the charts with mock data:** in **Run and Debug**, pick **"Run Extension (mock data)"** and press **F5**. VS Code asks how many days of data to generate (1, 2, 7, 30, 90, 180 or 365 — default 90). The dashboard then shows generated calls across several branches and models for the last N days, always ending now. The dashboard ignores the budget window in this mode, and nothing is saved, so your real call history stays untouched. The sidebar and status bar keep showing real data. The generator lives in [`src/dashboard/mockData.ts`](src/dashboard/mockData.ts).
+
 **Debugging the dashboard:** in the Extension Development Host, run **Developer: Open Webview Developer Tools** from the Command Palette to get the console and element inspector for the dashboard webview. Extension-side breakpoints in `src/` work directly from the original VS Code window.
 
 #### 4. Run tests

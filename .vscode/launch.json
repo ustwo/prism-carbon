@@ -12,6 +12,31 @@
       "outFiles": [
         "${workspaceFolder}/dist/**/*.js"
       ]
+    },
+    {
+      // Dashboard shows generated calls for the last N days (asked on launch) instead of stored data.
+      "name": "Run Extension (mock data)",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/",
+        "${workspaceFolder}"
+      ],
+      "env": {
+        "PRISM_MOCK_DATA": "${input:mockDays}"
+      },
+      "outFiles": [
+        "${workspaceFolder}/dist/**/*.js"
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "mockDays",
+      "type": "pickString",
+      "description": "Days of mock data to show in the dashboard (ending now)",
+      "options": ["1", "2", "7", "30", "90", "180", "365"],
+      "default": "90"
     }
   ]
 }
